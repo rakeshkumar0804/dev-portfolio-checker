@@ -59,10 +59,22 @@ export async function fetchGitHubData(username) {
     hasProfileReadme = false;
   }
 
-  return processGitHubData(profile, repos, events, hasProfileReadme);
+  // 5. Real Contribution Graph Data (accurate 30d, 90d & annual totals matching GitHub profile)
+  let contributionData = null;
+  try {
+    const contribRes = await axios.get(
+      `https://github-contributions-api.jogruber.de/v4/${username}`,
+      { timeout: 6000 }
+    );
+    contributionData = contribRes.data;
+  } catch (_) {
+    contributionData = null;
+  }
+
+  return processGitHubData(profile, repos, events, hasProfileReadme, contributionData);
 }
 
-function processGitHubData(profile, repos, events, hasProfileReadme) {
+function processGitHubData(profile, repos, events, hasProfileReadme, contributionData) {
   // Language distribution
   const langCount = {};
   repos.forEach((r) => {
@@ -85,26 +97,66 @@ function processGitHubData(profile, repos, events, hasProfileReadme) {
     (r.topics || []).forEach((t) => skillsSet.add(t));
   });
 
-  // Commit activity
-  const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
-  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
   const pushEvents = events.filter((e) => e.type === "PushEvent");
-  const commitCount90Days = pushEvents
-    .filter((e) => new Date(e.created_at).getTime() > ninetyDaysAgo)
-    .reduce((sum, e) => sum + (e.payload?.commits?.length || 1), 0);
-  const commitCount30Days = pushEvents
-    .filter((e) => new Date(e.created_at).getTime() > thirtyDaysAgo)
-    .reduce((sum, e) => sum + (e.payload?.commits?.length || 1), 0);
+
+  // Commit & Contribution activity
+  let commitCount90Days = 0;
+  let commitCount30Days = 0;
+  let totalContributionsYear = 0;
+
+  if (contributionData && Array.isArray(contributionData.contributions)) {
+    const now = Date.now();
+    const ninetyDaysAgo = now - 90 * 24 * 60 * 60 * 1000;
+    const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+
+    commitCount90Days = contributionData.contributions
+      .filter((c) => new Date(c.date).getTime() >= ninetyDaysAgo)
+      .reduce((sum, c) => sum + c.count, 0);
+
+    commitCount30Days = contributionData.contributions
+      .filter((c) => new Date(c.date).getTime() >= thirtyDaysAgo)
+      .reduce((sum, c) => sum + c.count, 0);
+
+    const currentYear = new Date().getFullYear().toString();
+    totalContributionsYear = contributionData.total?.[currentYear] || 0;
+  } else {
+    // Fallback to GitHub public events stream
+    const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    commitCount90Days = pushEvents
+      .filter((e) => new Date(e.created_at).getTime() > ninetyDaysAgo)
+      .reduce((sum, e) => sum + (e.payload?.commits?.length || 1), 0);
+    commitCount30Days = pushEvents
+      .filter((e) => new Date(e.created_at).getTime() > thirtyDaysAgo)
+      .reduce((sum, e) => sum + (e.payload?.commits?.length || 1), 0);
+  }
 
   // Streak calculation
-  const activeDays = new Set(
-    pushEvents.map((e) => new Date(e.created_at).toDateString())
-  );
   let currentStreak = 0;
-  for (let i = 0; i < 30; i++) {
-    const d = new Date(Date.now() - i * 86400000).toDateString();
-    if (activeDays.has(d)) currentStreak++;
-    else break;
+  if (contributionData && Array.isArray(contributionData.contributions)) {
+    const activeDays = new Set(
+      contributionData.contributions.filter((c) => c.count > 0).map((c) => c.date)
+    );
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(Date.now() - i * 86400000).toISOString().split("T")[0];
+      if (activeDays.has(d)) {
+        currentStreak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
+  } else {
+    const activeDays = new Set(
+      pushEvents.map((e) => new Date(e.created_at).toDateString())
+    );
+    for (let i = 0; i < 30; i++) {
+      const d = new Date(Date.now() - i * 86400000).toDateString();
+      if (activeDays.has(d)) {
+        currentStreak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
   }
 
   // Weekly activity heatmap (12 weeks)
@@ -215,6 +267,7 @@ function processGitHubData(profile, repos, events, hasProfileReadme) {
       avgReadmeScore,
       commitCount90Days,
       commitCount30Days,
+      totalContributionsYear,
       currentStreak,
       weeklyActivity,
     },

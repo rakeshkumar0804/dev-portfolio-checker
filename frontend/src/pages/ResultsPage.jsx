@@ -350,7 +350,7 @@ export default function ResultsPage() {
                   { value: stats.totalRepos,        label: "Total Repos" },
                   { value: stats.ownedRepos,         label: "Owned Repos" },
                   { value: stats.totalStars,         label: "Total Stars ⭐" },
-                  { value: profile.followers,        label: "Followers" },
+                  { value: stats.totalContributionsYear || stats.commitCount90Days, label: "Year Contributions" },
                   { value: stats.commitCount90Days,  label: "Commits (90d)" },
                   { value: stats.commitCount30Days,  label: "Commits (30d)" },
                   { value: stats.currentStreak,      label: "Activity Streak" },
