@@ -256,11 +256,11 @@ https://github.com/rakeshkumar0804
 
 LinkedIn
 
-(Add your LinkedIn)
+(https://www.linkedin.com/in/rakesh-kumar-520754246/)
 
 Portfolio
 
-(Add your Portfolio)
+(https://developer-portfolio-nu-rouge.vercel.app)
 
 ---
 
