@@ -205,39 +205,101 @@ export async function getReport(req, res) {
   try {
     const { shareId } = req.params;
 
-    // Check memory store first
-    if (memoryStore.has(shareId)) {
-      const report = memoryStore.get(shareId);
-      const missingSkills = detectMissingSkills(report.skillsDetected || [], report.targetRole || "fullstack");
-      return res.json({ success: true, ...report, missingSkills });
-    }
+    let report = memoryStore.get(shareId);
+    let isFromDb = false;
 
-    // Try DB
-    const Report = await getReportModel();
-    if (Report) {
-      const report = await Report.findOne({ shareId });
-      if (report) {
-        const missingSkills = detectMissingSkills(report.skillsDetected || [], report.targetRole || "fullstack");
-        return res.json({
-          success: true,
-          shareId: report.shareId,
-          createdAt: report.createdAt,
-          githubData: report.githubData,
-          portfolioData: report.portfolioData,
-          scores: report.scores,
-          scoreBreakdowns: report.scoreBreakdowns,
-          improvements: report.improvements,
-          aiFeedback: report.aiFeedback,
-          resumeAnalysis: report.resumeAnalysis,
-          missingSkills,
-          skillsDetected: report.skillsDetected,
-          targetRole: report.targetRole,
-        });
+    if (!report) {
+      const Report = await getReportModel();
+      if (Report) {
+        const dbReport = await Report.findOne({ shareId });
+        if (dbReport) {
+          isFromDb = true;
+          report = {
+            shareId: dbReport.shareId,
+            createdAt: dbReport.createdAt.getTime ? dbReport.createdAt.getTime() : new Date(dbReport.createdAt).getTime(),
+            githubUsername: dbReport.githubUsername,
+            portfolioUrl: dbReport.portfolioUrl,
+            githubData: dbReport.githubData,
+            portfolioData: dbReport.portfolioData,
+            scores: dbReport.scores,
+            scoreBreakdowns: dbReport.scoreBreakdowns,
+            improvements: dbReport.improvements,
+            aiFeedback: dbReport.aiFeedback,
+            resumeAnalysis: dbReport.resumeAnalysis,
+            skillsDetected: dbReport.skillsDetected || [],
+            targetRole: dbReport.targetRole || "fullstack",
+          };
+        }
       }
     }
 
-    return res.status(404).json({ message: "Report not found. It may have expired — please run a new analysis." });
+    if (!report) {
+      return res.status(404).json({ message: "Report not found. It may have expired — please run a new analysis." });
+    }
+
+    const username = report.githubUsername || report.githubData?.profile?.username;
+    const createdAtMs = typeof report.createdAt === "number" ? report.createdAt : new Date(report.createdAt).getTime();
+    const ageMs = Date.now() - createdAtMs;
+    const isStale = ageMs > CACHE_TTL_MS;
+
+    // Auto-refresh stale report (> 5 minutes old) with fresh GitHub data
+    if (isStale && username) {
+      try {
+        console.log(`🔄 Auto-refreshing stale report (${Math.round(ageMs / 60000)}m old) for "${username}"`);
+        const freshGithub = await fetchGitHubData(username);
+        if (isCacheValid({ githubData: freshGithub })) {
+          report.githubData = freshGithub;
+          report.skillsDetected = freshGithub.skills || [];
+          const { scores, scoreBreakdowns, improvements } = calculateAllScores(
+            freshGithub,
+            report.portfolioData,
+            report.targetRole || "fullstack"
+          );
+          report.scores = scores;
+          report.scoreBreakdowns = scoreBreakdowns;
+          report.improvements = improvements;
+          report.createdAt = Date.now();
+
+          // Save back to memory & DB
+          if (username) {
+            const cacheKey = `${username.toLowerCase()}|${report.portfolioUrl || ""}`;
+            memoryStore.set(cacheKey, report);
+          }
+          memoryStore.set(shareId, report);
+
+          const Report = await getReportModel();
+          if (Report) {
+            await Report.findOneAndUpdate(
+              { shareId },
+              {
+                githubData: freshGithub,
+                scores,
+                scoreBreakdowns,
+                improvements,
+                skillsDetected: freshGithub.skills || [],
+                createdAt: new Date(),
+              }
+            );
+          }
+        }
+      } catch (refreshErr) {
+        console.warn("Auto-refresh on getReport failed, serving existing data:", refreshErr.message);
+      }
+    }
+
+    const missingSkills = detectMissingSkills(report.skillsDetected || [], report.targetRole || "fullstack");
+    const currentAgeMs = Date.now() - (typeof report.createdAt === "number" ? report.createdAt : new Date(report.createdAt).getTime());
+    const cacheAge = Math.round(currentAgeMs / 60000);
+
+    return res.json({
+      success: true,
+      fromCache: currentAgeMs <= CACHE_TTL_MS,
+      cacheAge,
+      ...report,
+      missingSkills,
+    });
   } catch (err) {
+    console.error("getReport error:", err);
     return res.status(500).json({ message: "Failed to fetch report: " + err.message });
   }
 }
