@@ -1,77 +1,267 @@
-# Developer Portfolio Health Checker 🔍
+# 🚀 Dev Portfolio Checker
 
-> AI-powered Career Intelligence Platform — analyze your GitHub, portfolio, and resume to see exactly how you look to recruiters.
+> AI-powered career intelligence platform that analyzes your GitHub, portfolio, and resume to show exactly how recruiters evaluate your developer profile.
 
-## Features
+![Status](https://img.shields.io/badge/Status-Active-success)
+![React](https://img.shields.io/badge/Frontend-React%2018-61DAFB)
+![Node.js](https://img.shields.io/badge/Backend-Node.js-339933)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
-- **Calibrated Scoring** — real scores with evidence breakdowns, not random numbers
-- **Score Evidence** — click any score to see exactly why it's that value (metric-by-metric)
-- **Improvement Cards** — each suggestion shows: why it matters, how to fix it, +points gained, difficulty & time estimate
-- **10-Second Recruiter Scan** — animated simulation of what a recruiter notices in their first 10 seconds
-- **Portfolio Audit** — SEO, accessibility, mobile responsiveness, content & performance checks
-- **Resume Analysis** — ATS score, keyword matching, action verb detection, GitHub consistency check
-- **Career Roadmap** — AI-generated weekly milestones from your current level to target level
-- **Skill Gap Detection** — compares your GitHub skills against your target role requirements
-- **Shareable Reports** — permanent public link for every analysis
+---
 
-## Tech Stack
+## 📸 Preview
 
-**Backend:** Node.js · Express · MongoDB · Gemini AI · Cheerio · pdf-parse  
-**Frontend:** React 18 · Vite · React Router · Vanilla CSS
+> Add screenshots or GIFs here.
 
-## Setup
+| Home | Analysis Report |
+|------|-----------------|
+| ![](docs/home.png) | ![](docs/report.png) |
 
-### 1. Prerequisites
-- Node.js 18+
-- MongoDB (local or Atlas)
-- Gemini API key (free at [aistudio.google.com](https://aistudio.google.com))
+---
 
-### 2. Backend
-```bash
-cd backend
-cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY and MONGODB_URI
-npm install
-npm run dev
+# ✨ What is Dev Portfolio Checker?
+
+Dev Portfolio Checker helps developers understand how recruiters perceive their technical profile.
+
+Instead of only checking your GitHub statistics, it performs a complete hiring-readiness analysis by evaluating:
+
+- GitHub Profile
+- Portfolio Website
+- Resume
+- Documentation Quality
+- Project Quality
+- Hiring Readiness
+
+and provides actionable AI-powered recommendations.
+
+---
+
+# 🔥 Features
+
+### 🐙 GitHub Analysis
+
+- Repository Quality
+- Stars & Followers
+- Commit Activity
+- Profile Completeness
+- README Evaluation
+- Language Distribution
+- Repository Topics
+- Hiring Signals
+
+---
+
+### 🌐 Portfolio Audit
+
+- SEO Analysis
+- Accessibility Checks
+- Mobile Responsiveness
+- HTTPS Validation
+- Contact Information
+- Social Links
+- Project Showcase
+- Performance Checks
+
+---
+
+### 📄 Resume Analysis
+
+- ATS Score
+- Keyword Matching
+- Missing Skills
+- Action Verbs
+- Resume Consistency
+- Recruiter Feedback
+
+---
+
+### 🤖 AI Insights
+
+Generate intelligent recommendations using Gemini AI.
+
+Examples include:
+
+- Strengths
+- Weaknesses
+- Missing Sections
+- Hiring Suggestions
+- Improvement Priority
+- Estimated Impact
+
+---
+
+### 📈 Career Readiness
+
+Receive:
+
+- Overall Hiring Score
+- Recruiter Simulation
+- Skill Gap Detection
+- Improvement Roadmap
+- Quick Wins
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
+- React 18
+- Vite
+- React Router
+- Vanilla CSS
+
+## Backend
+
+- Node.js
+- Express.js
+
+## Database
+
+- MongoDB
+
+## AI
+
+- Gemini API
+
+---
+
+# 📂 Project Structure
+
+```
+backend/
+frontend/
+README.md
 ```
 
-### 3. Frontend
+---
+
+# ⚙️ Installation
+
+## Clone
+
+```bash
+git clone https://github.com/rakeshkumar0804/dev-portfolio-checker.git
+cd dev-portfolio-checker
+```
+
+---
+
+## Backend
+
+```bash
+cd backend
+npm install
+```
+
+Create:
+
+```
+backend/.env
+```
+
+```
+PORT=
+MONGODB_URI=
+GEMINI_API_KEY=
+GITHUB_TOKEN=
+CLIENT_URL=
+```
+
+Start server
+
+```bash
+npm start
+```
+
+---
+
+## Frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`
+---
 
-## Environment Variables
-
-`backend/.env`:
-```
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/devportfolio
-GEMINI_API_KEY=your_key_here
-GITHUB_TOKEN=          # optional, increases rate limit from 60 to 5000/hr
-CLIENT_URL=http://localhost:5173
-```
-
-## Project Structure
+# 📊 Analysis Workflow
 
 ```
-developer-portfolio/
-├── backend/
-│   ├── controllers/     # analyzeController, resumeController
-│   ├── models/          # Report.js (MongoDB schema)
-│   ├── routes/          # analyzeRoutes, resumeRoutes
-│   ├── services/        # githubService, portfolioService, scoringService, aiService, resumeService
-│   ├── utils/           # connectDatabase
-│   └── server.js
-└── frontend/
-    ├── src/
-    │   ├── components/  # ScoreGauge, ImprovementCard, RecruiterSimulator, CareerRoadmap, etc.
-    │   ├── pages/       # HomePage, ResultsPage
-    │   ├── services/    # apiService
-    │   ├── styles.css
-    │   └── App.jsx
-    └── index.html
+User Input
+
+      ↓
+
+GitHub Analysis
+Portfolio Analysis
+Resume Analysis
+
+      ↓
+
+AI Processing
+
+      ↓
+
+Scores
+
+      ↓
+
+Recommendations
+
+      ↓
+
+Hiring Readiness Report
 ```
+
+---
+
+# 🚀 Future Roadmap
+
+- Resume-only mode
+- Portfolio-only mode
+- GitHub-only mode
+- Download PDF Report
+- Public Share Links
+- Score History
+- Team Dashboard
+- AI Resume Builder
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+Fork the repository and submit a pull request.
+
+---
+
+# 📄 License
+
+MIT License
+
+---
+
+# 👨‍💻 Author
+
+**Rakesh Kumar**
+
+Full Stack Developer
+
+GitHub
+
+https://github.com/rakeshkumar0804
+
+LinkedIn
+
+(Add your LinkedIn)
+
+Portfolio
+
+(Add your Portfolio)
+
+---
+
+⭐ If you found this project useful, consider giving it a star.
