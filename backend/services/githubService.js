@@ -125,14 +125,32 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
       .filter((c) => new Date(c.date).getTime() >= ninetyDaysAgo)
       .reduce((sum, c) => sum + c.count, 0);
 
+    // Use the max of live events vs graph API for 30d/90d (live events are truly real-time)
     commitCount30Days = Math.max(liveCommitCount30Days, api30Days);
     commitCount90Days = Math.max(liveCommitCount90Days, api90Days);
 
+    // Year total: graph API total + live events that happened AFTER the API's last cached day
     const currentYear = new Date().getFullYear().toString();
     const apiYearTotal = contributionData.total?.[currentYear] || 0;
-    // Add any delta between live events and cached API total
-    const liveExtraCommits = Math.max(0, liveCommitCount30Days - api30Days);
-    totalContributionsYear = apiYearTotal + liveExtraCommits;
+
+    // Find the latest date present in the contribution graph data
+    const apiDates = contributionData.contributions
+      .filter((c) => c.date.startsWith(currentYear) && c.count > 0)
+      .map((c) => c.date)
+      .sort();
+    const apiLastDate = apiDates[apiDates.length - 1] || `${currentYear}-01-01`;
+    const apiLastDateMs = new Date(apiLastDate).getTime();
+
+    // Count live push-event commits that happened AFTER the API's last recorded date
+    const realTimeDelta = pushEvents
+      .filter((e) => {
+        const d = new Date(e.created_at);
+        return d.getFullYear() === new Date().getFullYear() &&
+               d.getTime() > apiLastDateMs + 86400000; // strictly after last API day
+      })
+      .reduce((sum, e) => sum + (e.payload?.commits?.length || 1), 0);
+
+    totalContributionsYear = apiYearTotal + realTimeDelta;
   } else {
     totalContributionsYear = liveCommitCount90Days;
   }
