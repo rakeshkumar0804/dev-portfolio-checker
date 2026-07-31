@@ -8,6 +8,11 @@
   ],
   "routes": [
     {
+      "src": "/favicon\\.(ico|png|svg)",
+      "status": 204,
+      "headers": { "Content-Length": "0" }
+    },
+    {
       "src": "/(.*)",
       "dest": "server.js"
     }

@@ -31,6 +31,15 @@ app.use(
   express.static(path.join(__dirname, "uploads")),
 );
 
+app.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    service: "Developer Portfolio Health Checker API",
+    version: "2.0.0",
+    docs: "/api/health",
+  });
+});
+
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
