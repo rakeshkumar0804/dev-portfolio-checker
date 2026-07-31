@@ -8,7 +8,7 @@ import { generateAIFeedback } from "../services/aiService.js";
 // ── In-memory fallback store (used when MongoDB is not available) ──────────────
 const memoryStore = new Map(); // shareId → reportData
 const lastForceRefreshMap = new Map(); // username → timestamp
-const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes (short TTL for quick data sync)
 const REFRESH_COOLDOWN_MS = 30 * 1000; // 30 seconds
 
 // Lazy-load Report model only when DB is connected

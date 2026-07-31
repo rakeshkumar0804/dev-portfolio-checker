@@ -267,7 +267,7 @@ export default function ResultsPage() {
         {fromCache && (
           <div className="cache-notice" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
             <div>
-              ♻️ Cached results from <strong style={{ marginLeft: 4 }}>{cacheAge} minutes ago</strong> — auto-refreshes after 1 hour.
+              ♻️ Cached results from <strong style={{ marginLeft: 4 }}>{cacheAge} minutes ago</strong> — auto-refreshes after 5 mins.
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               {refreshMsg && <span style={{ fontSize: "0.8rem", color: "var(--txt-2)" }}>{refreshMsg}</span>}

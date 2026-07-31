@@ -251,7 +251,7 @@ export default function HomePage() {
               </form>
 
               <p style={{ textAlign: "center", marginTop: 14, fontSize: "0.73rem", color: "var(--txt-3)" }}>
-                🔒 Read-only GitHub access · Results cached 1 hr · No data sold
+                🔒 Read-only GitHub access · Auto-synced every 5 mins · No data sold
               </p>
             </div>
           </div>
