@@ -1,6 +1,7 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import os from "os";
 import { fileURLToPath } from "url";
 import { dbConnected } from "../utils/connectDatabase.js";
 import { analyzeResume } from "../services/resumeService.js";
@@ -8,13 +9,15 @@ import { analyzeResume } from "../services/resumeService.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const uploadDir =
-  process.env.VERCEL === "1"
-    ? "/tmp/uploads"
-    : path.join(__dirname, "../uploads");
-
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// On Vercel and AWS Lambda serverless functions, /var/task is read-only.
+// Always use os.tmpdir() (/tmp) for uploads.
+const uploadDir = path.join(os.tmpdir(), "uploads");
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (e) {
+  console.warn("Upload directory creation warning:", e.message);
 }
 
 const storage = multer.diskStorage({
