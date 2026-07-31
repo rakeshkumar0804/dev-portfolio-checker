@@ -1,6 +1,49 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
-import puppeteer from "puppeteer";
+import fs from "fs";
+import puppeteer from "puppeteer-core";
+
+// Launches a browser compatible with both Vercel serverless and local environments
+async function launchBrowser() {
+  // Vercel / AWS Lambda: use @sparticuz/chromium (serverless-compatible Chromium)
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    const chromium = (await import("@sparticuz/chromium")).default;
+    return puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
+  }
+
+  // Local development: find system Chrome/Chromium installation
+  const localPaths = [
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium-browser",
+    "/usr/bin/chromium",
+  ];
+  const executablePath = localPaths.find((p) => {
+    try { return fs.existsSync(p); } catch (_) { return false; }
+  });
+  if (!executablePath) throw new Error("No local Chrome/Chromium found. Install Google Chrome.");
+
+  return puppeteer.launch({
+    executablePath,
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-accelerated-2d-canvas",
+      "--disable-gpu",
+    ],
+  });
+}
 
 export async function fetchPortfolioData(url) {
   let targetUrl = url.trim();
@@ -43,16 +86,7 @@ export async function fetchPortfolioData(url) {
   // 2. Headless Puppeteer render for SPA JavaScript hydration (React, Vite, Vue, Next.js)
   let renderedHtml = html;
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--disable-gpu",
-      ],
-    });
+    const browser = await launchBrowser();
     const page = await browser.newPage();
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -64,7 +98,7 @@ export async function fetchPortfolioData(url) {
     await browser.close();
   } catch (renderErr) {
     console.warn("⚠️ Headless render fallback to static HTML:", renderErr.message?.slice(0, 100));
-    // Fall back to static Axios HTML if headless render times out
+    // Fall back to static Axios HTML if headless render fails
     renderedHtml = html;
   }
 
