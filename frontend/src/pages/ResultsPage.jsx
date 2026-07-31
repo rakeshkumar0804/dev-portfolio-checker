@@ -78,6 +78,7 @@ export default function ResultsPage() {
           if (parsed.fromCache) { setFromCache(true); setCacheAge(parsed.cacheAge || 0); }
           if (parsed.resumeAnalysis) setResumeResult(parsed.resumeAnalysis);
           setLoading(false);
+          sessionStorage.removeItem("portfolioReport");
           return;
         }
       } catch (_) {}

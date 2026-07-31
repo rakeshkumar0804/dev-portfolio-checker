@@ -99,36 +99,42 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
 
   const pushEvents = events.filter((e) => e.type === "PushEvent");
 
-  // Commit & Contribution activity
-  let commitCount90Days = 0;
-  let commitCount30Days = 0;
+  // Calculate live event contributions for zero-delay accuracy
+  const now = Date.now();
+  const ninetyDaysAgo = now - 90 * 24 * 60 * 60 * 1000;
+  const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+
+  const liveCommitCount30Days = pushEvents
+    .filter((e) => new Date(e.created_at).getTime() >= thirtyDaysAgo)
+    .reduce((sum, e) => sum + (e.payload?.commits?.length || 1), 0);
+
+  const liveCommitCount90Days = pushEvents
+    .filter((e) => new Date(e.created_at).getTime() >= ninetyDaysAgo)
+    .reduce((sum, e) => sum + (e.payload?.commits?.length || 1), 0);
+
+  let commitCount90Days = liveCommitCount90Days;
+  let commitCount30Days = liveCommitCount30Days;
   let totalContributionsYear = 0;
 
   if (contributionData && Array.isArray(contributionData.contributions)) {
-    const now = Date.now();
-    const ninetyDaysAgo = now - 90 * 24 * 60 * 60 * 1000;
-    const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
-
-    commitCount90Days = contributionData.contributions
-      .filter((c) => new Date(c.date).getTime() >= ninetyDaysAgo)
-      .reduce((sum, c) => sum + c.count, 0);
-
-    commitCount30Days = contributionData.contributions
+    const api30Days = contributionData.contributions
       .filter((c) => new Date(c.date).getTime() >= thirtyDaysAgo)
       .reduce((sum, c) => sum + c.count, 0);
 
+    const api90Days = contributionData.contributions
+      .filter((c) => new Date(c.date).getTime() >= ninetyDaysAgo)
+      .reduce((sum, c) => sum + c.count, 0);
+
+    commitCount30Days = Math.max(liveCommitCount30Days, api30Days);
+    commitCount90Days = Math.max(liveCommitCount90Days, api90Days);
+
     const currentYear = new Date().getFullYear().toString();
-    totalContributionsYear = contributionData.total?.[currentYear] || 0;
+    const apiYearTotal = contributionData.total?.[currentYear] || 0;
+    // Add any delta between live events and cached API total
+    const liveExtraCommits = Math.max(0, liveCommitCount30Days - api30Days);
+    totalContributionsYear = apiYearTotal + liveExtraCommits;
   } else {
-    // Fallback to GitHub public events stream
-    const ninetyDaysAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
-    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    commitCount90Days = pushEvents
-      .filter((e) => new Date(e.created_at).getTime() > ninetyDaysAgo)
-      .reduce((sum, e) => sum + (e.payload?.commits?.length || 1), 0);
-    commitCount30Days = pushEvents
-      .filter((e) => new Date(e.created_at).getTime() > thirtyDaysAgo)
-      .reduce((sum, e) => sum + (e.payload?.commits?.length || 1), 0);
+    totalContributionsYear = liveCommitCount90Days;
   }
 
   // Streak calculation
