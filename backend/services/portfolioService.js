@@ -5,13 +5,19 @@ import puppeteer from "puppeteer-core";
 
 // Launches a browser compatible with both Vercel serverless and local environments
 async function launchBrowser() {
-  // Vercel / AWS Lambda: use @sparticuz/chromium (serverless-compatible Chromium)
+  // Vercel / AWS Lambda: use @sparticuz/chromium-min
+  // chromium-min does NOT bundle the binary — it downloads from S3 at runtime
+  // This keeps the serverless function bundle under Vercel's 50MB limit
   if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    const chromium = (await import("@sparticuz/chromium")).default;
+    const chromium = (await import("@sparticuz/chromium-min")).default;
+    // Point to the official Sparticuz S3 release for the matching Chromium version
+    const executablePath = await chromium.executablePath(
+      "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+    );
     return puppeteer.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
+      executablePath,
       headless: chromium.headless,
     });
   }
