@@ -27,28 +27,43 @@ function pct(numerator, denominator) {
   return numerator / denominator;
 }
 
+function buildEmptyScore() {
+  return { score: 0, breakdown: [], improvements: [] };
+}
+
 // ─── GitHub Profile Score (0–100) ─────────────────────────────────────────────
 export function calculateGitHubScore(githubData) {
-  const { profile, stats, languageDistribution, hasProfileReadme } = githubData;
-  if (!profile) return buildEmptyScore();
+  if (!githubData || !githubData.profile) return buildEmptyScore();
+
+  const profile = githubData.profile || {};
+  const stats = githubData.stats || {};
+  const languageDistribution = githubData.languageDistribution || [];
+  const hasProfileReadme = githubData.hasProfileReadme || false;
+
+  const commitCount90Days = stats.commitCount90Days || 0;
+  const currentStreak = stats.currentStreak || 0;
+  const totalStars = stats.totalStars || 0;
+  const ownedRepos = stats.ownedRepos || 0;
+  const followers = profile.followers || 0;
+  const reposWithDescription = stats.reposWithDescription || 0;
+  const reposWithTopics = stats.reposWithTopics || 0;
 
   const breakdown = [];
   const improvements = [];
   let score = 0;
 
   // ── 1. Activity Score (0–25 pts) ──────────────────────────────────────────
-  // Realistic: 10 commits/90d = decent, 30+ = active, 60+ = very active
-  const activityScore = clamp(logScore(stats.commitCount90Days, 40, 25), 0, 25);
+  const activityScore = clamp(logScore(commitCount90Days, 40, 25), 0, 25);
   score += activityScore;
   breakdown.push({
     score: activityScore,
     max: 25,
     label: "Commit Activity",
-    evidence: stats.commitCount90Days > 0
-      ? `${stats.commitCount90Days} commits in last 90 days${stats.currentStreak > 0 ? `, ${stats.currentStreak}-day streak` : ""}`
+    evidence: commitCount90Days > 0
+      ? `${commitCount90Days} commits in last 90 days${currentStreak > 0 ? `, ${currentStreak}-day streak` : ""}`
       : "No recent commits detected",
   });
-  if (stats.commitCount90Days < 10) {
+  if (commitCount90Days < 10) {
     improvements.push({
       action: "Commit code more consistently — aim for 3–4 times per week",
       why: "Commit frequency is the single most visible signal to recruiters scanning GitHub. An empty contribution graph is an immediate red flag.",
@@ -61,29 +76,16 @@ export function calculateGitHubScore(githubData) {
   }
 
   // ── 2. Community Reputation (0–20 pts) ────────────────────────────────────
-  // Stars: 1 star = good, 10 = great, 50 = excellent (for most devs)
-  // Followers: 10 = active, 50 = well-known, 200+ = influencer
-  const starScore = clamp(logScore(stats.totalStars, 30, 12), 0, 12);
-  const followerScore = clamp(logScore(profile.followers, 100, 8), 0, 8);
+  const starScore = clamp(logScore(totalStars, 30, 12), 0, 12);
+  const followerScore = clamp(logScore(followers, 100, 8), 0, 8);
   const reputationScore = starScore + followerScore;
   score += reputationScore;
   breakdown.push({
     score: reputationScore,
     max: 20,
     label: "Community Reputation",
-    evidence: `${stats.totalStars} stars across repos · ${profile.followers} followers`,
+    evidence: `${totalStars} stars across repos · ${followers} followers`,
   });
-  if (stats.totalStars < 5) {
-    improvements.push({
-      action: "Build projects that solve real problems to attract stars",
-      why: "Stars are the most credible social proof on GitHub. Even 5–10 stars signals that others found your work useful.",
-      how: "Share your projects on Reddit (r/webdev, r/programming), Product Hunt, or Hacker News. Add to GitHub topic collections.",
-      points: 4,
-      difficulty: "Hard",
-      timeMinutes: 60,
-      priority: 4,
-    });
-  }
 
   // ── 3. Profile Completeness (0–20 pts) ────────────────────────────────────
   const checks = [
@@ -96,65 +98,28 @@ export function calculateGitHubScore(githubData) {
   ];
   const completenessScore = checks.reduce((s, c) => s + (c.pass ? c.pts : 0), 0);
   score += completenessScore;
-  const failedChecks = checks.filter((c) => !c.pass);
   breakdown.push({
     score: completenessScore,
     max: 20,
     label: "Profile Completeness",
-    evidence: `${checks.filter((c) => c.pass).length}/${checks.length} fields complete: ${failedChecks.map((c) => c.label).join(", ") || "All complete!"}`,
+    evidence: `${checks.filter((c) => c.pass).length}/${checks.length} profile fields completed`,
   });
-  if (!profile.bio || profile.bio.trim().length < 10) {
-    improvements.push({
-      action: "Write a compelling GitHub bio (1–2 sentences)",
-      why: "Your bio is the first text a recruiter reads. It should tell them your role, stack, and what excites you in 160 characters.",
-      how: 'Go to GitHub → Settings → Edit profile → Bio. Example: "Full-stack developer · React, Node.js, MongoDB · Building products that matter"',
-      points: 5,
-      difficulty: "Easy",
-      timeMinutes: 5,
-      priority: 1,
-    });
-  }
-  if (!profile.website) {
-    improvements.push({
-      action: "Add your portfolio URL to your GitHub profile",
-      why: "Your profile website link is shown prominently on every page of your GitHub. It's free traffic to your portfolio.",
-      how: "Go to GitHub → Settings → Edit profile → Website. Add your portfolio or LinkedIn URL.",
-      points: 4,
-      difficulty: "Easy",
-      timeMinutes: 2,
-      priority: 2,
-    });
-  }
 
   // ── 4. Profile README (0–15 pts) ──────────────────────────────────────────
   const readmeScore = hasProfileReadme ? 15 : 0;
   score += readmeScore;
   breakdown.push({
-    score: readmeScore,
-    max: 15,
+    score: readmeScore, max: 15,
     label: "Profile README",
-    evidence: hasProfileReadme
-      ? "✅ Profile README exists — great first impression"
-      : "❌ No profile README — you're missing a prime opportunity",
+    evidence: hasProfileReadme ? "✅ Profile README exists" : "❌ No profile README",
   });
-  if (!hasProfileReadme) {
-    improvements.push({
-      action: `Create a GitHub profile README at github.com/${profile.username}/${profile.username}`,
-      why: "Profile READMEs appear directly on your GitHub page and can showcase your personality, skills, and top projects beautifully. Recruiters love them.",
-      how: `1. Go to github.com/new\n2. Create repo named exactly "${profile.username}"\n3. Make it public\n4. Add README.md with your intro, skills, stats`,
-      points: 15,
-      difficulty: "Easy",
-      timeMinutes: 20,
-      priority: 1,
-    });
-  }
 
   // ── 5. Repository Quality (0–20 pts) ──────────────────────────────────────
   let repoQualityScore = 0;
-  const ownedCount = Math.max(stats.ownedRepos, 1);
-  const descRatio = pct(stats.reposWithDescription, ownedCount);
-  const topicsRatio = pct(stats.reposWithTopics, ownedCount);
-  const repoCountScore = clamp(logScore(stats.ownedRepos, 15, 5), 0, 5);
+  const ownedCount = Math.max(ownedRepos, 1);
+  const descRatio = pct(reposWithDescription, ownedCount);
+  const topicsRatio = pct(reposWithTopics, ownedCount);
+  const repoCountScore = clamp(logScore(ownedRepos, 15, 5), 0, 5);
   repoQualityScore += Math.round(descRatio * 8) + Math.round(topicsRatio * 7) + repoCountScore;
   repoQualityScore = clamp(repoQualityScore, 0, 20);
   score += repoQualityScore;
@@ -162,36 +127,13 @@ export function calculateGitHubScore(githubData) {
     score: repoQualityScore,
     max: 20,
     label: "Repository Quality",
-    evidence: `${stats.reposWithDescription}/${stats.ownedRepos} repos have descriptions · ${stats.reposWithTopics}/${stats.ownedRepos} have topics`,
+    evidence: `${reposWithDescription}/${ownedCount} repos have descriptions · ${reposWithTopics}/${ownedCount} have topics`,
   });
-  if (stats.reposWithDescription < Math.ceil(stats.ownedRepos * 0.6)) {
-    improvements.push({
-      action: `Add descriptions to ${stats.ownedRepos - stats.reposWithDescription} repositories that are missing them`,
-      why: "Repository descriptions are shown on your profile page and in search results. Empty descriptions make your work look unfinished.",
-      how: "Click the ⚙️ gear icon on each repo → Add Description. Keep it under 100 chars, describe what the project does.",
-      points: 6,
-      difficulty: "Easy",
-      timeMinutes: 10,
-      priority: 2,
-    });
-  }
-  if (stats.reposWithTopics < Math.ceil(stats.ownedRepos * 0.5)) {
-    improvements.push({
-      action: `Add topic tags to ${stats.ownedRepos - stats.reposWithTopics} repositories`,
-      why: "Topics make your repos discoverable in GitHub's explore feature and tell recruiters your tech stack instantly.",
-      how: "Click ⚙️ gear icon → Topics → Add relevant tags like 'react', 'nodejs', 'javascript', 'portfolio', etc.",
-      points: 4,
-      difficulty: "Easy",
-      timeMinutes: 8,
-      priority: 3,
-    });
-  }
 
-  // ── Bonuses ────────────────────────────────────────────────────────────────
   let bonusScore = 0;
   if (languageDistribution.length >= 3) bonusScore += 2;
-  if (stats.ownedRepos >= 5) bonusScore += 2;
-  if (profile.accountAgeYears >= 2) bonusScore += 1;
+  if (ownedRepos >= 5) bonusScore += 2;
+  if ((profile.accountAgeYears || 0) >= 2) bonusScore += 1;
   if (profile.isHireable) bonusScore += 1;
   bonusScore = clamp(bonusScore, 0, 6);
 
@@ -206,69 +148,52 @@ export function calculateGitHubScore(githubData) {
 
 // ─── Documentation Score (0–100) ──────────────────────────────────────────────
 export function calculateDocumentationScore(githubData) {
-  const { stats, hasProfileReadme } = githubData;
+  if (!githubData || !githubData.profile) return buildEmptyScore();
+
+  const stats = githubData.stats || {};
+  const hasProfileReadme = githubData.hasProfileReadme || false;
+  const ownedRepos = stats.ownedRepos || 0;
+  const reposWithDescription = stats.reposWithDescription || 0;
+  const reposWithTopics = stats.reposWithTopics || 0;
+  const avgReadmeScore = stats.avgReadmeScore || 0;
+
   const breakdown = [];
   const improvements = [];
   let score = 0;
 
-  // 1. Profile README (0–30 pts)
   const readmePts = hasProfileReadme ? 30 : 0;
   score += readmePts;
   breakdown.push({
     score: readmePts, max: 30,
     label: "Profile README",
-    evidence: hasProfileReadme ? "✅ Profile README exists" : "❌ Missing — create one for instant credibility",
+    evidence: hasProfileReadme ? "✅ Profile README exists" : "❌ Missing",
   });
 
-  // 2. Repo description coverage (0–30 pts)
-  const descRatio = pct(stats.reposWithDescription, Math.max(stats.ownedRepos, 1));
+  const descRatio = pct(reposWithDescription, Math.max(ownedRepos, 1));
   const descPts = Math.round(descRatio * 30);
   score += descPts;
   breakdown.push({
     score: descPts, max: 30,
     label: "Repo Descriptions",
-    evidence: `${stats.reposWithDescription}/${stats.ownedRepos} repositories have descriptions (${Math.round(descRatio * 100)}%)`,
+    evidence: `${reposWithDescription}/${ownedRepos} repos have descriptions (${Math.round(descRatio * 100)}%)`,
   });
 
-  // 3. Topic tags (0–20 pts)
-  const topicsRatio = pct(stats.reposWithTopics, Math.max(stats.ownedRepos, 1));
+  const topicsRatio = pct(reposWithTopics, Math.max(ownedRepos, 1));
   const topicsPts = Math.round(topicsRatio * 20);
   score += topicsPts;
   breakdown.push({
     score: topicsPts, max: 20,
     label: "Topic Tags",
-    evidence: `${stats.reposWithTopics}/${stats.ownedRepos} repositories have topic tags`,
+    evidence: `${reposWithTopics}/${ownedRepos} repos have topic tags`,
   });
 
-  // 4. README quality estimate (0–15 pts)
-  const readmeQualityPts = Math.round((stats.avgReadmeScore / 100) * 15);
+  const readmeQualityPts = Math.round((avgReadmeScore / 100) * 15);
   score += readmeQualityPts;
   breakdown.push({
     score: readmeQualityPts, max: 15,
     label: "README Quality",
-    evidence: `Estimated README quality score: ${stats.avgReadmeScore}/100 (based on descriptions, topics, and homepage links)`,
+    evidence: `Estimated README quality score: ${avgReadmeScore}/100`,
   });
-
-  // 5. License usage (0–5 pts)
-  const licensePts = stats.reposWithLicense > 0 ? Math.min(5, Math.round(pct(stats.reposWithLicense, Math.max(stats.ownedRepos, 1)) * 5)) : 0;
-  score += licensePts;
-  breakdown.push({
-    score: licensePts, max: 5,
-    label: "License Coverage",
-    evidence: `${stats.reposWithLicense}/${stats.ownedRepos} repositories have a license`,
-  });
-
-  if (descRatio < 0.6) {
-    improvements.push({
-      action: "Add descriptions to all your repositories",
-      why: "Well-documented repos appear in GitHub search and show recruiters you care about your work.",
-      how: "Edit each repo's description from the repo homepage. Keep it concise — what does the project do?",
-      points: 10,
-      difficulty: "Easy",
-      timeMinutes: 15,
-      priority: 1,
-    });
-  }
 
   return {
     score: clamp(Math.round(score), 10, 100),
@@ -279,7 +204,13 @@ export function calculateDocumentationScore(githubData) {
 
 // ─── Project Quality Score (0–100) ────────────────────────────────────────────
 export function calculateProjectQualityScore(githubData) {
-  const { stats, topRepos } = githubData;
+  if (!githubData || !githubData.profile) return buildEmptyScore();
+
+  const stats = githubData.stats || {};
+  const topRepos = githubData.topRepos || [];
+  const totalStars = stats.totalStars || 0;
+  const ownedRepos = stats.ownedRepos || 0;
+
   const breakdown = [];
   const improvements = [];
   let score = 0;
@@ -468,36 +399,42 @@ export function calculatePortfolioScore(portfolioData) {
 }
 
 // ─── Hiring Readiness Score (0–100) ───────────────────────────────────────────
-export function calculateHiringReadiness(scores, githubData, portfolioData) {
-  const { profile, stats, hasProfileReadme } = githubData;
+export function calculateHiringReadiness(scores, githubData, portfolioData, resumeAnalysis = null) {
+  const profile = githubData?.profile || {};
+  const stats = githubData?.stats || {};
+  const hasProfileReadme = githubData?.hasProfileReadme || false;
+  const resumeScore = resumeAnalysis?.atsScore || 0;
 
-  // Weighted base (GitHub matters most for hiring readiness)
-  const base = portfolioData?.accessible
-    ? scores.github * 0.30 + scores.projectQuality * 0.25 + scores.documentation * 0.20 + scores.portfolio * 0.25
-    : scores.github * 0.42 + scores.projectQuality * 0.32 + scores.documentation * 0.26;
+  let base = 50;
+  if (portfolioData?.accessible && resumeScore > 0) {
+    base = scores.github * 0.25 + scores.projectQuality * 0.20 + scores.documentation * 0.15 + scores.portfolio * 0.20 + resumeScore * 0.20;
+  } else if (portfolioData?.accessible) {
+    base = scores.github * 0.30 + scores.projectQuality * 0.25 + scores.documentation * 0.20 + scores.portfolio * 0.25;
+  } else if (resumeScore > 0) {
+    base = scores.github * 0.35 + scores.projectQuality * 0.25 + scores.documentation * 0.20 + resumeScore * 0.20;
+  } else {
+    base = scores.github * 0.40 + scores.projectQuality * 0.35 + scores.documentation * 0.25;
+  }
 
-  // Recruiter-visible bonus signals
-  let bonus = 0;
-  if (profile?.bio?.length > 10)                  bonus += 5;
-  if (profile?.website)                            bonus += 5;
-  if (hasProfileReadme)                            bonus += 5;
-  if ((stats?.totalStars || 0) >= 10)             bonus += 3;
-  if ((stats?.commitCount90Days || 0) >= 15)      bonus += 4;
-  if (portfolioData?.checklist?.hasResumeLink?.pass) bonus += 5;
-  if (portfolioData?.checklist?.hasLinkedinLink?.pass) bonus += 3;
-  if (profile?.location)                           bonus += 2;
-  if ((profile?.followers || 0) >= 50)             bonus += 5;
-  if ((stats?.ownedRepos || 0) >= 5)              bonus += 3;
+  // Cap hiring readiness so it never hits 100/100 unless commit activity >= 30, portfolio is live, and README exists
+  let maxCap = 95;
+  if ((stats.commitCount90Days || 0) < 15 || !hasProfileReadme) {
+    maxCap = 85;
+  }
 
-  return clamp(Math.round(base + bonus), 20, 100);
+  return clamp(Math.round(base), 20, maxCap);
 }
 
-// ─── Calculate All Scores ──────────────────────────────────────────────────────
-export function calculateAllScores(githubData, portfolioData) {
-  const githubResult   = calculateGitHubScore(githubData);
-  const docResult      = calculateDocumentationScore(githubData);
-  const projResult     = calculateProjectQualityScore(githubData);
-  const portfolioResult = calculatePortfolioScore(portfolioData);
+// ─── Calculate All Scores (Handles Full 360°, GitHub-Only, Portfolio-Only, Resume-Only) ───
+export function calculateAllScores(githubData, portfolioData, targetRole = "fullstack", resumeAnalysis = null) {
+  const hasGithub = !!(githubData && githubData.profile);
+  const hasPortfolio = !!(portfolioData && portfolioData.accessible);
+  const hasResume = !!(resumeAnalysis && resumeAnalysis.atsScore);
+
+  const githubResult    = hasGithub ? calculateGitHubScore(githubData) : buildEmptyScore();
+  const docResult       = hasGithub ? calculateDocumentationScore(githubData) : buildEmptyScore();
+  const projResult      = hasGithub ? calculateProjectQualityScore(githubData) : buildEmptyScore();
+  const portfolioResult = hasPortfolio ? calculatePortfolioScore(portfolioData) : buildEmptyScore();
 
   const scores = {
     github:         githubResult.score,
@@ -506,14 +443,65 @@ export function calculateAllScores(githubData, portfolioData) {
     portfolio:      portfolioResult.score,
   };
 
-  const hiringReadiness = calculateHiringReadiness(scores, githubData, portfolioData);
+  const hiringReadiness = hasGithub
+    ? calculateHiringReadiness(scores, githubData, portfolioData)
+    : (hasPortfolio ? scores.portfolio : (hasResume ? (resumeAnalysis.atsScore || 70) : 50));
 
-  const hasPortfolio = portfolioData?.accessible;
-  const overall = hasPortfolio
-    ? Math.round(scores.github * 0.25 + scores.projectQuality * 0.20 + scores.documentation * 0.15 + scores.portfolio * 0.20 + hiringReadiness * 0.20)
-    : Math.round(scores.github * 0.35 + scores.projectQuality * 0.25 + scores.documentation * 0.20 + hiringReadiness * 0.20);
+  // Dynamic Overall Score Calculation depending on available input channels
+  let overall = 50;
+  if (hasGithub && hasPortfolio && hasResume) {
+    // Full 360° Mode
+    overall = Math.round(
+      scores.github * 0.20 +
+      scores.projectQuality * 0.20 +
+      scores.documentation * 0.15 +
+      scores.portfolio * 0.20 +
+      (resumeAnalysis.atsScore || 70) * 0.15 +
+      hiringReadiness * 0.10
+    );
+  } else if (hasGithub && hasPortfolio) {
+    // GitHub + Portfolio
+    overall = Math.round(
+      scores.github * 0.25 +
+      scores.projectQuality * 0.25 +
+      scores.documentation * 0.15 +
+      scores.portfolio * 0.20 +
+      hiringReadiness * 0.15
+    );
+  } else if (hasGithub && hasResume) {
+    // GitHub + Resume
+    overall = Math.round(
+      scores.github * 0.35 +
+      scores.projectQuality * 0.25 +
+      scores.documentation * 0.15 +
+      (resumeAnalysis.atsScore || 70) * 0.15 +
+      hiringReadiness * 0.10
+    );
+  } else if (hasPortfolio && hasResume) {
+    // Portfolio + Resume
+    overall = Math.round(
+      scores.portfolio * 0.50 +
+      (resumeAnalysis.atsScore || 70) * 0.35 +
+      hiringReadiness * 0.15
+    );
+  } else if (hasGithub) {
+    // GitHub Only Mode
+    overall = Math.round(
+      scores.github * 0.40 +
+      scores.projectQuality * 0.35 +
+      scores.documentation * 0.25
+    );
+  } else if (hasPortfolio) {
+    // Portfolio Only Mode
+    overall = scores.portfolio;
+  } else if (hasResume) {
+    // Resume Only Mode
+    overall = resumeAnalysis.atsScore || 70;
+  }
 
-  // Merge all improvements, sort by priority then points
+  // Merge all active improvements with explainable metadata
+  const topRepoNames = githubData?.topRepos?.slice(0, 3).map((r) => r.name) || [];
+
   const allImprovements = [
     ...githubResult.improvements,
     ...docResult.improvements,
@@ -521,7 +509,17 @@ export function calculateAllScores(githubData, portfolioData) {
     ...portfolioResult.improvements,
   ]
     .sort((a, b) => a.priority - b.priority || b.points - a.points)
-    .slice(0, 12);
+    .slice(0, 12)
+    .map((item) => ({
+      ...item,
+      confidenceLevel: "High Confidence",
+      affectedRepos: item.action.toLowerCase().includes("readme") || item.action.toLowerCase().includes("topic") || item.action.toLowerCase().includes("description")
+        ? (topRepoNames.length > 0 ? topRepoNames : ["GitHub Repositories"])
+        : ["Public Profile"],
+      affectedResumeSection: item.action.toLowerCase().includes("resume") || item.action.toLowerCase().includes("impact")
+        ? "Resume Work Experience Section"
+        : "GitHub Public Repositories",
+    }));
 
   const scoreBreakdowns = {
     github:         githubResult.breakdown,
@@ -542,14 +540,38 @@ const ROLE_SKILLS = {
   frontend: {
     core:       ["HTML", "CSS", "JavaScript", "TypeScript"],
     frameworks: ["React", "Vue", "Angular", "Svelte", "Next.js"],
-    tools:      ["Webpack", "Vite", "Sass", "Tailwind", "Redux"],
-    testing:    ["Jest", "Cypress", "Testing Library"],
+    styling:    ["Tailwind", "Sass", "Styled Components"],
+    testing:    ["Jest", "Cypress", "Playwright", "Testing Library"],
+  },
+  react: {
+    core:       ["JavaScript", "TypeScript", "React", "Next.js"],
+    state:      ["Redux", "Zustand", "Context API", "React Query"],
+    styling:    ["Tailwind", "CSS Modules"],
+    testing:    ["Jest", "Testing Library"],
   },
   backend: {
     core:       ["Node.js", "Python", "Java", "Go", "Rust"],
-    frameworks: ["Express", "FastAPI", "Django", "Spring", "NestJS"],
+    frameworks: ["Express", "FastAPI", "Django", "Spring Boot", "NestJS"],
     databases:  ["PostgreSQL", "MySQL", "MongoDB", "Redis"],
-    tools:      ["Docker", "REST API", "GraphQL", "JWT", "OAuth"],
+    tools:      ["REST API", "GraphQL", "Docker", "JWT"],
+  },
+  node: {
+    core:       ["JavaScript", "TypeScript", "Node.js"],
+    frameworks: ["Express", "NestJS", "Fastify"],
+    databases:  ["MongoDB", "PostgreSQL", "Redis"],
+    tools:      ["JWT", "REST API", "Docker"],
+  },
+  python_dev: {
+    core:       ["Python"],
+    frameworks: ["FastAPI", "Django", "Flask"],
+    databases:  ["PostgreSQL", "SQLite", "Redis"],
+    tools:      ["Docker", "PyTest", "Celery"],
+  },
+  java_dev: {
+    core:       ["Java"],
+    frameworks: ["Spring Boot", "Hibernate"],
+    databases:  ["PostgreSQL", "MySQL", "Oracle"],
+    tools:      ["Maven", "Gradle", "Docker"],
   },
   fullstack: {
     frontend:   ["React", "Vue", "Next.js", "TypeScript", "HTML", "CSS"],
@@ -569,17 +591,23 @@ const ROLE_SKILLS = {
     frameworks: ["Expo", "Ionic"],
     tools:      ["Firebase", "REST API", "SQLite"],
   },
-  aiml: {
+  ai_ml: {
     core:       ["Python", "R"],
     frameworks: ["TensorFlow", "PyTorch", "Scikit-learn", "Pandas", "NumPy"],
-    tools:      ["Jupyter", "Hugging Face", "OpenAI API", "LangChain"],
-    cloud:      ["AWS SageMaker", "GCP Vertex AI", "Azure ML"],
+    ai_tools:   ["Jupyter", "Hugging Face", "OpenAI API", "LangChain"],
+    cloud:      ["AWS SageMaker", "GCP Vertex AI", "FastAPI"],
+  },
+  data_science: {
+    core:       ["Python", "R", "SQL"],
+    libraries:  ["Pandas", "NumPy", "Scikit-learn", "SciPy"],
+    viz:        ["Matplotlib", "Seaborn", "Tableau", "PowerBI"],
+    tools:      ["Jupyter", "Spark", "PostgreSQL"],
   },
 };
 
 export function detectMissingSkills(detectedSkills, targetRole) {
-  const role = ROLE_SKILLS[targetRole] || ROLE_SKILLS.fullstack;
-  const detected = detectedSkills.map((s) => s.toLowerCase());
+  const role = ROLE_SKILLS[targetRole] || ROLE_SKILLS[targetRole?.replace("-", "_")] || ROLE_SKILLS.fullstack;
+  const detected = (detectedSkills || []).map((s) => s.toLowerCase());
 
   const result = {};
   Object.entries(role).forEach(([category, skills]) => {
@@ -593,8 +621,4 @@ export function detectMissingSkills(detectedSkills, targetRole) {
   });
 
   return result;
-}
-
-function buildEmptyScore() {
-  return { score: 0, breakdown: [], improvements: [] };
 }

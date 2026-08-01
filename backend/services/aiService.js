@@ -38,133 +38,144 @@ async function callGemini(prompt) {
   return null;
 }
 
-export async function generateAIFeedback(githubData, portfolioData, scores, improvements, targetRole) {
-  const { profile, stats, languageDistribution, topRepos, hasProfileReadme } = githubData;
+export async function generateAIFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis) {
+  const profile = githubData?.profile || {};
+  const stats = githubData?.stats || {};
+  const languageDistribution = githubData?.languageDistribution || [];
+  const topRepos = githubData?.topRepos || [];
+  const hasProfileReadme = githubData?.hasProfileReadme || false;
+
   const langs = languageDistribution.slice(0, 5).map((l) => `${l.language} (${l.percentage}%)`).join(", ");
   const topReposList = topRepos.slice(0, 4).map((r) => `"${r.name}" (⭐${r.stars}, ${r.language || "?"})`).join(", ");
 
-  const prompt = `You are an expert senior software engineer and tech recruiter analyzing a developer's online presence for the Developer Portfolio Health Checker app.
+  const resumeScore = resumeAnalysis?.atsScore || 0;
+  const resumeSkills = (resumeAnalysis?.skillsExtracted || []).join(", ") || "None";
+  const resumeStrengths = (resumeAnalysis?.strengths || []).join("; ") || "None";
+  const resumeIssues = (resumeAnalysis?.issues || []).join("; ") || "None";
 
-## Developer Data
-- GitHub: @${profile.username} | ${profile.followers} followers | ${stats.ownedRepos} owned repos | ${stats.totalStars} stars | ${stats.commitCount90Days} commits/90d
-- Bio: "${profile.bio || "EMPTY"}" | Website: "${profile.website || "NONE"}" | Location: "${profile.location || "NONE"}"
+  const prompt = `You are an expert senior tech recruiter analyzing a developer's profile for the Developer Portfolio Health Checker app.
+
+## Developer Input Data
+- GitHub: ${profile.username ? `@${profile.username}` : "Not Provided"} | ${profile.followers || 0} followers | ${stats.ownedRepos || 0} repos | ${stats.totalStars || 0} stars
+- Bio: "${profile.bio || "NONE"}" | Website: "${profile.website || "NONE"}"
 - Profile README: ${hasProfileReadme ? "YES" : "NO"}
 - Languages: ${langs || "None"}
-- Top repos: ${topReposList || "None"}
-- Repos with descriptions: ${stats.reposWithDescription}/${stats.ownedRepos}
-- Repos with topics: ${stats.reposWithTopics}/${stats.ownedRepos}
+- Top Repos: ${topReposList || "None"}
 - Portfolio: ${portfolioData?.accessible ? `✅ ${portfolioData.url}` : "❌ None"}
+- Resume ATS Score: ${resumeScore > 0 ? `${resumeScore}/100` : "❌ None"}
+- Resume Extracted Skills: ${resumeSkills}
+- Resume Strengths: ${resumeStrengths}
+- Resume Concerns: ${resumeIssues}
 - Target Role: ${targetRole || "Full Stack Developer"}
 
 ## Scores (out of 100)
-- GitHub: ${scores.github}/100
-- Project Quality: ${scores.projectQuality}/100
-- Documentation: ${scores.documentation}/100
-- Portfolio: ${scores.portfolio}/100
-- Hiring Readiness: ${scores.hiringReadiness}/100
 - Overall: ${scores.overall}/100
-
-## Top Improvement Opportunities (already computed)
-${improvements.slice(0, 5).map((imp, i) => `${i + 1}. ${imp.action} (+${imp.points} pts, ${imp.difficulty}, ${imp.timeMinutes}min)`).join("\n")}
-
----
+- Hiring Readiness: ${scores.hiringReadiness}/100
+- GitHub: ${scores.github}/100
+- Portfolio: ${scores.portfolio}/100
 
 Return ONLY a valid JSON object (no markdown, no explanation):
 {
-  "overallSummary": "3-4 honest, specific sentences describing this developer's profile. Reference actual data (username, star counts, repo names). Be direct but encouraging.",
-  "strengths": ["specific strength with data", "specific strength 2", "..."],
-  "weaknesses": ["specific weakness with data", "specific weakness 2", "..."],
+  "overallSummary": "3-4 honest, specific sentences evaluating this candidate for ${targetRole}. Reference actual resume skills, GitHub data, or portfolio if present.",
+  "strengths": ["specific candidate strength 1", "specific candidate strength 2"],
+  "weaknesses": ["specific candidate weakness 1", "specific candidate weakness 2"],
   "scoreExplanations": {
-    "github": "1-2 sentences explaining WHY the GitHub score is ${scores.github}/100 with specific evidence",
-    "projectQuality": "1-2 sentences explaining the project quality score",
-    "documentation": "1-2 sentences explaining the documentation score",
-    "portfolio": "1-2 sentences explaining the portfolio score"
+    "github": "Explanation of GitHub score",
+    "projectQuality": "Explanation of project quality score",
+    "documentation": "Explanation of documentation score",
+    "portfolio": "Explanation of portfolio score"
   },
   "recruiterFirstImpression": {
     "verdict": "one of: Strong Candidate | Promising Developer | Needs Polish | Early Stage",
-    "thought": "What a recruiter thinks in the first 10 seconds — 2 sentences, be realistic",
-    "positives": ["specific thing recruiter notices positively", "..."],
-    "negatives": ["specific thing recruiter notices negatively", "..."]
+    "thought": "What a recruiter thinks in the first 10 seconds scanning this candidate for ${targetRole}",
+    "positives": ["specific positive signal"],
+    "negatives": ["specific concern or red flag"]
   },
   "careerRoadmap": {
-    "currentLevel": "e.g. Junior Frontend Developer",
-    "targetLevel": "e.g. Mid-Level Full Stack Developer",
+    "currentLevel": "Candidate Level",
+    "targetLevel": "Target Level",
     "estimatedWeeks": 4,
     "milestones": [
-      { "week": "Week 1-2", "task": "specific action", "impact": "why this matters" },
-      { "week": "Week 3-4", "task": "specific action", "impact": "why this matters" },
-      { "week": "Week 5-6", "task": "specific action", "impact": "why this matters" }
+      { "week": "Week 1-2", "task": "actionable task", "impact": "why it matters" },
+      { "week": "Week 3-4", "task": "actionable task", "impact": "why it matters" }
     ]
   },
   "hiringRecommendation": "strong_hire | hire | maybe | not_yet",
-  "topPriority": "The single most important thing to do right now"
-}
-
-Be specific, data-driven, and honest. Reference actual repository names, numbers, and missing things.`;
+  "topPriority": "The single most important improvement right now"
+}`;
 
   const aiResult = await callGemini(prompt);
   if (aiResult) return aiResult;
 
-  // Intelligent fallback (no AI required)
-  return buildFallbackFeedback(githubData, portfolioData, scores, improvements, targetRole);
+  return buildFallbackFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis);
 }
 
-function buildFallbackFeedback(githubData, portfolioData, scores, improvements, targetRole) {
-  const { profile, stats, hasProfileReadme } = githubData;
+function buildFallbackFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis) {
+  const profile = githubData?.profile || {};
+  const stats = githubData?.stats || {};
   const strengths = [];
   const weaknesses = [];
 
-  if (stats.totalStars > 5) strengths.push(`${stats.totalStars} total stars — your work has earned community recognition`);
-  if (stats.commitCount90Days > 20) strengths.push(`Active contributor: ${stats.commitCount90Days} commits in the last 90 days`);
-  if (profile.bio && profile.bio.length > 10) strengths.push("GitHub bio is filled in — good first impression");
-  if (hasProfileReadme) strengths.push("Profile README exists — stands out on your GitHub page");
-  if (portfolioData?.accessible) strengths.push("Has a live portfolio website — shows real initiative");
-  if (profile.followers > 30) strengths.push(`${profile.followers} GitHub followers — building a community presence`);
-  if (stats.ownedRepos >= 5) strengths.push(`${stats.ownedRepos} public repositories — consistent project history`);
-  if (languageDistributionCount(githubData) >= 3) strengths.push("Multi-language developer — versatile skillset");
+  const hasGithub = !!(githubData && githubData.profile);
+  const hasPortfolio = !!(portfolioData && portfolioData.accessible);
+  const hasResume = !!(resumeAnalysis && resumeAnalysis.atsScore);
 
-  if (!profile.bio || profile.bio.length < 10) weaknesses.push("GitHub bio is empty — recruiters look here first");
-  if (!hasProfileReadme) weaknesses.push("No profile README — missing a prime opportunity to make an impression");
-  if (stats.commitCount90Days < 10) weaknesses.push(`Only ${stats.commitCount90Days} commits in 90 days — activity graph looks sparse`);
-  if (!portfolioData?.accessible) weaknesses.push("No portfolio website — the #1 differentiator among candidates");
-  if (stats.reposWithDescription < Math.ceil(stats.ownedRepos * 0.5)) weaknesses.push(`${stats.ownedRepos - stats.reposWithDescription} repos have no description — looks unpolished`);
+  if (hasResume) {
+    if (resumeAnalysis.atsScore >= 70) strengths.push(`Strong Resume ATS score of ${resumeAnalysis.atsScore}/100`);
+    if (resumeAnalysis.hasActionVerbs) strengths.push("Resume uses active verbs in work experience");
+    if (resumeAnalysis.hasMetrics) strengths.push("Resume includes quantified impact metrics");
+    if (resumeAnalysis.skillsExtracted?.length > 0) strengths.push(`Resume demonstrates skills in: ${resumeAnalysis.skillsExtracted.slice(0, 5).join(", ")}`);
 
-  const level = scores.overall >= 70 ? "Mid-Level" : scores.overall >= 50 ? "Junior" : "Early-Stage";
-  const verdict = scores.overall >= 70 ? "Promising Developer" : scores.overall >= 50 ? "Needs Polish" : "Early Stage";
+    if (!resumeAnalysis.hasMetrics) weaknesses.push("Resume lacks quantitative achievements (e.g. 'improved performance by 30%')");
+    if (!resumeAnalysis.hasActionVerbs) weaknesses.push("Resume bullet points need stronger action verbs");
+    if (resumeAnalysis.missingKeywords?.length > 0) weaknesses.push(`Missing keywords for ${targetRole.toUpperCase()}: ${resumeAnalysis.missingKeywords.slice(0, 3).join(", ")}`);
+  }
+
+  if (hasGithub) {
+    if (stats.totalStars > 5) strengths.push(`${stats.totalStars} total GitHub stars`);
+    if (stats.commitCount90Days > 20) strengths.push(`Active GitHub activity: ${stats.commitCount90Days} commits in 90 days`);
+    if (!profile.bio || profile.bio.length < 10) weaknesses.push("GitHub bio is empty");
+  } else if (!hasResume) {
+    weaknesses.push("No GitHub profile provided");
+  }
+
+  if (hasPortfolio) {
+    strengths.push("Live portfolio website available");
+  } else if (!hasResume) {
+    weaknesses.push("No portfolio website provided");
+  }
+
+  const level = scores.overall >= 75 ? "Mid-Level" : scores.overall >= 55 ? "Junior" : "Early-Stage";
+  const verdict = scores.overall >= 75 ? "Promising Developer" : scores.overall >= 55 ? "Needs Polish" : "Early Stage";
 
   return {
-    overallSummary: `@${profile.username} has ${stats.ownedRepos} public repositories with ${stats.totalStars} total stars and ${profile.followers} followers. ${
-      stats.commitCount90Days > 15 ? "Recent activity is strong." : "Commit activity has been low recently."
-    } ${scores.overall >= 60 ? "The profile shows solid foundations worth building on." : "Several quick improvements would significantly boost this profile's impact."}`,
-    strengths: strengths.length ? strengths : ["Active GitHub presence with public projects"],
-    weaknesses: weaknesses.length ? weaknesses : ["Profile needs more polishing"],
+    overallSummary: `Analysis completed for ${targetRole.toUpperCase()} role. ${
+      hasResume ? `Resume scored ${resumeAnalysis.atsScore}/100 with extracted skills (${(resumeAnalysis.skillsExtracted || []).slice(0, 5).join(", ") || "general"}).` : ""
+    } ${hasGithub ? `@${profile.username} has ${stats.ownedRepos || 0} repos.` : ""} Focus on strengthening quantifiable achievements to maximize interview call rates.`,
+    strengths: strengths.length ? strengths : ["Candidate profile provided for evaluation"],
+    weaknesses: weaknesses.length ? weaknesses : ["Add more quantifiable project impact metrics"],
     scoreExplanations: {
-      github: `GitHub score of ${scores.github}/100 reflects ${profile.followers} followers, ${stats.totalStars} stars, ${stats.commitCount90Days} commits in 90d, and ${Math.round((stats.reposWithDescription / Math.max(stats.ownedRepos, 1)) * 100)}% repos with descriptions.`,
-      projectQuality: `Project quality at ${scores.projectQuality}/100 based on average stars, description completeness, live demos, and tech diversity across your ${stats.ownedRepos} repos.`,
-      documentation: `Documentation score of ${scores.documentation}/100 — ${hasProfileReadme ? "Profile README ✓" : "no Profile README ✗"}, ${stats.reposWithDescription}/${stats.ownedRepos} repos have descriptions.`,
-      portfolio: portfolioData?.accessible ? `Portfolio at ${scores.portfolio}/100 based on SEO, accessibility, mobile responsiveness, and content quality.` : "Portfolio score is 0 — no portfolio URL was provided.",
+      github: hasGithub ? `GitHub score of ${scores.github}/100 reflects commits and public repos.` : "GitHub analysis skipped.",
+      projectQuality: hasGithub ? `Project quality at ${scores.projectQuality}/100 based on repository completeness.` : "Project quality skipped.",
+      documentation: hasGithub ? `Documentation score of ${scores.documentation}/100.` : "Documentation analysis skipped.",
+      portfolio: hasPortfolio ? `Portfolio at ${scores.portfolio}/100.` : "Portfolio analysis skipped.",
     },
     recruiterFirstImpression: {
       verdict,
-      thought: `A recruiter spending 10 seconds on @${profile.username}'s profile would see ${hasProfileReadme ? "a professional README" : "no profile README"} and ${stats.ownedRepos} repositories. ${scores.hiringReadiness >= 65 ? "The profile looks reasonably prepared." : "Several gaps would make them move on quickly."}`,
+      thought: `A recruiter evaluating this ${targetRole.toUpperCase()} application sees ${hasResume ? `a resume with ATS score ${resumeAnalysis.atsScore}/100` : "an incomplete profile"}. ${scores.overall >= 65 ? "The candidate looks worth interviewing." : "More evidence of project impact is needed."}`,
       positives: strengths.slice(0, 3),
       negatives: weaknesses.slice(0, 3),
     },
     careerRoadmap: {
-      currentLevel: `${level} ${targetRole === "frontend" ? "Frontend" : targetRole === "backend" ? "Backend" : "Full Stack"} Developer`,
-      targetLevel: `${scores.overall >= 70 ? "Senior" : "Mid-Level"} ${targetRole === "frontend" ? "Frontend" : "Full Stack"} Developer`,
+      currentLevel: `${level} ${targetRole.toUpperCase()} Candidate`,
+      targetLevel: `Mid/Senior ${targetRole.toUpperCase()} Developer`,
       estimatedWeeks: 4,
-      milestones: improvements.slice(0, 3).map((imp, i) => ({
-        week: `Week ${i * 2 + 1}–${i * 2 + 2}`,
-        task: imp.action,
-        impact: imp.why,
-      })),
+      milestones: [
+        { week: "Week 1–2", task: "Add quantifiable metrics to resume and top project READMEs", impact: "Directly improves ATS score and recruiter callback rate" },
+        { week: "Week 3–4", task: "Build a production demo project aligned with " + targetRole.toUpperCase(), impact: "Provides strong technical proof to interviewers" }
+      ],
     },
-    hiringRecommendation: scores.hiringReadiness >= 75 ? "hire" : scores.hiringReadiness >= 55 ? "maybe" : "not_yet",
-    topPriority: improvements[0]?.action || "Complete your GitHub profile and add a portfolio website",
+    hiringRecommendation: scores.overall >= 75 ? "hire" : scores.overall >= 55 ? "maybe" : "not_yet",
+    topPriority: improvements[0]?.action || "Add quantified achievements and action verbs to resume bullet points",
   };
-}
-
-function languageDistributionCount(githubData) {
-  return githubData?.languageDistribution?.length || 0;
 }

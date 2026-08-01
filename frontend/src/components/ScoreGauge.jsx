@@ -32,7 +32,6 @@ export default function ScoreGauge({ score = 0, label, breakdown = [] }) {
       ([entry]) => {
         if (entry.isIntersecting && !animated) {
           setAnimated(true);
-          // Count up animation
           let start = 0;
           const end = score;
           const duration = 1200;
@@ -53,11 +52,16 @@ export default function ScoreGauge({ score = 0, label, breakdown = [] }) {
   const color = getScoreColor(score);
   const offset = CIRC - (score / 100) * CIRC;
 
+  // Calculate lost points and potential score gain
+  const lostPoints = breakdown.reduce((acc, item) => acc + (item.max - item.score), 0);
+  const potentialGain = Math.min(100 - score, Math.round(lostPoints * 0.8));
+
   return (
     <div
       ref={ref}
       className={`score-gauge-card ${expanded ? "expanded" : ""}`}
-      onClick={() => breakdown.length > 0 && setExpanded((e) => !e)}
+      style={{ cursor: "pointer" }}
+      onClick={() => setExpanded((e) => !e)}
     >
       <svg
         className="score-gauge-svg"
@@ -109,36 +113,51 @@ export default function ScoreGauge({ score = 0, label, breakdown = [] }) {
         {getGrade(score)}
       </div>
 
-      {breakdown.length > 0 && (
-        <div className="score-gauge-expand">
-          {expanded ? "▲ Hide details" : "▼ See breakdown"}
-        </div>
-      )}
+      <div className="score-gauge-expand">
+        {expanded ? "▲ Hide Explainability" : "▼ Explain Score & Evidence"}
+      </div>
 
-      {expanded && breakdown.length > 0 && (
-        <div className="score-breakdown-panel">
-          {breakdown.map((item, i) => {
-            const pct = item.max > 0 ? (item.score / item.max) * 100 : 0;
-            const barColor =
-              pct >= 70 ? "var(--green)" : pct >= 40 ? "var(--cyan)" : "var(--red)";
-            return (
-              <div key={i} className="breakdown-row">
-                <div className="breakdown-label-row">
-                  <span className="breakdown-metric">{item.label}</span>
-                  <span className="breakdown-score">
-                    {item.score}/{item.max}
+      {expanded && (
+        <div className="score-breakdown-panel" style={{ marginTop: 12, borderTop: "1px solid var(--border)", paddingTop: 12 }}>
+          <div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--cyan)", marginBottom: 8 }}>
+            💡 Why this score ({score}/100)?
+          </div>
+
+          {potentialGain > 0 && (
+            <div style={{ background: "rgba(56, 189, 248, 0.08)", padding: "8px 12px", borderRadius: 8, fontSize: "0.78rem", color: "var(--txt-2)", marginBottom: 10 }}>
+              🚀 Potential Score Gain: <strong style={{ color: "var(--cyan)" }}>+{potentialGain} pts</strong> · Est. Effort: <strong style={{ color: "var(--txt-1)" }}>20–40 mins</strong>
+            </div>
+          )}
+
+          {breakdown.length > 0 ? (
+            breakdown.map((item, i) => {
+              const pct = item.max > 0 ? (item.score / item.max) * 100 : 0;
+              const barColor = pct >= 70 ? "var(--green)" : pct >= 40 ? "var(--cyan)" : "var(--red)";
+              return (
+                <div key={i} className="breakdown-row" style={{ marginBottom: 8 }}>
+                  <div className="breakdown-label-row">
+                    <span className="breakdown-metric">{item.label}</span>
+                    <span className="breakdown-score">
+                      {item.score}/{item.max}
+                    </span>
+                  </div>
+                  <div className="breakdown-bar-bg">
+                    <div
+                      className="breakdown-bar-fill"
+                      style={{ width: `${pct}%`, background: barColor }}
+                    />
+                  </div>
+                  <span className="breakdown-evidence" style={{ fontSize: "0.75rem", color: "var(--txt-3)" }}>
+                    {item.evidence}
                   </span>
                 </div>
-                <div className="breakdown-bar-bg">
-                  <div
-                    className="breakdown-bar-fill"
-                    style={{ width: `${pct}%`, background: barColor }}
-                  />
-                </div>
-                <span className="breakdown-evidence">{item.evidence}</span>
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <div style={{ fontSize: "0.78rem", color: "var(--txt-3)" }}>
+              Score calculated based on overall readiness metrics for {label}.
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -26,9 +26,10 @@ const improvementSchema = new mongoose.Schema(
 const reportSchema = new mongoose.Schema(
   {
     shareId: { type: String, required: true, unique: true, index: true },
-    githubUsername: { type: String, required: true, index: true },
+    githubUsername: { type: String, required: false, index: true, default: null },
     portfolioUrl: { type: String, default: null },
     targetRole: { type: String, default: "fullstack" },
+    analysisMode: { type: String, default: "full_360" },
 
     scores: {
       github: Number,

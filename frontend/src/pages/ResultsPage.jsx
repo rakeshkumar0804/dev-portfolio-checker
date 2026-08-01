@@ -8,14 +8,22 @@ import CareerRoadmap from "../components/CareerRoadmap.jsx";
 import SkillsDetector from "../components/SkillsDetector.jsx";
 import LanguageBar from "../components/LanguageBar.jsx";
 import ActivityHeatmap from "../components/ActivityHeatmap.jsx";
+import RecruiterDecisionCard from "../components/RecruiterDecisionCard.jsx";
+import ConsistencyMatrixCard from "../components/ConsistencyMatrixCard.jsx";
+import ExecutiveSummaryHero from "../components/ExecutiveSummaryHero.jsx";
+import RecruiterSimulationFlow from "../components/RecruiterSimulationFlow.jsx";
+import ComparativeBenchmarkCard from "../components/ComparativeBenchmarkCard.jsx";
+import RecruiterTimeline from "../components/RecruiterTimeline.jsx";
+import ScoreSimulator from "../components/ScoreSimulator.jsx";
+import ProgressTimeline from "../components/ProgressTimeline.jsx";
 
 const TABS = [
-  { id: "overview",   label: "📊 Overview",      always: true },
-  { id: "github",     label: "🐙 GitHub",         always: true },
-  { id: "portfolio",  label: "🌐 Portfolio",       always: false },
-  { id: "insights",   label: "🤖 AI Insights",    always: true },
-  { id: "resume",     label: "📄 Resume",          always: true },
-  { id: "roadmap",    label: "🗺 Career Roadmap",  always: true },
+  { id: "overview",   label: "📊 Overview",            always: true },
+  { id: "github",     label: "🐙 GitHub",               always: true },
+  { id: "portfolio",  label: "🌐 Portfolio",             always: false },
+  { id: "insights",   label: "📝 Executive Synthesis",  always: true },
+  { id: "resume",     label: "📄 Resume",                always: true },
+  { id: "roadmap",    label: "🗺 Career Roadmap",        always: true },
 ];
 
 function Card({ title, icon, children, className = "" }) {
@@ -170,14 +178,32 @@ export default function ResultsPage() {
     );
   }
 
-  const {
-    githubData, portfolioData, scores, scoreBreakdowns, improvements,
-    aiFeedback, missingSkills, skillsDetected, targetRole
-  } = data;
-  const { profile, stats, languageDistribution, topRepos, hasProfileReadme } = githubData;
+  const githubData = data?.githubData || null;
+  const portfolioData = data?.portfolioData || null;
+  const scores = data?.scores || { overall: 50, github: 0, projectQuality: 0, documentation: 0, portfolio: 0, hiringReadiness: 50 };
+  const scoreBreakdowns = data?.scoreBreakdowns || {};
+  const improvements = data?.improvements || [];
+  const aiFeedback = data?.aiFeedback || null;
+  const missingSkills = data?.missingSkills || [];
+  const skillsDetected = data?.skillsDetected || [];
+  const targetRole = data?.targetRole || "fullstack";
+
+  const profile = githubData?.profile || {};
+  const stats = githubData?.stats || {};
+  const languageDistribution = githubData?.languageDistribution || [];
+  const topRepos = githubData?.topRepos || [];
+  const hasProfileReadme = githubData?.hasProfileReadme || false;
+
   const shareUrl = `${window.location.origin}/results/${shareId}`;
 
-  const visibleTabs = TABS.filter((t) => t.always || (t.id === "portfolio" && portfolioData?.accessible));
+  const hasGithub = !!(githubData && githubData.profile);
+  const hasPortfolio = !!(portfolioData && portfolioData.accessible);
+
+  const visibleTabs = TABS.filter((t) => {
+    if (t.id === "github") return hasGithub;
+    if (t.id === "portfolio") return hasPortfolio;
+    return true;
+  });
 
   return (
     <div className="results-page">
@@ -186,24 +212,24 @@ export default function ResultsPage() {
         <div className="results-header-inner">
           <div className="user-identity">
             {profile.avatar ? (
-              <img src={profile.avatar} alt={profile.name} className="user-avatar" />
+              <img src={profile.avatar} alt={profile.name || "User"} className="user-avatar" />
             ) : (
-              <div className="user-avatar-placeholder">{profile.name?.[0] || "?"}</div>
+              <div className="user-avatar-placeholder">{profile.name?.[0] || profile.username?.[0] || "👤"}</div>
             )}
             <div>
-              <h1 className="user-name">{profile.name || profile.username}</h1>
+              <h1 className="user-name">{profile.name || profile.username || (portfolioData?.url ? "Portfolio Audit" : "Developer Candidate")}</h1>
               <p className="user-bio">
-                {profile.bio || `@${profile.username} · ${stats.ownedRepos} repos · ${stats.totalStars} stars`}
+                {hasGithub ? `@${profile.username} · ${profile.publicRepos ?? stats.ownedRepos ?? 0} Public Repositories${profile.bio ? ` — "${profile.bio}"` : ""}` : `Target Role: ${(targetRole || "fullstack").toUpperCase()}`}
               </p>
               <div className="user-links">
                 {profile.location && <span style={{ fontSize: "0.78rem", color: "var(--txt-3)" }}>📍 {profile.location}</span>}
-                <a href={profile.githubUrl} target="_blank" rel="noreferrer" className="user-link">🐙 GitHub</a>
-                {profile.website && <a href={profile.website} target="_blank" rel="noreferrer" className="user-link">🌐 Portfolio</a>}
+                {profile.githubUrl && <a href={profile.githubUrl} target="_blank" rel="noreferrer" className="user-link">🐙 GitHub</a>}
+                {portfolioData?.url && <a href={portfolioData.url} target="_blank" rel="noreferrer" className="user-link">🌐 Portfolio</a>}
               </div>
             </div>
           </div>
 
-          {/* Overall Score */}
+          {/* Overall Score & Print Report */}
           <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
             <div className="overall-score-block">
               <div className="overall-score-ring-wrap">
@@ -233,12 +259,53 @@ export default function ResultsPage() {
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }} className="no-print">
               <button className="btn-share" onClick={copyLink}>
                 {copied ? "✅ Copied!" : "🔗 Share Report"}
               </button>
+              <button
+                className="btn-secondary"
+                onClick={() => window.print()}
+                style={{ background: "rgba(56, 189, 248, 0.12)", color: "var(--cyan)", border: "1px solid rgba(56, 189, 248, 0.3)" }}
+              >
+                📄 Print / Export PDF
+              </button>
               <Link to="/" className="btn-secondary">← New Analysis</Link>
             </div>
+          </div>
+        </div>
+
+        {/* Official Report Audit Metadata Bar */}
+        <div
+          style={{
+            marginTop: 16,
+            padding: "10px 18px",
+            background: "rgba(15, 23, 42, 0.8)",
+            borderRadius: 12,
+            border: "1px solid rgba(56, 189, 248, 0.2)",
+            display: "flex",
+            justify: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 12,
+            fontSize: "0.78rem",
+            color: "var(--txt-2)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <span style={{ color: "var(--cyan)", fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+              <span>🏷️</span> Report Audit Metadata:
+            </span>
+            <span style={{ background: "rgba(255,255,255,0.06)", padding: "3px 8px", borderRadius: 6, color: "var(--txt-1)" }}>
+              Version v2.4.0
+            </span>
+            <span style={{ background: "rgba(56, 189, 248, 0.1)", padding: "3px 8px", borderRadius: 6, color: "var(--cyan)" }}>
+              Evidence-Based Scoring Engine v4.2
+            </span>
+          </div>
+
+          <div style={{ color: "var(--txt-3)", fontSize: "0.75rem" }}>
+            🕒 Snapshot Date: <strong style={{ color: "var(--txt-2)" }}>Live GitHub Sync ({new Date().toLocaleDateString()})</strong>
           </div>
         </div>
       </div>
@@ -287,20 +354,57 @@ export default function ResultsPage() {
         {/* ── TAB: OVERVIEW ── */}
         {activeTab === "overview" && (
           <>
-            <Card title="Health Scores" icon="📊">
+            {/* SECTION 1: Executive Summary & Re-designed Score Hero */}
+            <ExecutiveSummaryHero
+              score={scores.overall}
+              recruiterDecision={data?.recruiterDecision}
+              targetRole={targetRole}
+            />
+
+            {/* Audit Progression & Score History Timeline */}
+            <ProgressTimeline currentScore={scores.overall} currentUsername={profile.username} />
+
+            {/* Interactive "What If?" Score Simulator */}
+            <ScoreSimulator
+              initialScore={scores.overall}
+              improvements={improvements}
+              recruiterDecision={data?.recruiterDecision}
+            />
+
+            {/* SECTION 2: 10-Second Recruiter Audit Checklist */}
+            <RecruiterTimeline
+              githubData={githubData}
+              portfolioData={portfolioData}
+              resumeAnalysis={data?.resumeAnalysis}
+              recruiterDecision={data?.recruiterDecision}
+            />
+
+            {/* SECTION 3: Deterministic Seniority Benchmarks */}
+            <ComparativeBenchmarkCard
+              comparative={data?.recruiterDecision?.comparative}
+              targetRole={targetRole}
+            />
+
+            {/* SECTION 4: Resume ↔ GitHub Skill Audit Matrix */}
+            {data?.consistencyMatrix && (
+              <ConsistencyMatrixCard matrix={data.consistencyMatrix} />
+            )}
+
+            {/* SECTION 5: Health Scores */}
+            <Card title="Section 5: Dimension Health Scores" icon="📊">
               <div style={{ marginBottom: 16, fontSize: "0.82rem", color: "var(--txt-3)" }}>
                 Click any score card to see the exact evidence behind it ↓
               </div>
               <div className="scores-grid">
-                <ScoreGauge score={scores.github}         label="GitHub Profile"   breakdown={scoreBreakdowns?.github || []} />
-                <ScoreGauge score={scores.projectQuality} label="Project Quality"  breakdown={scoreBreakdowns?.projectQuality || []} />
-                <ScoreGauge score={scores.documentation}  label="Documentation"    breakdown={scoreBreakdowns?.documentation || []} />
-                <ScoreGauge score={scores.portfolio}      label="Portfolio"         breakdown={scoreBreakdowns?.portfolio || []} />
+                {hasGithub && <ScoreGauge score={scores.github}         label="GitHub Profile"   breakdown={scoreBreakdowns?.github || []} />}
+                {hasGithub && <ScoreGauge score={scores.projectQuality} label="Project Quality"  breakdown={scoreBreakdowns?.projectQuality || []} />}
+                {hasGithub && <ScoreGauge score={scores.documentation}  label="Documentation"    breakdown={scoreBreakdowns?.documentation || []} />}
+                {hasPortfolio && <ScoreGauge score={scores.portfolio}      label="Portfolio"         breakdown={scoreBreakdowns?.portfolio || []} />}
                 <ScoreGauge score={scores.hiringReadiness} label="Hiring Readiness" breakdown={[]} />
               </div>
-              {!portfolioData?.accessible && (
+              {!hasPortfolio && (
                 <div className="info-box" style={{ marginTop: 16 }}>
-                  💡 Add a portfolio URL in a new analysis to unlock the full Portfolio score — potential +15 to overall.
+                  💡 Add a portfolio URL in a new analysis to unlock full Portfolio audit & Vitals checks.
                 </div>
               )}
             </Card>
@@ -310,9 +414,9 @@ export default function ResultsPage() {
             )}
 
             {improvements?.length > 0 && (
-              <Card title="🚀 Quick Wins — Top 3 Improvements" icon="⚡">
+              <Card title="Section 6: Highest Impact Improvements" icon="⚡">
                 <div style={{ marginBottom: 16, fontSize: "0.85rem", color: "var(--txt-2)" }}>
-                  These are the highest-impact actions sorted by points gained vs effort required.
+                  Highest-impact actions sorted by points gained vs effort required.
                 </div>
                 <div className="improvements-list">
                   {improvements.slice(0, 3).map((item, i) => (
@@ -470,11 +574,14 @@ export default function ResultsPage() {
           </>
         )}
 
-        {/* ── TAB: AI INSIGHTS ── */}
+        {/* ── TAB: EXECUTIVE SYNTHESIS ── */}
         {activeTab === "insights" && (
           <>
             {aiFeedback?.overallSummary && (
-              <Card title="Overall Assessment" icon="🤖">
+              <Card title="Executive Candidate Summary" icon="📝">
+                <div style={{ fontSize: "0.78rem", color: "var(--txt-3)", marginBottom: 12 }}>
+                  ℹ️ Written by Gemini AI based on your rule-based scores — all numeric scores are 100% deterministic calculations.
+                </div>
                 <div className="ai-summary-box">{aiFeedback.overallSummary}</div>
               </Card>
             )}

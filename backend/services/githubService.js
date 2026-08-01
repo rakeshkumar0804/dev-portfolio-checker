@@ -90,11 +90,25 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
       percentage: totalReposWithLang > 0 ? Math.round((count / totalReposWithLang) * 100) : 0,
     }));
 
-  // Skills from languages + topics
+  // Skills from languages + topics + repo names + repo descriptions
   const skillsSet = new Set();
   repos.forEach((r) => {
     if (r.language) skillsSet.add(r.language);
     (r.topics || []).forEach((t) => skillsSet.add(t));
+
+    const combinedText = `${r.name || ""} ${r.description || ""} ${(r.topics || []).join(" ")}`.toLowerCase();
+    
+    if (combinedText.includes("node") || combinedText.includes("express") || combinedText.includes("mern")) {
+      skillsSet.add("Node.js");
+      skillsSet.add("Express");
+    }
+    if (combinedText.includes("react")) skillsSet.add("React");
+    if (combinedText.includes("mongo")) skillsSet.add("MongoDB");
+    if (combinedText.includes("python") || combinedText.includes("django") || combinedText.includes("flask")) skillsSet.add("Python");
+    if (combinedText.includes("java") || combinedText.includes("spring")) skillsSet.add("Java");
+    if (combinedText.includes("sql") || combinedText.includes("postgres") || combinedText.includes("mysql")) skillsSet.add("SQL");
+    if (combinedText.includes("docker") || combinedText.includes("container")) skillsSet.add("Docker");
+    if (combinedText.includes("rest")) skillsSet.add("REST API");
   });
 
   const pushEvents = events.filter((e) => e.type === "PushEvent");
@@ -186,11 +200,11 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
   // Weekly activity heatmap (12 weeks)
   const weeklyActivity = buildWeeklyActivity(events);
 
-  // Repo stats
+  // Repo stats — Non-forked repositories matching GitHub profile badge
   const ownedRepos = repos.filter((r) => !r.fork);
   const totalStars = repos.reduce((s, r) => s + r.stargazers_count, 0);
   const totalForks = repos.reduce((s, r) => s + r.forks_count, 0);
-  const reposWithDescription = repos.filter(
+  const reposWithDescription = ownedRepos.filter(
     (r) => r.description && r.description.trim().length > 5
   ).length;
   const reposWithTopics = repos.filter(

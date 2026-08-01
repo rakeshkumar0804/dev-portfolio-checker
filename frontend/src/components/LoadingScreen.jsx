@@ -1,29 +1,33 @@
 import { useState, useEffect } from "react";
 
-const STEPS = [
-  { icon: "🐙", label: "Fetching GitHub profile & repositories…" },
-  { icon: "📊", label: "Analyzing commits, activity & contributions…" },
-  { icon: "🌐", label: "Auditing portfolio website (SEO, accessibility)…" },
-  { icon: "🤖", label: "Generating AI-powered insights & roadmap…" },
-  { icon: "✨", label: "Building your personalized report…" },
-];
-
-export default function LoadingScreen({ portfolioUrl }) {
+export default function LoadingScreen({ githubUsername, portfolioUrl, resumeFile }) {
   const [step, setStep] = useState(0);
   const [progress, setProgress] = useState(0);
 
+  const steps = [];
+  if (githubUsername) {
+    steps.push({ icon: "🐙", label: "Fetching GitHub profile & repositories…" });
+    steps.push({ icon: "📊", label: "Analyzing commits, activity & contributions…" });
+  }
+  if (portfolioUrl) {
+    steps.push({ icon: "🌐", label: "Auditing portfolio website (SEO, accessibility)…" });
+  }
+  if (resumeFile) {
+    steps.push({ icon: "📄", label: "Analyzing resume PDF & ATS keywords…" });
+  }
+  steps.push({ icon: "🤖", label: "Generating AI-powered insights & roadmap…" });
+  steps.push({ icon: "✨", label: "Building your personalized report…" });
+
   useEffect(() => {
-    const intervals = [3000, 7000, 11000, 17000, 22000];
-    const timers = intervals.map((delay, i) =>
+    const stepDuration = 2500;
+    const timers = steps.map((_, i) =>
       setTimeout(() => {
         setStep(i + 1);
-        setProgress(((i + 1) / STEPS.length) * 100);
-      }, delay)
+        setProgress(((i + 1) / steps.length) * 100);
+      }, (i + 1) * stepDuration)
     );
     return () => timers.forEach(clearTimeout);
-  }, []);
-
-  const visibleSteps = portfolioUrl ? STEPS : STEPS.filter((_, i) => i !== 2);
+  }, [steps.length]);
 
   return (
     <div className="loading-screen">
@@ -31,11 +35,11 @@ export default function LoadingScreen({ portfolioUrl }) {
         <div className="loading-logo">🔍</div>
         <h2 className="loading-title">Analyzing Your Profile</h2>
         <p className="loading-sub">
-          Running {visibleSteps.length} checks across your entire developer presence…
+          Running {steps.length} tailored checks across your selected inputs…
         </p>
 
         <div className="loading-steps">
-          {visibleSteps.map((s, i) => (
+          {steps.map((s, i) => (
             <div
               key={i}
               className={`loading-step ${i < step ? "done" : i === step ? "active" : ""}`}

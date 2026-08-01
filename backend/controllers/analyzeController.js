@@ -4,6 +4,8 @@ import { fetchGitHubData } from "../services/githubService.js";
 import { fetchPortfolioData } from "../services/portfolioService.js";
 import { calculateAllScores, detectMissingSkills } from "../services/scoringService.js";
 import { generateAIFeedback } from "../services/aiService.js";
+import { evaluateRecruiterDecision } from "../services/recruiterEngine.js";
+import { generateConsistencyMatrix } from "../services/consistencyService.js";
 
 // ── In-memory fallback store (used when MongoDB is not available) ──────────────
 const memoryStore = new Map(); // shareId → reportData
@@ -27,19 +29,31 @@ function isCacheValid(report) {
 // POST /api/analyze/full
 export async function analyzeFullProfile(req, res) {
   try {
-    const { githubUsername, portfolioUrl, targetRole = "fullstack", forceRefresh = false } = req.body;
+    const { githubUsername, portfolioUrl, targetRole = "fullstack", forceRefresh = false, resumeAnalysis = null } = req.body;
     const isForce = forceRefresh === true || forceRefresh === "true";
+    const Report = await getReportModel();
 
-    if (!githubUsername?.trim()) {
-      return res.status(400).json({ message: "GitHub username is required" });
+    const username = githubUsername?.trim()?.toLowerCase() || null;
+    const normalizedPortfolio = portfolioUrl?.trim() || null;
+
+    if (!username && !normalizedPortfolio && !resumeAnalysis) {
+      return res.status(400).json({ message: "Please provide at least one input: GitHub username, Portfolio URL, or Resume PDF." });
     }
 
-    const username = githubUsername.trim().toLowerCase();
-    const normalizedPortfolio = portfolioUrl?.trim() || null;
-    const cacheKey = `${username}|${normalizedPortfolio || ""}`;
+    // Determine Analysis Mode
+    let analysisMode = "full_360";
+    if (username && normalizedPortfolio && resumeAnalysis) analysisMode = "full_360";
+    else if (username && normalizedPortfolio) analysisMode = "github_portfolio";
+    else if (username && resumeAnalysis) analysisMode = "github_resume";
+    else if (normalizedPortfolio && resumeAnalysis) analysisMode = "resume_portfolio";
+    else if (username) analysisMode = "github_only";
+    else if (normalizedPortfolio) analysisMode = "portfolio_only";
+    else if (resumeAnalysis) analysisMode = "resume_only";
+
+    const cacheKey = `${username || ""}|${normalizedPortfolio || ""}|${analysisMode}`;
 
     // Rate-limiting / debounce check for forceRefresh
-    if (isForce) {
+    if (isForce && username) {
       const lastRefresh = lastForceRefreshMap.get(username) || 0;
       const elapsed = Date.now() - lastRefresh;
       if (elapsed < REFRESH_COOLDOWN_MS) {
@@ -54,65 +68,27 @@ export async function analyzeFullProfile(req, res) {
     // ── Check in-memory cache first (skipped if forceRefresh is true) ─────────
     if (!isForce && memoryStore.has(cacheKey)) {
       const cached = memoryStore.get(cacheKey);
-      if (Date.now() - cached.createdAt < CACHE_TTL_MS && isCacheValid(cached)) {
-        console.log(`♻️ Memory cache hit for "${username}"`);
+      if (Date.now() - cached.createdAt < CACHE_TTL_MS) {
+        console.log(`♻️ Memory cache hit for key "${cacheKey}"`);
         const missingSkills = detectMissingSkills(cached.skillsDetected || [], cached.targetRole || "fullstack");
         const cacheAge = Math.round((Date.now() - cached.createdAt) / 60000);
         return res.json({ success: true, fromCache: true, cacheAge, ...cached, missingSkills });
       }
     }
 
-    // ── Check MongoDB cache (skipped if forceRefresh is true) ─────────────────
-    const Report = await getReportModel();
-    if (!isForce && Report) {
-      const cacheThreshold = new Date(Date.now() - CACHE_TTL_MS);
-      const cachedReports = await Report.find({
-        githubUsername: username,
-        portfolioUrl: normalizedPortfolio,
-        createdAt: { $gte: cacheThreshold },
-      }).sort({ createdAt: -1 }).limit(3);
-
-      const validCache = cachedReports.find(isCacheValid);
-      if (validCache) {
-        console.log(`♻️ DB cache hit for "${username}"`);
-        const missingSkills = detectMissingSkills(validCache.skillsDetected || [], validCache.targetRole || "fullstack");
-        const cacheAge = Math.round((Date.now() - validCache.createdAt.getTime()) / 60000);
-        return res.json({
-          success: true, fromCache: true, cacheAge,
-          shareId: validCache.shareId,
-          githubData: validCache.githubData,
-          portfolioData: validCache.portfolioData,
-          scores: validCache.scores,
-          scoreBreakdowns: validCache.scoreBreakdowns,
-          improvements: validCache.improvements,
-          aiFeedback: validCache.aiFeedback,
-          resumeAnalysis: validCache.resumeAnalysis,
-          missingSkills,
-          skillsDetected: validCache.skillsDetected || [],
-          targetRole: validCache.targetRole,
-        });
-      }
-    }
-
     // ── Fresh analysis ───────────────────────────────────────────────────────
-    console.log(`🔍 Fresh analysis for "${username}" (DB: ${dbConnected ? "✅" : "⚠️ memory-only"})`);
+    console.log(`🔍 Fresh analysis [Mode: ${analysisMode}] [Role: ${targetRole}] (DB: ${dbConnected ? "✅" : "⚠️ memory-only"})`);
 
-    let githubData;
-    try {
-      githubData = await fetchGitHubData(username);
-    } catch (err) {
-      return res.status(400).json({ message: err.message });
-    }
-
-    // Safety: block completely empty API responses (rate limit scenario)
-    if (
-      (githubData.profile?.followers ?? 0) === 0 &&
-      (githubData.stats?.totalRepos ?? 0) === 0
-    ) {
-      return res.status(503).json({
-        message:
-          "GitHub returned empty data for this profile. This usually means you've hit the 60 req/hr rate limit. Add a GITHUB_TOKEN to backend/.env to increase this to 5000/hr, or wait ~1 hour.",
-      });
+    let githubData = null;
+    if (username) {
+      try {
+        githubData = await fetchGitHubData(username);
+      } catch (err) {
+        if (analysisMode === "github_only") {
+          return res.status(400).json({ message: err.message });
+        }
+        githubData = null;
+      }
     }
 
     let portfolioData = null;
@@ -124,12 +100,25 @@ export async function analyzeFullProfile(req, res) {
       }
     }
 
-    const { scores, scoreBreakdowns, improvements } = calculateAllScores(githubData, portfolioData);
-    const missingSkills = detectMissingSkills(githubData.skills || [], targetRole);
+    const { scores, scoreBreakdowns, improvements } = calculateAllScores(
+      githubData,
+      portfolioData,
+      targetRole,
+      resumeAnalysis
+    );
+
+    const skillsDetected = [
+      ...(githubData?.skills || []),
+      ...(resumeAnalysis?.skillsExtracted || []),
+    ];
+
+    const missingSkills = detectMissingSkills(skillsDetected, targetRole);
+    const recruiterDecision = evaluateRecruiterDecision(scores, githubData, portfolioData, resumeAnalysis, targetRole);
+    const consistencyMatrix = generateConsistencyMatrix(githubData, resumeAnalysis);
 
     let aiFeedback = null;
     try {
-      aiFeedback = await generateAIFeedback(githubData, portfolioData, scores, improvements, targetRole);
+      aiFeedback = await generateAIFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis);
     } catch (aiErr) {
       console.warn("AI feedback failed (non-critical):", aiErr.message?.slice(0, 80));
     }
@@ -151,14 +140,18 @@ export async function analyzeFullProfile(req, res) {
       shareId,
       githubUsername: username,
       portfolioUrl: normalizedPortfolio,
+      targetRole,
+      analysisMode,
       scores,
       scoreBreakdowns,
       improvements,
       githubData,
       portfolioData,
       aiFeedback,
-      skillsDetected: githubData.skills || [],
-      targetRole,
+      resumeAnalysis,
+      skillsDetected,
+      recruiterDecision,
+      consistencyMatrix,
       createdAt: Date.now(),
     };
 
@@ -170,7 +163,7 @@ export async function analyzeFullProfile(req, res) {
           { ...reportPayload, createdAt: new Date() },
           { upsert: true, new: true }
         );
-        console.log(`✅ DB report updated: ${shareId} for "${username}" — Overall: ${scores.overall}`);
+        console.log(`✅ DB report updated: ${shareId} [Mode: ${analysisMode}] — Overall: ${scores.overall}`);
       } catch (dbErr) {
         console.warn("DB save failed (non-critical), using memory:", dbErr.message?.slice(0, 80));
       }
@@ -178,21 +171,25 @@ export async function analyzeFullProfile(req, res) {
     
     memoryStore.set(cacheKey, reportPayload);
     memoryStore.set(shareId, reportPayload);
-    console.log(`✅ Memory report updated: ${shareId} for "${username}" — Overall: ${scores.overall}`);
+    console.log(`✅ Memory report updated: ${shareId} [Mode: ${analysisMode}] — Overall: ${scores.overall}`);
 
     return res.json({
       success: true,
       fromCache: false,
       shareId,
+      analysisMode,
       githubData,
       portfolioData,
+      resumeAnalysis,
       scores,
       scoreBreakdowns,
       improvements,
       aiFeedback,
       missingSkills,
-      skillsDetected: githubData.skills || [],
+      skillsDetected,
       targetRole,
+      recruiterDecision,
+      consistencyMatrix,
     });
   } catch (err) {
     console.error("analyzeFullProfile error:", err);
@@ -253,11 +250,20 @@ export async function getReport(req, res) {
           const { scores, scoreBreakdowns, improvements } = calculateAllScores(
             freshGithub,
             report.portfolioData,
-            report.targetRole || "fullstack"
+            report.targetRole || "fullstack",
+            report.resumeAnalysis || null
           );
           report.scores = scores;
           report.scoreBreakdowns = scoreBreakdowns;
           report.improvements = improvements;
+          report.recruiterDecision = evaluateRecruiterDecision(
+            scores,
+            freshGithub,
+            report.portfolioData,
+            report.resumeAnalysis || null,
+            report.targetRole || "fullstack"
+          );
+          report.consistencyMatrix = generateConsistencyMatrix(freshGithub, report.resumeAnalysis || null);
           report.createdAt = Date.now();
 
           // Save back to memory & DB
