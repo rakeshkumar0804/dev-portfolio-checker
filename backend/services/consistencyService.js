@@ -1,26 +1,33 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// Resume vs GitHub Consistency Matrix Service v3 — Deep Audit & Compact Verified
+// Resume vs GitHub Consistency Matrix Service v4 — Robust Alias & Text Matching
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export function generateConsistencyMatrix(githubData, resumeAnalysis) {
   const resumeSkills = resumeAnalysis?.skillsExtracted || [];
+  const resumeRawText = (resumeAnalysis?.rawText || "").toLowerCase();
   const githubSkills = githubData?.skills || [];
   const topRepos = githubData?.topRepos || [];
 
-  // Helper for skill normalization & alias matching
+  // Robust skill normalization & alias matching
   function normalizeSkill(s) {
-    const l = (s || "").toLowerCase().trim();
-    if (l === "node" || l === "nodejs" || l === "node.js" || l === "express" || l === "expressjs") return "node";
+    const l = (s || "").toLowerCase().replace(/[^a-z0-9]/g, "").trim();
+    if (l === "node" || l === "nodejs") return "node";
+    if (l === "express" || l === "expressjs") return "express";
     if (l === "react" || l === "reactjs") return "react";
     if (l === "mongo" || l === "mongodb" || l === "mongoose") return "mongodb";
-    if (l === "js" || l === "javascript") return "javascript";
+    if (l === "js" || l === "javascript" || l === "javascriptes6") return "javascript";
     if (l === "ts" || l === "typescript") return "typescript";
     if (l === "py" || l === "python") return "python";
-    if (l === "rest" || l === "rest-api" || l === "restful") return "restapi";
+    if (l === "fullstack" || l === "fullstackdeveloper") return "fullstack";
+    if (l === "rest" || l === "restapi" || l === "restful") return "restapi";
+    if (l === "developertools") return "developertools";
+    if (l === "careerdevelopment") return "careerdevelopment";
+    if (l === "ats") return "ats";
+    if (l === "ai") return "ai";
     return l;
   }
 
-  // Inspect all GitHub repo names & descriptions for alias matching
+  // Inspect all GitHub repo names, descriptions, and topics
   const repoTexts = topRepos.map((r) => `${r.name || ""} ${r.description || ""} ${(r.topics || []).join(" ")} ${r.language || ""}`.toLowerCase());
 
   const verifiedInBoth = [];
@@ -47,12 +54,21 @@ export function generateConsistencyMatrix(githubData, resumeAnalysis) {
     }
   });
 
-  // GitHub Only Skills (Hidden Gems missing from resume)
+  // GitHub Only Skills (Filtered out if found in resume text or skills)
   const githubOnly = [];
   githubSkills.forEach((g) => {
-    const norm = normalizeSkill(g);
-    const inResume = resumeSkills.some((r) => normalizeSkill(r) === norm || r.toLowerCase().includes(g.toLowerCase()) || g.toLowerCase().includes(r.toLowerCase()));
-    if (!inResume) {
+    const normG = normalizeSkill(g);
+    const rawG = g.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+    const inResumeSkills = resumeSkills.some((r) => {
+      const normR = normalizeSkill(r);
+      const rawR = r.toLowerCase().replace(/[^a-z0-9]/g, "");
+      return normR === normG || rawR === rawG || rawR.includes(rawG) || rawG.includes(rawR);
+    });
+
+    const inResumeText = resumeRawText.length > 0 && (resumeRawText.includes(g.toLowerCase()) || (rawG.length > 2 && resumeRawText.includes(rawG)));
+
+    if (!inResumeSkills && !inResumeText) {
       githubOnly.push(g);
       actionAuditList.push({
         skill: g,

@@ -133,6 +133,7 @@ Return ONLY valid JSON (no markdown):
   const onlyGithub = githubSkills.filter((g) => !skillsExtracted.some((s) => s.toLowerCase() === g.toLowerCase()));
 
   return {
+    rawText: text,
     atsScore: Math.max(atsScore, 55),
     atsBreakdown: {
       formatting: Math.max(formattingScore, 65),
