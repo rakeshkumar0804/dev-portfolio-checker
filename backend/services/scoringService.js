@@ -447,6 +447,9 @@ export function calculateAllScores(githubData, portfolioData, targetRole = "full
     ? calculateHiringReadiness(scores, githubData, portfolioData)
     : (hasPortfolio ? scores.portfolio : (hasResume ? (resumeAnalysis.atsScore || 70) : 50));
 
+  const hasValidResume = hasResume && (resumeAnalysis?.atsScore || 0) > 0;
+  const effectiveAtsScore = hasValidResume ? Math.max(resumeAnalysis.atsScore, 75) : 75;
+
   // Dynamic Overall Score Calculation depending on available input channels
   let overall = 50;
   if (hasGithub && hasPortfolio && hasResume) {
@@ -456,7 +459,7 @@ export function calculateAllScores(githubData, portfolioData, targetRole = "full
       scores.projectQuality * 0.20 +
       scores.documentation * 0.15 +
       scores.portfolio * 0.20 +
-      (resumeAnalysis.atsScore || 70) * 0.15 +
+      effectiveAtsScore * 0.15 +
       hiringReadiness * 0.10
     );
   } else if (hasGithub && hasPortfolio) {
@@ -474,7 +477,7 @@ export function calculateAllScores(githubData, portfolioData, targetRole = "full
       scores.github * 0.35 +
       scores.projectQuality * 0.25 +
       scores.documentation * 0.15 +
-      (resumeAnalysis.atsScore || 70) * 0.15 +
+      effectiveAtsScore * 0.15 +
       hiringReadiness * 0.10
     );
   } else if (hasPortfolio && hasResume) {
