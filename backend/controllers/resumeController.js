@@ -4,7 +4,7 @@ import fs from "fs";
 import os from "os";
 import { fileURLToPath } from "url";
 import { dbConnected } from "../utils/connectDatabase.js";
-import { analyzeResume } from "../services/resumeService.js";
+import { analyzeResume, buildFallbackResumeAnalysis } from "../services/resumeService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,14 +23,13 @@ try {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {
-    const unique =
-      Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, "resume-" + unique + ".pdf");
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "application/pdf") cb(null, true);
+  if (file.mimetype === "application/pdf" || file.originalname.toLowerCase().endsWith(".pdf")) cb(null, true);
   else cb(new Error("Only PDF files are allowed"), false);
 };
 
@@ -46,68 +45,66 @@ export async function analyzeResumeController(req, res) {
   const { shareId, targetRole } = req.body;
 
   if (!file) {
-    return res
-      .status(400)
-      .json({ message: "Please upload a PDF resume" });
+    return res.status(400).json({ message: "Please upload a PDF resume file." });
+  }
+
+  let resumeText = "";
+
+  try {
+    const pdfParse = (await import("pdf-parse/lib/pdf-parse.js")).default;
+    const dataBuffer = fs.readFileSync(file.path);
+    const pdfData = await pdfParse(dataBuffer);
+    resumeText = pdfData.text || "";
+  } catch (pdfErr) {
+    console.warn("PDF parse warning (bad XRef or encoding, applying fallback extraction):", pdfErr.message);
+    try {
+      const rawBuffer = fs.readFileSync(file.path);
+      const rawText = rawBuffer.toString("binary");
+      const textMatches = rawText.match(/\(([^()]+)\)/g);
+      if (textMatches) {
+        resumeText = textMatches.map((m) => m.slice(1, -1)).join(" ");
+      }
+    } catch (_) {
+      resumeText = "";
+    }
+  } finally {
+    if (file?.path && fs.existsSync(file.path)) {
+      fs.unlink(file.path, () => {});
+    }
   }
 
   try {
-    // Dynamically import pdf-parse
-    const pdfParse = (
-      await import("pdf-parse/lib/pdf-parse.js")
-    ).default;
-    const dataBuffer = fs.readFileSync(file.path);
-    const pdfData = await pdfParse(dataBuffer);
-    const resumeText = pdfData.text;
-
-    // Clean up uploaded file
-    fs.unlink(file.path, () => {});
-
     let githubData = null;
 
     if (shareId && dbConnected) {
       try {
-        const { default: Report } =
-          await import("../models/Report.js");
+        const { default: Report } = await import("../models/Report.js");
         const report = await Report.findOne({ shareId });
         if (report) githubData = report.githubData;
       } catch (e) {
-        console.warn(
-          "Could not query DB for resume consistency check:",
-          e.message,
-        );
+        console.warn("Could not query DB for resume consistency check:", e.message);
       }
     }
 
     const resumeAnalysis = await analyzeResume(
       resumeText,
       githubData,
-      targetRole || "fullstack",
+      targetRole || "fullstack"
     );
 
     if (shareId && dbConnected) {
       try {
-        const { default: Report } =
-          await import("../models/Report.js");
-        await Report.updateOne(
-          { shareId },
-          { $set: { resumeAnalysis } },
-        );
+        const { default: Report } = await import("../models/Report.js");
+        await Report.updateOne({ shareId }, { $set: { resumeAnalysis } });
       } catch (e) {
-        console.warn(
-          "Could not save resume analysis to DB:",
-          e.message,
-        );
+        console.warn("Could not save resume analysis to DB:", e.message);
       }
     }
 
     return res.json({ success: true, resumeAnalysis });
   } catch (err) {
-    if (file?.path && fs.existsSync(file.path))
-      fs.unlink(file.path, () => {});
-    console.error("Resume analysis error:", err.message);
-    return res.status(500).json({
-      message: "Failed to analyze resume: " + err.message,
-    });
+    console.error("Resume analysis controller error:", err.message);
+    const fallback = buildFallbackResumeAnalysis("", null, targetRole || "fullstack");
+    return res.json({ success: true, resumeAnalysis: fallback });
   }
 }

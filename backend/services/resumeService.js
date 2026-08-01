@@ -162,7 +162,7 @@ Return ONLY valid JSON (no markdown):
   };
 }
 
-function buildFallbackResumeAnalysis(resumeText, githubData, targetRole) {
+export function buildFallbackResumeAnalysis(resumeText, githubData, targetRole) {
   return {
     atsScore: 0,
     atsBreakdown: { formatting: 0, keywords: 0, actionVerbs: 0, impactMetrics: 0, length: 0 },
