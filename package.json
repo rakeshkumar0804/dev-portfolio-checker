@@ -3,6 +3,9 @@
   "version": "3.0.1",
   "description": "PortfolioPulse - a SaaS career intelligence workspace for developers.",
   "type": "module",
+  "engines": {
+    "node": ">=18.x"
+  },
   "scripts": {
     "dev": "vite",
     "dev:api": "node --watch server.js",
