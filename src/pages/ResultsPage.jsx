@@ -800,13 +800,6 @@ export default function ResultsPage() {
                     </div>
                   </Card>
                 )}
-
-                <div style={{ textAlign: "center" }}>
-                  <label style={{ cursor: "pointer" }}>
-                    <input type="file" accept=".pdf" onChange={handleResumeUpload} style={{ display: "none" }} />
-                    <span className="btn-secondary">🔄 Re-analyze with Different Resume</span>
-                  </label>
-                </div>
               </>
             )}
           </>
@@ -814,74 +807,58 @@ export default function ResultsPage() {
 
         {/* ── TAB: ROADMAP ── */}
         {activeTab === "roadmap" && (
-          <Card title="Career Roadmap" icon="🗺">
-            {aiFeedback?.careerRoadmap ? (
-              <CareerRoadmap roadmap={aiFeedback.careerRoadmap} />
-            ) : (
-              <div style={{ color: "var(--txt-3)", fontSize: "0.88rem", textAlign: "center", padding: 40 }}>
-                Career roadmap requires the AI analysis to complete. Make sure your Gemini API key is configured in backend/.env.
-              </div>
-            )}
+          <Card title="Personalized Career Roadmap" icon="🗺">
+            <CareerRoadmap
+              improvements={improvements}
+              missingSkills={missingSkills}
+              targetRole={targetRole}
+              scores={scores}
+            />
           </Card>
         )}
-
-        {/* Share */}
-        <div className="share-section">
-          <h2 className="share-title">📤 Share Your Report</h2>
-          <p className="share-sub">Permanent public link — share with recruiters, mentors, or team</p>
-          <div className="share-link-row">
-            <input className="share-link-input" value={shareUrl} readOnly />
-            <button className="btn-copy" onClick={copyLink}>{copied ? "✅ Copied" : "📋 Copy"}</button>
-          </div>
-        </div>
       </div>
 
-      {/* Auth Conversion Modal for Gated Actions */}
+      {/* Gate Auth Modal */}
       {showAuthModal && (
-        <div style={{
-          position: "fixed", inset: 0, zIndex: 9999,
-          background: "rgba(2, 8, 16, 0.85)", backdropFilter: "blur(12px)",
-          display: "flex", alignItems: "center", justifyContent: "center", padding: 20
-        }}>
-          <div style={{
-            background: "var(--bg-card)", border: "1px solid rgba(56, 189, 248, 0.35)",
-            borderRadius: "var(--r-xl)", padding: "32px 28px", maxWidth: 440, width: "100%",
-            boxShadow: "0 20px 50px rgba(0,0,0,0.7)", textAlign: "center", position: "relative"
-          }}>
-            <button
-              type="button"
-              onClick={() => setShowAuthModal(false)}
-              style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", color: "var(--txt-3)", fontSize: "1.2rem", cursor: "pointer" }}
-            >
-              ✕
-            </button>
-            <div style={{ fontSize: "2.6rem", marginBottom: 12 }}>🚀</div>
-            <h3 style={{ fontSize: "1.3rem", fontWeight: 700, marginBottom: 8, color: "var(--txt-1)" }}>
-              Create your free account
-            </h3>
-            <p style={{ fontSize: "0.86rem", color: "var(--txt-2)", lineHeight: 1.6, marginBottom: 24 }}>
-              {authModalReason || "Save your analysis, download PDF reports, track improvements over time, and access your reports anytime."}
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <Link
-                to="/auth"
+        <div className="auth-modal-overlay" onClick={() => setShowAuthModal(false)}>
+          <div className="auth-modal-card card anim-scale-in" onClick={(e) => e.stopPropagation()}>
+            <button className="auth-modal-close" onClick={() => setShowAuthModal(false)}>✕</button>
+            <div style={{ textAlign: "center", marginBottom: 20 }}>
+              <div style={{ fontSize: "2.5rem", marginBottom: 10 }}>🔒</div>
+              <h3 style={{ fontSize: "1.25rem", margin: "0 0 6px" }}>Unlock Full Career Growth Features</h3>
+              <p style={{ color: "var(--txt-2)", fontSize: "0.85rem", margin: 0 }}>
+                {authModalReason || "Sign in or create a free account to continue."}
+              </p>
+            </div>
+            <div style={{ display: "grid", gap: 10 }}>
+              <button
                 className="btn-primary"
-                style={{ textDecoration: "none", justifyContent: "center" }}
+                onClick={() => {
+                  try {
+                    const currentReport = data || JSON.parse(sessionStorage.getItem("portfolioReport") || "null");
+                    if (currentReport && currentReport.shareId) {
+                      localStorage.setItem("pending_save_report", JSON.stringify(currentReport));
+                    }
+                  } catch (_) {}
+                  navigate("/auth?mode=register");
+                }}
               >
                 Create Free Account →
-              </Link>
-              <Link
-                to="/auth"
-                style={{ fontSize: "0.82rem", color: "var(--cyan)", textDecoration: "none", fontWeight: 500 }}
-              >
-                Already have an account? Sign in
-              </Link>
+              </button>
               <button
-                type="button"
-                onClick={() => setShowAuthModal(false)}
-                style={{ background: "none", border: "none", color: "var(--txt-3)", fontSize: "0.78rem", cursor: "pointer", marginTop: 4 }}
+                className="btn-secondary"
+                style={{ justifyContent: "center" }}
+                onClick={() => {
+                  try {
+                    const currentReport = data || JSON.parse(sessionStorage.getItem("portfolioReport") || "null");
+                    if (currentReport && currentReport.shareId) {
+                      localStorage.setItem("pending_save_report", JSON.stringify(currentReport));
+                    }
+                  } catch (_) {}
+                  navigate("/auth?mode=login");
+                }}
               >
-                Continue without saving
+                Sign In to Existing Account
               </button>
             </div>
           </div>
