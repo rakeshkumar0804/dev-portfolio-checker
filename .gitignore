@@ -1,21 +1,4 @@
-# Dependencies
 node_modules/
-
-# Environment files
-.env
-backend/.env
-frontend/.env
-
-# Build folders
 dist/
-build/
-
-# Uploads
-backend/uploads/
-
-# Logs
-*.log
-
-# OS files
-.DS_Store
-Thumbs.db
+.env
+.env.local

@@ -1,0 +1,4729 @@
+[
+  {
+    "shareId": "WcxDSj2kBR",
+    "userId": "zefcZQ1UB-8AoL",
+    "githubUsername": "rakeshkumar0804",
+    "portfolioUrl": "https://developer-portfolio-nu-rouge.vercel.app/",
+    "targetRole": "fullstack",
+    "analysisMode": "full_360",
+    "scores": {
+      "github": 86,
+      "documentation": 71,
+      "projectQuality": 78,
+      "portfolio": 88,
+      "hiringReadiness": 81,
+      "overall": 83
+    },
+    "scoreBreakdowns": {
+      "github": [
+        {
+          "score": 38,
+          "max": 40,
+          "label": "Commit Cadence & Consistency",
+          "evidence": "Earned +23 pts for 60 commits in last 90 days (3-day active streak)"
+        },
+        {
+          "score": 13,
+          "max": 25,
+          "label": "Community Stars & Followers",
+          "evidence": "Earned +3 pts for 2 stars across repos and 1 followers"
+        },
+        {
+          "score": 35,
+          "max": 35,
+          "label": "Profile Completeness & Overview README",
+          "evidence": "Earned +20 pts for completing 5/5 profile fields and Profile README"
+        }
+      ],
+      "documentation": [
+        {
+          "score": 23,
+          "max": 35,
+          "label": "Repository Descriptions Coverage",
+          "evidence": "Earned +13 pts: 3/6 repos have descriptions (50%)"
+        },
+        {
+          "score": 23,
+          "max": 30,
+          "label": "Topic Tags & Categorization",
+          "evidence": "Earned +13 pts: 4/6 repos tagged with topics (67%)"
+        },
+        {
+          "score": 25,
+          "max": 35,
+          "label": "Repository README Content Depth",
+          "evidence": "Earned +10 pts based on project README depth (52/100 quality rating)"
+        }
+      ],
+      "projectQuality": [
+        {
+          "score": 30,
+          "max": 40,
+          "label": "Live Demo Deployments",
+          "evidence": "Earned +20 pts: 4/6 top projects have live demo links"
+        },
+        {
+          "score": 6,
+          "max": 15,
+          "label": "Tech Diversity",
+          "evidence": "2 different languages across top repositories"
+        }
+      ],
+      "portfolio": [
+        {
+          "score": 10,
+          "max": 10,
+          "label": "HTTPS Secure",
+          "evidence": "✅ HTTPS Secure — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Mobile Responsive",
+          "evidence": "✅ Mobile Responsive — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Meta Description",
+          "evidence": "✅ Meta Description — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Contact Email",
+          "evidence": "✅ Contact Email — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Resume Link",
+          "evidence": "✅ Resume Link — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Projects Section",
+          "evidence": "✅ Projects Section — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "H1 Heading",
+          "evidence": "✅ H1 Heading — passing"
+        },
+        {
+          "score": 0,
+          "max": 5,
+          "label": "Open Graph Tags",
+          "evidence": "❌ Open Graph Tags — needs fix"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "GitHub Link",
+          "evidence": "✅ GitHub Link — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "LinkedIn Link",
+          "evidence": "✅ LinkedIn Link — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "Contact Section",
+          "evidence": "✅ Contact Section — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "Page Title",
+          "evidence": "✅ Page Title — passing"
+        },
+        {
+          "score": 4,
+          "max": 4,
+          "label": "Image Alt Tags",
+          "evidence": "✅ Image Alt Tags — passing"
+        },
+        {
+          "score": 0,
+          "max": 3,
+          "label": "Social Share Image",
+          "evidence": "❌ Social Share Image — needs fix"
+        },
+        {
+          "score": 3,
+          "max": 3,
+          "label": "Accessible",
+          "evidence": "✅ Accessible — passing"
+        },
+        {
+          "score": 0,
+          "max": 3,
+          "label": "Twitter/X Link",
+          "evidence": "❌ Twitter/X Link — needs fix"
+        },
+        {
+          "score": 2,
+          "max": 2,
+          "label": "Fast Loading",
+          "evidence": "✅ Fast Loading — passing"
+        }
+      ]
+    },
+    "improvements": [
+      {
+        "action": "Add concise descriptions to all public repositories",
+        "why": "Recruiters skip repositories without clear one-line explanations.",
+        "how": "Edit the header settings of your repositories on GitHub to add a 10-word summary.",
+        "points": 10,
+        "difficulty": "Easy",
+        "timeMinutes": 10,
+        "priority": 1,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "leaveflow-hr",
+          "Developer-Portfolio",
+          "dev-portfolio-checker"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Add detailed descriptions and topics to your top repositories",
+        "why": "Incomplete repos signal you don't care about presentation — which makes recruiters wonder about your code quality too.",
+        "how": "For each repo: add a 1-2 sentence description, add 3–5 relevant topics (react, nodejs, portfolio, etc.), and add a homepage link if deployed.",
+        "points": 8,
+        "difficulty": "Easy",
+        "timeMinutes": 20,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "leaveflow-hr",
+          "Developer-Portfolio",
+          "dev-portfolio-checker"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: Open Graph Tags",
+        "why": "SEO issue — this reduces your professional credibility.",
+        "how": "Add og:title, og:description, og:image meta tags for social sharing.",
+        "points": 5,
+        "difficulty": "Easy",
+        "timeMinutes": 5,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      }
+    ],
+    "githubData": {
+      "profile": {
+        "username": "rakeshkumar0804",
+        "name": "Rakesh Kumar",
+        "bio": "Full-Stack Developer | MERN Stack\r\nJavaScript • React • Node.js • SQL\r\nBuilding scalable web applications",
+        "avatar": "https://avatars.githubusercontent.com/u/200815585?v=4",
+        "location": "Gurugram, Haryana, India",
+        "website": "https://developer-portfolio-nu-rouge.vercel.app/",
+        "company": "",
+        "email": "",
+        "githubUrl": "https://github.com/rakeshkumar0804",
+        "followers": 1,
+        "following": 0,
+        "publicRepos": 6,
+        "publicGists": 0,
+        "accountCreated": "2025-02-25T16:27:26Z",
+        "accountAgeYears": 1.4,
+        "isHireable": true,
+        "twitterUsername": ""
+      },
+      "stats": {
+        "totalStars": 2,
+        "totalForks": 0,
+        "totalRepos": 6,
+        "ownedRepos": 6,
+        "forkedRepos": 0,
+        "reposWithDescription": 3,
+        "reposWithTopics": 4,
+        "reposWithLicense": 1,
+        "reposWithHomepage": 4,
+        "reposWithGoodReadme": 3,
+        "avgReadmeScore": 52,
+        "commitCount90Days": 60,
+        "commitCount30Days": 51,
+        "totalContributionsYear": 61,
+        "currentStreak": 3,
+        "weeklyActivity": [
+          {
+            "week": "2026-05-17",
+            "count": 0
+          },
+          {
+            "week": "2026-05-24",
+            "count": 0
+          },
+          {
+            "week": "2026-05-31",
+            "count": 0
+          },
+          {
+            "week": "2026-06-07",
+            "count": 0
+          },
+          {
+            "week": "2026-06-14",
+            "count": 0
+          },
+          {
+            "week": "2026-06-21",
+            "count": 0
+          },
+          {
+            "week": "2026-06-28",
+            "count": 0
+          },
+          {
+            "week": "2026-07-05",
+            "count": 0
+          },
+          {
+            "week": "2026-07-12",
+            "count": 0
+          },
+          {
+            "week": "2026-07-19",
+            "count": 2
+          },
+          {
+            "week": "2026-07-26",
+            "count": 26
+          },
+          {
+            "week": "2026-08-02",
+            "count": 3
+          }
+        ]
+      },
+      "languageDistribution": [
+        {
+          "language": "JavaScript",
+          "count": 4,
+          "percentage": 100
+        }
+      ],
+      "topRepos": [
+        {
+          "name": "leaveflow-hr",
+          "description": "Full-Stack Employee Leave Management System built with Node.js, SQLite, REST APIs and Role-Based Authentication.Live Demo: https://leaveflow-hr-hvfh.onrender.com",
+          "stars": 1,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "expressjs",
+            "fullstack",
+            "hrms",
+            "javascript",
+            "leave-management-system",
+            "mern",
+            "nodejs",
+            "rbac",
+            "rest-api",
+            "sqlite"
+          ],
+          "url": "https://github.com/rakeshkumar0804/leaveflow-hr",
+          "lastPushed": "2026-08-01T07:03:54Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 100
+        },
+        {
+          "name": "Developer-Portfolio",
+          "description": "Modern Full-Stack Developer Portfolio built with React and Vite, showcasing projects, technical skills, certifications, and experience with a responsive, recruiter-friendly design.",
+          "stars": 1,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "frontened",
+            "javascript",
+            "mern",
+            "portfolio",
+            "react",
+            "responsive-design",
+            "software-engineer",
+            "vite",
+            "web-development"
+          ],
+          "url": "https://github.com/rakeshkumar0804/Developer-Portfolio",
+          "lastPushed": "2026-07-29T13:01:18Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 90
+        },
+        {
+          "name": "dev-portfolio-checker",
+          "description": "AI-powered career intelligence platform that analyzes GitHub profiles, portfolio websites, and resumes to evaluate hiring readiness with actionable insights, recruiter simulation, ATS analysis, and personalized improvement recommendations.",
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "ai",
+            "ats",
+            "career-development",
+            "developer-tools",
+            "express",
+            "full-stack",
+            "github-api",
+            "mongodb",
+            "nodejs",
+            "portfolio",
+            "react",
+            "resume",
+            "vite"
+          ],
+          "url": "https://github.com/rakeshkumar0804/dev-portfolio-checker",
+          "lastPushed": "2026-08-02T10:08:22Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 80
+        },
+        {
+          "name": "rakeshkumar0804",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "Unknown",
+          "topics": [],
+          "url": "https://github.com/rakeshkumar0804/rakeshkumar0804",
+          "lastPushed": "2026-07-31T10:18:27Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": false,
+          "hasReadme": false,
+          "readmeScore": 0
+        },
+        {
+          "name": "taskflow",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "expressjs",
+            "full-stack",
+            "javascript",
+            "jwt",
+            "mern",
+            "mongodb",
+            "nodejs",
+            "rbac",
+            "react",
+            "task-management"
+          ],
+          "url": "https://github.com/rakeshkumar0804/taskflow",
+          "lastPushed": "2026-07-26T18:51:07Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": true,
+          "hasReadme": false,
+          "readmeScore": 40
+        },
+        {
+          "name": "RPS-project",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "Unknown",
+          "topics": [],
+          "url": "https://github.com/rakeshkumar0804/RPS-project",
+          "lastPushed": "2026-04-05T07:29:32Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": false,
+          "hasReadme": false,
+          "readmeScore": 0
+        }
+      ],
+      "skills": [
+        "JavaScript",
+        "ai",
+        "ats",
+        "career-development",
+        "developer-tools",
+        "express",
+        "full-stack",
+        "github-api",
+        "mongodb",
+        "nodejs",
+        "portfolio",
+        "react",
+        "resume",
+        "vite",
+        "Node.js",
+        "Express",
+        "React",
+        "MongoDB",
+        "expressjs",
+        "fullstack",
+        "hrms",
+        "javascript",
+        "leave-management-system",
+        "mern",
+        "rbac",
+        "rest-api",
+        "sqlite",
+        "Java",
+        "SQL",
+        "REST API",
+        "jwt",
+        "task-management",
+        "frontened",
+        "responsive-design",
+        "software-engineer",
+        "web-development"
+      ],
+      "hasProfileReadme": true
+    },
+    "portfolioData": {
+      "url": "https://developer-portfolio-nu-rouge.vercel.app/",
+      "accessible": true,
+      "isHttps": true,
+      "statusCode": 200,
+      "responseTimeMs": 309,
+      "seo": {
+        "title": "Rakesh Kumar | Software Engineer",
+        "titleLength": 32,
+        "metaDescription": "Rakesh Kumar - Software Engineer and MERN Stack Developer",
+        "metaDescriptionLength": 57,
+        "ogTitle": "",
+        "ogDescription": "",
+        "ogImage": "",
+        "h1Tags": [
+          "Hi, I'mRakesh KumarFull-StackDeveloper."
+        ],
+        "h1Count": 1
+      },
+      "content": {
+        "hasProjectSection": true,
+        "hasContactSection": true,
+        "hasResumeLink": true,
+        "emailsFound": [
+          "rakeshchauhan6651@gmail.com"
+        ]
+      },
+      "accessibility": {
+        "hasGoodAltTags": true,
+        "imgsTotal": 0,
+        "imgsWithAlt": 0
+      },
+      "social": {
+        "hasGithubLink": true,
+        "hasLinkedinLink": true,
+        "hasTwitterLink": false
+      },
+      "checklist": {
+        "isHttps": {
+          "pass": true,
+          "label": "HTTPS Secure",
+          "importance": "critical",
+          "hint": "Deploy your site to HTTPS. Netlify and Vercel provide this automatically."
+        },
+        "isAccessible": {
+          "pass": true,
+          "label": "Site Accessible",
+          "importance": "critical",
+          "hint": "Make sure your site is publicly accessible."
+        },
+        "hasTitle": {
+          "pass": true,
+          "label": "Page Title",
+          "importance": "high",
+          "hint": "Add a <title> tag to your HTML head."
+        },
+        "hasTitleOptimal": {
+          "pass": true,
+          "label": "Title Length (20–70)",
+          "importance": "medium",
+          "hint": "Make your title 20–70 characters for best SEO."
+        },
+        "hasMetaDescription": {
+          "pass": true,
+          "label": "Meta Description",
+          "importance": "high",
+          "hint": "Add <meta name=\"description\" content=\"...\"> to your HTML head."
+        },
+        "hasMetaDescriptionOptimal": {
+          "pass": true,
+          "label": "Description Length (50–160)",
+          "importance": "medium",
+          "hint": "Keep your meta description 50–160 characters."
+        },
+        "hasH1": {
+          "pass": true,
+          "label": "H1 Heading",
+          "importance": "high",
+          "hint": "Add exactly one <h1> tag on your page for SEO."
+        },
+        "hasSingleH1": {
+          "pass": true,
+          "label": "Single H1",
+          "importance": "medium",
+          "hint": "Use exactly one <h1> per page — multiple H1s confuse search engines."
+        },
+        "hasOgTags": {
+          "pass": false,
+          "label": "Open Graph Tags",
+          "importance": "medium",
+          "hint": "Add og:title, og:description, og:image meta tags for social sharing."
+        },
+        "hasOgImage": {
+          "pass": false,
+          "label": "OG Social Image",
+          "importance": "low",
+          "hint": "Add <meta property=\"og:image\" content=\"...\"> for beautiful social previews."
+        },
+        "hasViewport": {
+          "pass": true,
+          "label": "Mobile Viewport",
+          "importance": "critical",
+          "hint": "Add <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> to your HTML head."
+        },
+        "hasEmail": {
+          "pass": true,
+          "label": "Email Address",
+          "importance": "high",
+          "hint": "Add your email address visibly on your site so recruiters can contact you."
+        },
+        "hasContactSection": {
+          "pass": true,
+          "label": "Contact Section",
+          "importance": "high",
+          "hint": "Add a dedicated contact section or page."
+        },
+        "hasGithubLink": {
+          "pass": true,
+          "label": "GitHub Link",
+          "importance": "high",
+          "hint": "Add a link to your GitHub profile in your navigation or footer."
+        },
+        "hasLinkedinLink": {
+          "pass": true,
+          "label": "LinkedIn Link",
+          "importance": "medium",
+          "hint": "Add your LinkedIn profile link — many recruiters go straight there."
+        },
+        "hasTwitterLink": {
+          "pass": false,
+          "label": "Twitter/X Link",
+          "importance": "low",
+          "hint": "Add your Twitter/X link if active in the developer community."
+        },
+        "hasResumeLink": {
+          "pass": true,
+          "label": "Resume/CV Link",
+          "importance": "critical",
+          "hint": "Add a downloadable PDF resume link. This is the #1 thing recruiters look for."
+        },
+        "hasProjectSection": {
+          "pass": true,
+          "label": "Projects Section",
+          "importance": "critical",
+          "hint": "Add a section showcasing your best 3–5 projects with descriptions and links."
+        },
+        "hasGoodAltTags": {
+          "pass": true,
+          "label": "Image Alt Texts",
+          "importance": "medium",
+          "hint": "Add alt attributes to all your <img> tags for accessibility and SEO."
+        },
+        "hasReasonableSize": {
+          "pass": true,
+          "label": "Page Size OK",
+          "importance": "low",
+          "hint": "Your page HTML is large. Optimize images and minimize unused code."
+        }
+      }
+    },
+    "aiFeedback": {
+      "overallSummary": "Analysis completed for FULLSTACK role. Resume scored 77/100 with extracted skills (React, Node.js, Express, MongoDB, JavaScript). @rakeshkumar0804 has 6 repos. Focus on strengthening quantifiable achievements to maximize interview call rates.",
+      "strengths": [
+        "Strong Resume ATS score of 77/100",
+        "Resume uses active verbs in work experience",
+        "Resume demonstrates skills in: React, Node.js, Express, MongoDB, JavaScript",
+        "Active GitHub activity: 60 commits in 90 days",
+        "Live portfolio website available"
+      ],
+      "weaknesses": [
+        "Resume lacks quantitative achievements (e.g. 'improved performance by 30%')",
+        "Missing keywords for FULLSTACK: typescript"
+      ],
+      "scoreExplanations": {
+        "github": "GitHub score of 86/100 reflects commits and public repos.",
+        "projectQuality": "Project quality at 78/100 based on repository completeness.",
+        "documentation": "Documentation score of 71/100.",
+        "portfolio": "Portfolio at 88/100."
+      },
+      "recruiterFirstImpression": {
+        "verdict": "Promising Developer",
+        "thought": "A recruiter evaluating this FULLSTACK application sees a resume with ATS score 77/100. The candidate looks worth interviewing.",
+        "positives": [
+          "Strong Resume ATS score of 77/100",
+          "Resume uses active verbs in work experience",
+          "Resume demonstrates skills in: React, Node.js, Express, MongoDB, JavaScript"
+        ],
+        "negatives": [
+          "Resume lacks quantitative achievements (e.g. 'improved performance by 30%')",
+          "Missing keywords for FULLSTACK: typescript"
+        ]
+      },
+      "careerRoadmap": {
+        "currentLevel": "Mid-Level FULLSTACK Candidate",
+        "targetLevel": "Mid/Senior FULLSTACK Developer",
+        "estimatedWeeks": 4,
+        "milestones": [
+          {
+            "week": "Week 1–2",
+            "task": "Add quantifiable metrics to resume and top project READMEs",
+            "impact": "Directly improves ATS score and recruiter callback rate"
+          },
+          {
+            "week": "Week 3–4",
+            "task": "Build a production demo project aligned with FULLSTACK",
+            "impact": "Provides strong technical proof to interviewers"
+          }
+        ]
+      },
+      "hiringRecommendation": "hire",
+      "topPriority": "Add concise descriptions to all public repositories"
+    },
+    "resumeAnalysis": {
+      "rawText": "Rakesh Kumar\nrakeshchauhan6651@gmail.com   |   +91-9306573459   |   Gurugram, India (Open to Relocate)\nGitHub     LinkedIn     Portfolio\nPROFESSIONAL SUMMARY\nFull-Stack Web Developer specializing in React, Node.js, Express, and MongoDB. Experienced in building JWT-authenticated\nRESTful services and role-based access control systems, with multiple full-stack web applications deployed and live. Strong DSA\nfoundation with 165+ problems solved on LeetCode.\nEXPERIENCE\nSoftware Development Intern – Codetech IT Solutions\nJan 2026 – Apr 2026\n• Engineered an Internal Employee Management System (Node.js, Express.js, MongoDB) supporting 3 user roles, replacing\nmanual spreadsheet tracking.\n• Implemented JWT-based authentication with RBAC across 3 permission tiers (employee, manager, admin), securing\nrole-restricted API access.\n• Designed validated RESTful API endpoints enabling full CRUD operations across employee, department, and role modules.\nTECHNICAL SKILLS\nFrontend: React.js (Hooks, Component Architecture), React Router, Axios, HTML5, CSS3, Bootstrap, Responsive UI\nBackend: Node.js, Express.js, REST API Design, JWT Authentication, RBAC, bcrypt\nDatabase: MongoDB, Mongoose (Schema Design & Validation), MySQL\nLanguages: JavaScript (ES6+), Python, C++, SQL\nTools & Platforms: Git, GitHub, Postman, VS Code, Vercel, Render, npm\nCore CS: Data Structures & Algorithms, DBMS, OOP, Operating Systems, Computer Networks\nPROJECTS\nTask Management System (TaskFlow)\n2025\nReact, Node.js, Express.js, MongoDB, JWT\n• Architected a full-stack task platform with component-based React architecture, using Hooks for state management, React\nRouter for navigation, and Axios for API calls.\n• Implemented JWT-based authentication with RBAC, enabling admins to assign tasks across the team while restricting\nstandard users to their own view.\n• Built a real-time analytics dashboard displaying 4 live task-status metrics (total, in progress, completed, to-do) and a 4-tier\npriority breakdown (critical, high, medium, low).\n• Deployed a fully responsive production build on Vercel.\nLive Demo  |  GitHub\nEmployee Leave Management System (LeaveFlow)\n2024\nNode.js, Express.js, MongoDB, JWT, HTML/CSS/JS\n• Developed a leave platform with three role-based dashboards (employee, manager, admin), each with scoped permissions\nvia JWT/RBAC.\n• Automated the leave approval pipeline with real-time status updates across 3 user tiers, eliminating manual tracking.\n• Designed RESTful APIs and validated MongoDB schemas with structured request validation and error handling; deployed on\nRender.\nLive Demo  |  GitHub\nDeveloper Portfolio Health Checker\n2026\nMERN Stack, GitHub API\n• Architected a MERN-stack platform integrating the GitHub API to analyze developer repositories and portfolio sites,\ncomputing hiring-readiness scores across activity, code quality, and profile-completeness dimensions.\n• Designed the scoring dashboard and REST API layer, and built an AI-powered feedback engine with recruiter-simulation\nlogic to help developers identify and close skill gaps.\nEDUCATION\nParul University – Vadodara, Gujarat, India\n2022 – 2026\nB.Tech in Computer Science Engineering\nCERTIFICATIONS & ACHIEVEMENTS\nSQL (Advanced) – HackerRank  |  C++ Programming – OpenEDG/Cisco  |  Cybersecurity Fundamentals – Udemy  |  Python\nProgramming – Udemy  |  Full-Stack Web Crash Course (CSS, Bootstrap, JS, PHP) – Udemy\nLeetCode: Solved 165+ DSA problems over 100+ active days",
+      "atsScore": 77,
+      "atsBreakdown": {
+        "formatting": 100,
+        "keywords": 91,
+        "actionVerbs": 100,
+        "impactMetrics": 30,
+        "length": 90
+      },
+      "strengths": [
+        "Strong use of action verbs (built, developed, designed, implemented)",
+        "Matches target role skills (react, node, javascript, express, mongodb)",
+        "Well-structured section headers (Experience, Projects, Skills)"
+      ],
+      "issues": [
+        "Missing quantifiable impact metrics (e.g., 'Reduced load time by 35%', 'Served 10k users')",
+        "Missing target role keywords: typescript"
+      ],
+      "missingKeywords": [
+        "typescript"
+      ],
+      "hasActionVerbs": true,
+      "hasMetrics": false,
+      "skillsExtracted": [
+        "React",
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "JavaScript",
+        "Python",
+        "Java",
+        "C++",
+        "HTML",
+        "CSS",
+        "SQL",
+        "Git",
+        "REST API"
+      ],
+      "githubConsistency": {
+        "score": 70,
+        "matching": [],
+        "onlyResume": [
+          "React",
+          "Node.js",
+          "Express",
+          "MongoDB",
+          "JavaScript",
+          "Python",
+          "Java",
+          "C++",
+          "HTML",
+          "CSS",
+          "SQL",
+          "Git",
+          "REST API"
+        ],
+        "onlyGithub": []
+      },
+      "improvements": [
+        {
+          "action": "Missing quantifiable impact metrics (e.g., 'Reduced load time by 35%', 'Served 10k users')",
+          "impact": "Boosts ATS keyword ranking and recruiter interview rate",
+          "priority": 1
+        },
+        {
+          "action": "Missing target role keywords: typescript",
+          "impact": "Boosts ATS keyword ranking and recruiter interview rate",
+          "priority": 2
+        }
+      ],
+      "overallVerdict": "Resume scored 77/100 for FULLSTACK role. Extracted skills: React, Node.js, Express, MongoDB, JavaScript. Add quantified impact metrics to increase interview calls."
+    },
+    "skillsDetected": [
+      "JavaScript",
+      "ai",
+      "ats",
+      "career-development",
+      "developer-tools",
+      "express",
+      "full-stack",
+      "github-api",
+      "mongodb",
+      "nodejs",
+      "portfolio",
+      "react",
+      "resume",
+      "vite",
+      "Node.js",
+      "Express",
+      "React",
+      "MongoDB",
+      "expressjs",
+      "fullstack",
+      "hrms",
+      "javascript",
+      "leave-management-system",
+      "mern",
+      "rbac",
+      "rest-api",
+      "sqlite",
+      "Java",
+      "SQL",
+      "REST API",
+      "jwt",
+      "task-management",
+      "frontened",
+      "responsive-design",
+      "software-engineer",
+      "web-development",
+      "React",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "JavaScript",
+      "Python",
+      "Java",
+      "C++",
+      "HTML",
+      "CSS",
+      "SQL",
+      "Git",
+      "REST API"
+    ],
+    "recruiterDecision": {
+      "decision": "YES",
+      "decisionLabel": "🌟 Shortlist: YES — High Priority Candidate",
+      "grade": "A",
+      "seniorityLevel": "Senior Candidate Level",
+      "toneCategory": "senior",
+      "confidenceScore": 92,
+      "confidenceLevel": "High Confidence",
+      "confidenceRationale": "Verified strictly against public GitHub API commits, repository metadata, and uploaded resume text parsing.",
+      "hiringRecommendation": "Fast-Track to Technical Interview & Team Matching",
+      "salaryBandEstimate": "$130,000 – $160,000 USD (Senior Developer Benchmark)",
+      "recruiterThought": "Strong candidate for FULLSTACK roles. Public GitHub commit velocity, repository structure, and technical documentation demonstrate high readiness for senior engineering environments.",
+      "interviewQuestions": [
+        "1. \"I noticed your public GitHub repos focus on fullstack projects. How do you approach state management and system architecture when scaling a production app?\"",
+        "2. \"Your profile shows 6 active project repositories. Can you walk me through the hardest technical bug you debugged in your main repository?\"",
+        "3. \"You have a live portfolio at https://developer-portfolio-nu-rouge.vercel.app/. How did you handle web performance, responsiveness, and deployment CI/CD for this site?\""
+      ],
+      "greenFlags": [
+        {
+          "title": "Active GitHub Contributor",
+          "evidence": "60 commits verified in last 90 days"
+        },
+        {
+          "title": "Profile README Active",
+          "evidence": "Dedicated GitHub Profile README file verified"
+        },
+        {
+          "title": "Public Repositories Published",
+          "evidence": "6 original code repositories on GitHub"
+        },
+        {
+          "title": "Live Portfolio Website",
+          "evidence": "Active at https://developer-portfolio-nu-rouge.vercel.app/"
+        }
+      ],
+      "redFlags": [
+        {
+          "title": "Add Quantified Impact Metrics",
+          "risk": "Include specific metrics (e.g., 'Improved load speed by 25%') to strengthen bullet points."
+        }
+      ],
+      "dataFreshness": "Live GitHub & Resume Audit"
+    },
+    "consistencyMatrix": {
+      "consistencyScore": 77,
+      "verifiedInBoth": [
+        "React",
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "JavaScript",
+        "Java",
+        "C++",
+        "SQL",
+        "Git",
+        "REST API"
+      ],
+      "resumeOnly": [
+        "Python",
+        "HTML",
+        "CSS"
+      ],
+      "githubOnly": [
+        "ats",
+        "developer-tools",
+        "resume",
+        "vite",
+        "hrms",
+        "leave-management-system",
+        "task-management",
+        "frontened"
+      ],
+      "actionAuditList": [
+        {
+          "skill": "Python",
+          "status": "Resume Only (Unverified)",
+          "evidenceFound": "Claimed in resume text",
+          "evidenceMissing": "No matching public GitHub code found",
+          "actionableFix": "Build a small public demo project using Python",
+          "impact": "Medium"
+        },
+        {
+          "skill": "HTML",
+          "status": "Resume Only (Unverified)",
+          "evidenceFound": "Claimed in resume text",
+          "evidenceMissing": "No matching public GitHub code found",
+          "actionableFix": "Build a small public demo project using HTML",
+          "impact": "Medium"
+        },
+        {
+          "skill": "CSS",
+          "status": "Resume Only (Unverified)",
+          "evidenceFound": "Claimed in resume text",
+          "evidenceMissing": "No matching public GitHub code found",
+          "actionableFix": "Build a small public demo project using CSS",
+          "impact": "Medium"
+        },
+        {
+          "skill": "ats",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add ats to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "developer-tools",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add developer-tools to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "resume",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add resume to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "vite",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add vite to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "hrms",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add hrms to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "leave-management-system",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add leave-management-system to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "task-management",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add task-management to your resume skills section",
+          "impact": "High"
+        }
+      ],
+      "warnings": [
+        "Resume claims 3 skills (Python, HTML, CSS) that have no public GitHub code proof.",
+        "You have active GitHub code in ats, developer-tools, resume, but these are missing from your resume!"
+      ]
+    },
+    "createdAt": 1785682636116
+  },
+  {
+    "shareId": "T1zYiD-BSs",
+    "userId": "zefcZQ1UB-8AoL",
+    "githubUsername": "rakeshkumar0804",
+    "portfolioUrl": "https://developer-portfolio-nu-rouge.vercel.app/",
+    "targetRole": "fullstack",
+    "analysisMode": "full_360",
+    "scores": {
+      "github": 86,
+      "documentation": 72,
+      "projectQuality": 78,
+      "portfolio": 88,
+      "hiringReadiness": 81,
+      "overall": 83
+    },
+    "scoreBreakdowns": {
+      "github": [
+        {
+          "score": 38,
+          "max": 40,
+          "label": "Commit Cadence & Consistency",
+          "evidence": "Earned +23 pts for 60 commits in last 90 days (3-day active streak)"
+        },
+        {
+          "score": 13,
+          "max": 25,
+          "label": "Community Stars & Followers",
+          "evidence": "Earned +3 pts for 2 stars across repos and 1 followers"
+        },
+        {
+          "score": 35,
+          "max": 35,
+          "label": "Profile Completeness & Overview README",
+          "evidence": "Earned +20 pts for completing 5/5 profile fields and Profile README"
+        }
+      ],
+      "documentation": [
+        {
+          "score": 23,
+          "max": 35,
+          "label": "Repository Descriptions Coverage",
+          "evidence": "Earned +13 pts: 3/6 repos have descriptions (50%)"
+        },
+        {
+          "score": 23,
+          "max": 30,
+          "label": "Topic Tags & Categorization",
+          "evidence": "Earned +13 pts: 4/6 repos tagged with topics (67%)"
+        },
+        {
+          "score": 26,
+          "max": 35,
+          "label": "Repository README Content Depth",
+          "evidence": "Earned +11 pts based on project README depth (53/100 quality rating)"
+        }
+      ],
+      "projectQuality": [
+        {
+          "score": 30,
+          "max": 40,
+          "label": "Live Demo Deployments",
+          "evidence": "Earned +20 pts: 4/6 top projects have live demo links"
+        },
+        {
+          "score": 6,
+          "max": 15,
+          "label": "Tech Diversity",
+          "evidence": "2 different languages across top repositories"
+        }
+      ],
+      "portfolio": [
+        {
+          "score": 10,
+          "max": 10,
+          "label": "HTTPS Secure",
+          "evidence": "✅ HTTPS Secure — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Mobile Responsive",
+          "evidence": "✅ Mobile Responsive — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Meta Description",
+          "evidence": "✅ Meta Description — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Contact Email",
+          "evidence": "✅ Contact Email — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Resume Link",
+          "evidence": "✅ Resume Link — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Projects Section",
+          "evidence": "✅ Projects Section — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "H1 Heading",
+          "evidence": "✅ H1 Heading — passing"
+        },
+        {
+          "score": 0,
+          "max": 5,
+          "label": "Open Graph Tags",
+          "evidence": "❌ Open Graph Tags — needs fix"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "GitHub Link",
+          "evidence": "✅ GitHub Link — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "LinkedIn Link",
+          "evidence": "✅ LinkedIn Link — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "Contact Section",
+          "evidence": "✅ Contact Section — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "Page Title",
+          "evidence": "✅ Page Title — passing"
+        },
+        {
+          "score": 4,
+          "max": 4,
+          "label": "Image Alt Tags",
+          "evidence": "✅ Image Alt Tags — passing"
+        },
+        {
+          "score": 0,
+          "max": 3,
+          "label": "Social Share Image",
+          "evidence": "❌ Social Share Image — needs fix"
+        },
+        {
+          "score": 3,
+          "max": 3,
+          "label": "Accessible",
+          "evidence": "✅ Accessible — passing"
+        },
+        {
+          "score": 0,
+          "max": 3,
+          "label": "Twitter/X Link",
+          "evidence": "❌ Twitter/X Link — needs fix"
+        },
+        {
+          "score": 2,
+          "max": 2,
+          "label": "Fast Loading",
+          "evidence": "✅ Fast Loading — passing"
+        }
+      ]
+    },
+    "improvements": [
+      {
+        "action": "Add concise descriptions to all public repositories",
+        "why": "Recruiters skip repositories without clear one-line explanations.",
+        "how": "Edit the header settings of your repositories on GitHub to add a 10-word summary.",
+        "points": 10,
+        "difficulty": "Easy",
+        "timeMinutes": 10,
+        "priority": 1,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Developer-Portfolio",
+          "leaveflow-hr",
+          "dev-portfolio-checker"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Add detailed descriptions and topics to your top repositories",
+        "why": "Incomplete repos signal you don't care about presentation — which makes recruiters wonder about your code quality too.",
+        "how": "For each repo: add a 1-2 sentence description, add 3–5 relevant topics (react, nodejs, portfolio, etc.), and add a homepage link if deployed.",
+        "points": 8,
+        "difficulty": "Easy",
+        "timeMinutes": 20,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Developer-Portfolio",
+          "leaveflow-hr",
+          "dev-portfolio-checker"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: Open Graph Tags",
+        "why": "SEO issue — this reduces your professional credibility.",
+        "how": "Add og:title, og:description, og:image meta tags for social sharing.",
+        "points": 5,
+        "difficulty": "Easy",
+        "timeMinutes": 5,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      }
+    ],
+    "githubData": {
+      "profile": {
+        "username": "rakeshkumar0804",
+        "name": "Rakesh Kumar",
+        "bio": "Full-Stack Developer | MERN Stack\r\nJavaScript • React • Node.js • SQL\r\nBuilding scalable web applications",
+        "avatar": "https://avatars.githubusercontent.com/u/200815585?v=4",
+        "location": "Gurugram, Haryana, India",
+        "website": "https://developer-portfolio-nu-rouge.vercel.app/",
+        "company": "",
+        "email": "",
+        "githubUrl": "https://github.com/rakeshkumar0804",
+        "followers": 1,
+        "following": 0,
+        "publicRepos": 6,
+        "publicGists": 0,
+        "accountCreated": "2025-02-25T16:27:26Z",
+        "accountAgeYears": 1.4,
+        "isHireable": true,
+        "twitterUsername": ""
+      },
+      "stats": {
+        "totalStars": 2,
+        "totalForks": 0,
+        "totalRepos": 6,
+        "ownedRepos": 6,
+        "forkedRepos": 0,
+        "reposWithDescription": 3,
+        "reposWithTopics": 4,
+        "reposWithLicense": 2,
+        "reposWithHomepage": 4,
+        "reposWithGoodReadme": 3,
+        "avgReadmeScore": 53,
+        "commitCount90Days": 60,
+        "commitCount30Days": 51,
+        "totalContributionsYear": 61,
+        "currentStreak": 3,
+        "weeklyActivity": [
+          {
+            "week": "2026-05-17",
+            "count": 0
+          },
+          {
+            "week": "2026-05-24",
+            "count": 0
+          },
+          {
+            "week": "2026-05-31",
+            "count": 0
+          },
+          {
+            "week": "2026-06-07",
+            "count": 0
+          },
+          {
+            "week": "2026-06-14",
+            "count": 0
+          },
+          {
+            "week": "2026-06-21",
+            "count": 0
+          },
+          {
+            "week": "2026-06-28",
+            "count": 0
+          },
+          {
+            "week": "2026-07-05",
+            "count": 0
+          },
+          {
+            "week": "2026-07-12",
+            "count": 0
+          },
+          {
+            "week": "2026-07-19",
+            "count": 2
+          },
+          {
+            "week": "2026-07-26",
+            "count": 26
+          },
+          {
+            "week": "2026-08-02",
+            "count": 4
+          }
+        ]
+      },
+      "languageDistribution": [
+        {
+          "language": "JavaScript",
+          "count": 4,
+          "percentage": 100
+        }
+      ],
+      "topRepos": [
+        {
+          "name": "Developer-Portfolio",
+          "description": "Modern Full-Stack Developer Portfolio built with React and Vite, showcasing projects, technical skills, certifications, and experience with a responsive, recruiter-friendly design.",
+          "stars": 1,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "frontened",
+            "javascript",
+            "mern",
+            "portfolio",
+            "react",
+            "responsive-design",
+            "software-engineer",
+            "vite",
+            "web-development"
+          ],
+          "url": "https://github.com/rakeshkumar0804/Developer-Portfolio",
+          "lastPushed": "2026-08-02T15:54:02Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 100
+        },
+        {
+          "name": "leaveflow-hr",
+          "description": "Full-Stack Employee Leave Management System built with Node.js, SQLite, REST APIs and Role-Based Authentication.Live Demo: https://leaveflow-hr-hvfh.onrender.com",
+          "stars": 1,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "expressjs",
+            "fullstack",
+            "hrms",
+            "javascript",
+            "leave-management-system",
+            "mern",
+            "nodejs",
+            "rbac",
+            "rest-api",
+            "sqlite"
+          ],
+          "url": "https://github.com/rakeshkumar0804/leaveflow-hr",
+          "lastPushed": "2026-08-01T07:03:54Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 100
+        },
+        {
+          "name": "dev-portfolio-checker",
+          "description": "AI-powered career intelligence platform that analyzes GitHub profiles, portfolio websites, and resumes to evaluate hiring readiness with actionable insights, recruiter simulation, ATS analysis, and personalized improvement recommendations.",
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "ai",
+            "ats",
+            "career-development",
+            "developer-tools",
+            "express",
+            "full-stack",
+            "github-api",
+            "mongodb",
+            "nodejs",
+            "portfolio",
+            "react",
+            "resume",
+            "vite"
+          ],
+          "url": "https://github.com/rakeshkumar0804/dev-portfolio-checker",
+          "lastPushed": "2026-08-02T10:08:22Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 80
+        },
+        {
+          "name": "rakeshkumar0804",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "Unknown",
+          "topics": [],
+          "url": "https://github.com/rakeshkumar0804/rakeshkumar0804",
+          "lastPushed": "2026-07-31T10:18:27Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": false,
+          "hasReadme": false,
+          "readmeScore": 0
+        },
+        {
+          "name": "taskflow",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "expressjs",
+            "full-stack",
+            "javascript",
+            "jwt",
+            "mern",
+            "mongodb",
+            "nodejs",
+            "rbac",
+            "react",
+            "task-management"
+          ],
+          "url": "https://github.com/rakeshkumar0804/taskflow",
+          "lastPushed": "2026-07-26T18:51:07Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": true,
+          "hasReadme": false,
+          "readmeScore": 40
+        },
+        {
+          "name": "RPS-project",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "Unknown",
+          "topics": [],
+          "url": "https://github.com/rakeshkumar0804/RPS-project",
+          "lastPushed": "2026-04-05T07:29:32Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": false,
+          "hasReadme": false,
+          "readmeScore": 0
+        }
+      ],
+      "skills": [
+        "JavaScript",
+        "frontened",
+        "javascript",
+        "mern",
+        "portfolio",
+        "react",
+        "responsive-design",
+        "software-engineer",
+        "vite",
+        "web-development",
+        "Node.js",
+        "Express",
+        "React",
+        "Java",
+        "ai",
+        "ats",
+        "career-development",
+        "developer-tools",
+        "express",
+        "full-stack",
+        "github-api",
+        "mongodb",
+        "nodejs",
+        "resume",
+        "MongoDB",
+        "expressjs",
+        "fullstack",
+        "hrms",
+        "leave-management-system",
+        "rbac",
+        "rest-api",
+        "sqlite",
+        "SQL",
+        "REST API",
+        "jwt",
+        "task-management"
+      ],
+      "hasProfileReadme": true
+    },
+    "portfolioData": {
+      "url": "https://developer-portfolio-nu-rouge.vercel.app/",
+      "accessible": true,
+      "isHttps": true,
+      "statusCode": 200,
+      "responseTimeMs": 912,
+      "seo": {
+        "title": "Rakesh Kumar | Software Engineer",
+        "titleLength": 32,
+        "metaDescription": "Rakesh Kumar - Software Engineer and MERN Stack Developer",
+        "metaDescriptionLength": 57,
+        "ogTitle": "",
+        "ogDescription": "",
+        "ogImage": "",
+        "h1Tags": [
+          "Hi, I'mRakesh KumarFull-StackDeveloper."
+        ],
+        "h1Count": 1
+      },
+      "content": {
+        "hasProjectSection": true,
+        "hasContactSection": true,
+        "hasResumeLink": true,
+        "emailsFound": [
+          "rakeshchauhan6651@gmail.com"
+        ]
+      },
+      "accessibility": {
+        "hasGoodAltTags": true,
+        "imgsTotal": 0,
+        "imgsWithAlt": 0
+      },
+      "social": {
+        "hasGithubLink": true,
+        "hasLinkedinLink": true,
+        "hasTwitterLink": false
+      },
+      "checklist": {
+        "isHttps": {
+          "pass": true,
+          "label": "HTTPS Secure",
+          "importance": "critical",
+          "hint": "Deploy your site to HTTPS. Netlify and Vercel provide this automatically."
+        },
+        "isAccessible": {
+          "pass": true,
+          "label": "Site Accessible",
+          "importance": "critical",
+          "hint": "Make sure your site is publicly accessible."
+        },
+        "hasTitle": {
+          "pass": true,
+          "label": "Page Title",
+          "importance": "high",
+          "hint": "Add a <title> tag to your HTML head."
+        },
+        "hasTitleOptimal": {
+          "pass": true,
+          "label": "Title Length (20–70)",
+          "importance": "medium",
+          "hint": "Make your title 20–70 characters for best SEO."
+        },
+        "hasMetaDescription": {
+          "pass": true,
+          "label": "Meta Description",
+          "importance": "high",
+          "hint": "Add <meta name=\"description\" content=\"...\"> to your HTML head."
+        },
+        "hasMetaDescriptionOptimal": {
+          "pass": true,
+          "label": "Description Length (50–160)",
+          "importance": "medium",
+          "hint": "Keep your meta description 50–160 characters."
+        },
+        "hasH1": {
+          "pass": true,
+          "label": "H1 Heading",
+          "importance": "high",
+          "hint": "Add exactly one <h1> tag on your page for SEO."
+        },
+        "hasSingleH1": {
+          "pass": true,
+          "label": "Single H1",
+          "importance": "medium",
+          "hint": "Use exactly one <h1> per page — multiple H1s confuse search engines."
+        },
+        "hasOgTags": {
+          "pass": false,
+          "label": "Open Graph Tags",
+          "importance": "medium",
+          "hint": "Add og:title, og:description, og:image meta tags for social sharing."
+        },
+        "hasOgImage": {
+          "pass": false,
+          "label": "OG Social Image",
+          "importance": "low",
+          "hint": "Add <meta property=\"og:image\" content=\"...\"> for beautiful social previews."
+        },
+        "hasViewport": {
+          "pass": true,
+          "label": "Mobile Viewport",
+          "importance": "critical",
+          "hint": "Add <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> to your HTML head."
+        },
+        "hasEmail": {
+          "pass": true,
+          "label": "Email Address",
+          "importance": "high",
+          "hint": "Add your email address visibly on your site so recruiters can contact you."
+        },
+        "hasContactSection": {
+          "pass": true,
+          "label": "Contact Section",
+          "importance": "high",
+          "hint": "Add a dedicated contact section or page."
+        },
+        "hasGithubLink": {
+          "pass": true,
+          "label": "GitHub Link",
+          "importance": "high",
+          "hint": "Add a link to your GitHub profile in your navigation or footer."
+        },
+        "hasLinkedinLink": {
+          "pass": true,
+          "label": "LinkedIn Link",
+          "importance": "medium",
+          "hint": "Add your LinkedIn profile link — many recruiters go straight there."
+        },
+        "hasTwitterLink": {
+          "pass": false,
+          "label": "Twitter/X Link",
+          "importance": "low",
+          "hint": "Add your Twitter/X link if active in the developer community."
+        },
+        "hasResumeLink": {
+          "pass": true,
+          "label": "Resume/CV Link",
+          "importance": "critical",
+          "hint": "Add a downloadable PDF resume link. This is the #1 thing recruiters look for."
+        },
+        "hasProjectSection": {
+          "pass": true,
+          "label": "Projects Section",
+          "importance": "critical",
+          "hint": "Add a section showcasing your best 3–5 projects with descriptions and links."
+        },
+        "hasGoodAltTags": {
+          "pass": true,
+          "label": "Image Alt Texts",
+          "importance": "medium",
+          "hint": "Add alt attributes to all your <img> tags for accessibility and SEO."
+        },
+        "hasReasonableSize": {
+          "pass": true,
+          "label": "Page Size OK",
+          "importance": "low",
+          "hint": "Your page HTML is large. Optimize images and minimize unused code."
+        }
+      }
+    },
+    "aiFeedback": {
+      "overallSummary": "Analysis completed for FULLSTACK role. Resume scored 77/100 with extracted skills (React, Node.js, Express, MongoDB, JavaScript). @rakeshkumar0804 has 6 repos. Focus on strengthening quantifiable achievements to maximize interview call rates.",
+      "strengths": [
+        "Strong Resume ATS score of 77/100",
+        "Resume uses active verbs in work experience",
+        "Resume demonstrates skills in: React, Node.js, Express, MongoDB, JavaScript",
+        "Active GitHub activity: 60 commits in 90 days",
+        "Live portfolio website available"
+      ],
+      "weaknesses": [
+        "Resume lacks quantitative achievements (e.g. 'improved performance by 30%')",
+        "Missing keywords for FULLSTACK: typescript"
+      ],
+      "scoreExplanations": {
+        "github": "GitHub score of 86/100 reflects commits and public repos.",
+        "projectQuality": "Project quality at 78/100 based on repository completeness.",
+        "documentation": "Documentation score of 72/100.",
+        "portfolio": "Portfolio at 88/100."
+      },
+      "recruiterFirstImpression": {
+        "verdict": "Promising Developer",
+        "thought": "A recruiter evaluating this FULLSTACK application sees a resume with ATS score 77/100. The candidate looks worth interviewing.",
+        "positives": [
+          "Strong Resume ATS score of 77/100",
+          "Resume uses active verbs in work experience",
+          "Resume demonstrates skills in: React, Node.js, Express, MongoDB, JavaScript"
+        ],
+        "negatives": [
+          "Resume lacks quantitative achievements (e.g. 'improved performance by 30%')",
+          "Missing keywords for FULLSTACK: typescript"
+        ]
+      },
+      "careerRoadmap": {
+        "currentLevel": "Mid-Level FULLSTACK Candidate",
+        "targetLevel": "Mid/Senior FULLSTACK Developer",
+        "estimatedWeeks": 4,
+        "milestones": [
+          {
+            "week": "Week 1–2",
+            "task": "Add quantifiable metrics to resume and top project READMEs",
+            "impact": "Directly improves ATS score and recruiter callback rate"
+          },
+          {
+            "week": "Week 3–4",
+            "task": "Build a production demo project aligned with FULLSTACK",
+            "impact": "Provides strong technical proof to interviewers"
+          }
+        ]
+      },
+      "hiringRecommendation": "hire",
+      "topPriority": "Add concise descriptions to all public repositories"
+    },
+    "resumeAnalysis": {
+      "rawText": "Rakesh Kumar\nrakeshchauhan6651@gmail.com   |   +91-9306573459   |   Gurugram, India (Open to Relocate)\nGitHub     LinkedIn     Portfolio\nPROFESSIONAL SUMMARY\nFull-Stack Web Developer specializing in React, Node.js, Express, and MongoDB. Experienced in building JWT-authenticated\nRESTful services and role-based access control systems, with multiple full-stack web applications deployed and live. Strong DSA\nfoundation with 165+ problems solved on LeetCode.\nEXPERIENCE\nSoftware Development Intern – Codetech IT Solutions\nJan 2026 – Apr 2026\n• Engineered an Internal Employee Management System (Node.js, Express.js, MongoDB) supporting 3 user roles, replacing\nmanual spreadsheet tracking.\n• Implemented JWT-based authentication with RBAC across 3 permission tiers (employee, manager, admin), securing\nrole-restricted API access.\n• Designed validated RESTful API endpoints enabling full CRUD operations across employee, department, and role modules.\nTECHNICAL SKILLS\nFrontend: React.js (Hooks, Component Architecture), React Router, Axios, HTML5, CSS3, Bootstrap, Responsive UI\nBackend: Node.js, Express.js, REST API Design, JWT Authentication, RBAC, bcrypt\nDatabase: MongoDB, Mongoose (Schema Design & Validation), MySQL\nLanguages: JavaScript (ES6+), Python, C++, SQL\nTools & Platforms: Git, GitHub, Postman, VS Code, Vercel, Render, npm\nCore CS: Data Structures & Algorithms, DBMS, OOP, Operating Systems, Computer Networks\nPROJECTS\nTask Management System (TaskFlow)\n2025\nReact, Node.js, Express.js, MongoDB, JWT\n• Architected a full-stack task platform with component-based React architecture, using Hooks for state management, React\nRouter for navigation, and Axios for API calls.\n• Implemented JWT-based authentication with RBAC, enabling admins to assign tasks across the team while restricting\nstandard users to their own view.\n• Built a real-time analytics dashboard displaying 4 live task-status metrics (total, in progress, completed, to-do) and a 4-tier\npriority breakdown (critical, high, medium, low).\n• Deployed a fully responsive production build on Vercel.\nLive Demo  |  GitHub\nEmployee Leave Management System (LeaveFlow)\n2024\nNode.js, Express.js, MongoDB, JWT, HTML/CSS/JS\n• Developed a leave platform with three role-based dashboards (employee, manager, admin), each with scoped permissions\nvia JWT/RBAC.\n• Automated the leave approval pipeline with real-time status updates across 3 user tiers, eliminating manual tracking.\n• Designed RESTful APIs and validated MongoDB schemas with structured request validation and error handling; deployed on\nRender.\nLive Demo  |  GitHub\nDeveloper Portfolio Health Checker\n2026\nMERN Stack, GitHub API\n• Architected a MERN-stack platform integrating the GitHub API to analyze developer repositories and portfolio sites,\ncomputing hiring-readiness scores across activity, code quality, and profile-completeness dimensions.\n• Designed the scoring dashboard and REST API layer, and built an AI-powered feedback engine with recruiter-simulation\nlogic to help developers identify and close skill gaps.\nEDUCATION\nParul University – Vadodara, Gujarat, India\n2022 – 2026\nB.Tech in Computer Science Engineering\nCERTIFICATIONS & ACHIEVEMENTS\nSQL (Advanced) – HackerRank  |  C++ Programming – OpenEDG/Cisco  |  Cybersecurity Fundamentals – Udemy  |  Python\nProgramming – Udemy  |  Full-Stack Web Crash Course (CSS, Bootstrap, JS, PHP) – Udemy\nLeetCode: Solved 165+ DSA problems over 100+ active days",
+      "atsScore": 77,
+      "atsBreakdown": {
+        "formatting": 100,
+        "keywords": 91,
+        "actionVerbs": 100,
+        "impactMetrics": 30,
+        "length": 90
+      },
+      "strengths": [
+        "Strong use of action verbs (built, developed, designed, implemented)",
+        "Matches target role skills (react, node, javascript, express, mongodb)",
+        "Well-structured section headers (Experience, Projects, Skills)"
+      ],
+      "issues": [
+        "Missing quantifiable impact metrics (e.g., 'Reduced load time by 35%', 'Served 10k users')",
+        "Missing target role keywords: typescript"
+      ],
+      "missingKeywords": [
+        "typescript"
+      ],
+      "hasActionVerbs": true,
+      "hasMetrics": false,
+      "skillsExtracted": [
+        "React",
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "JavaScript",
+        "Python",
+        "Java",
+        "C++",
+        "HTML",
+        "CSS",
+        "SQL",
+        "Git",
+        "REST API"
+      ],
+      "githubConsistency": {
+        "score": 70,
+        "matching": [],
+        "onlyResume": [
+          "React",
+          "Node.js",
+          "Express",
+          "MongoDB",
+          "JavaScript",
+          "Python",
+          "Java",
+          "C++",
+          "HTML",
+          "CSS",
+          "SQL",
+          "Git",
+          "REST API"
+        ],
+        "onlyGithub": []
+      },
+      "improvements": [
+        {
+          "action": "Missing quantifiable impact metrics (e.g., 'Reduced load time by 35%', 'Served 10k users')",
+          "impact": "Boosts ATS keyword ranking and recruiter interview rate",
+          "priority": 1
+        },
+        {
+          "action": "Missing target role keywords: typescript",
+          "impact": "Boosts ATS keyword ranking and recruiter interview rate",
+          "priority": 2
+        }
+      ],
+      "overallVerdict": "Resume scored 77/100 for FULLSTACK role. Extracted skills: React, Node.js, Express, MongoDB, JavaScript. Add quantified impact metrics to increase interview calls."
+    },
+    "skillsDetected": [
+      "JavaScript",
+      "frontened",
+      "javascript",
+      "mern",
+      "portfolio",
+      "react",
+      "responsive-design",
+      "software-engineer",
+      "vite",
+      "web-development",
+      "Node.js",
+      "Express",
+      "React",
+      "Java",
+      "ai",
+      "ats",
+      "career-development",
+      "developer-tools",
+      "express",
+      "full-stack",
+      "github-api",
+      "mongodb",
+      "nodejs",
+      "resume",
+      "MongoDB",
+      "expressjs",
+      "fullstack",
+      "hrms",
+      "leave-management-system",
+      "rbac",
+      "rest-api",
+      "sqlite",
+      "SQL",
+      "REST API",
+      "jwt",
+      "task-management",
+      "React",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "JavaScript",
+      "Python",
+      "Java",
+      "C++",
+      "HTML",
+      "CSS",
+      "SQL",
+      "Git",
+      "REST API"
+    ],
+    "recruiterDecision": {
+      "decision": "YES",
+      "decisionLabel": "🌟 Shortlist: YES — High Priority Candidate",
+      "grade": "A",
+      "seniorityLevel": "Senior Candidate Level",
+      "toneCategory": "senior",
+      "confidenceScore": 92,
+      "confidenceLevel": "High Confidence",
+      "confidenceRationale": "Verified strictly against public GitHub API commits, repository metadata, and uploaded resume text parsing.",
+      "hiringRecommendation": "Fast-Track to Technical Interview & Team Matching",
+      "salaryBandEstimate": "$130,000 – $160,000 USD (Senior Developer Benchmark)",
+      "recruiterThought": "Strong candidate for FULLSTACK roles. Public GitHub commit velocity, repository structure, and technical documentation demonstrate high readiness for senior engineering environments.",
+      "interviewQuestions": [
+        "1. \"I noticed your public GitHub repos focus on fullstack projects. How do you approach state management and system architecture when scaling a production app?\"",
+        "2. \"Your profile shows 6 active project repositories. Can you walk me through the hardest technical bug you debugged in your main repository?\"",
+        "3. \"You have a live portfolio at https://developer-portfolio-nu-rouge.vercel.app/. How did you handle web performance, responsiveness, and deployment CI/CD for this site?\""
+      ],
+      "greenFlags": [
+        {
+          "title": "Active GitHub Contributor",
+          "evidence": "60 commits verified in last 90 days"
+        },
+        {
+          "title": "Profile README Active",
+          "evidence": "Dedicated GitHub Profile README file verified"
+        },
+        {
+          "title": "Public Repositories Published",
+          "evidence": "6 original code repositories on GitHub"
+        },
+        {
+          "title": "Live Portfolio Website",
+          "evidence": "Active at https://developer-portfolio-nu-rouge.vercel.app/"
+        }
+      ],
+      "redFlags": [
+        {
+          "title": "Add Quantified Impact Metrics",
+          "risk": "Include specific metrics (e.g., 'Improved load speed by 25%') to strengthen bullet points."
+        }
+      ],
+      "dataFreshness": "Live GitHub & Resume Audit"
+    },
+    "consistencyMatrix": {
+      "consistencyScore": 77,
+      "verifiedInBoth": [
+        "React",
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "JavaScript",
+        "Java",
+        "C++",
+        "SQL",
+        "Git",
+        "REST API"
+      ],
+      "resumeOnly": [
+        "Python",
+        "HTML",
+        "CSS"
+      ],
+      "githubOnly": [
+        "frontened",
+        "responsive-design",
+        "software-engineer",
+        "vite",
+        "web-development",
+        "ats",
+        "developer-tools",
+        "resume"
+      ],
+      "actionAuditList": [
+        {
+          "skill": "Python",
+          "status": "Resume Only (Unverified)",
+          "evidenceFound": "Claimed in resume text",
+          "evidenceMissing": "No matching public GitHub code found",
+          "actionableFix": "Build a small public demo project using Python",
+          "impact": "Medium"
+        },
+        {
+          "skill": "HTML",
+          "status": "Resume Only (Unverified)",
+          "evidenceFound": "Claimed in resume text",
+          "evidenceMissing": "No matching public GitHub code found",
+          "actionableFix": "Build a small public demo project using HTML",
+          "impact": "Medium"
+        },
+        {
+          "skill": "CSS",
+          "status": "Resume Only (Unverified)",
+          "evidenceFound": "Claimed in resume text",
+          "evidenceMissing": "No matching public GitHub code found",
+          "actionableFix": "Build a small public demo project using CSS",
+          "impact": "Medium"
+        },
+        {
+          "skill": "frontened",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add frontened to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "responsive-design",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add responsive-design to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "software-engineer",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add software-engineer to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "vite",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add vite to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "web-development",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add web-development to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "ats",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add ats to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "developer-tools",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add developer-tools to your resume skills section",
+          "impact": "High"
+        }
+      ],
+      "warnings": [
+        "Resume claims 3 skills (Python, HTML, CSS) that have no public GitHub code proof.",
+        "You have active GitHub code in frontened, responsive-design, software-engineer, but these are missing from your resume!"
+      ]
+    },
+    "createdAt": 1785686458946
+  },
+  {
+    "shareId": "O-cogbaXG8",
+    "userId": "zefcZQ1UB-8AoL",
+    "githubUsername": "rakeshkumar0804",
+    "portfolioUrl": "https://developer-portfolio-nu-rouge.vercel.app/",
+    "targetRole": "fullstack",
+    "analysisMode": "github_portfolio",
+    "scores": {
+      "github": 86,
+      "documentation": 72,
+      "projectQuality": 78,
+      "portfolio": 42,
+      "hiringReadiness": 70,
+      "overall": 72
+    },
+    "scoreBreakdowns": {
+      "github": [
+        {
+          "score": 38,
+          "max": 40,
+          "label": "Commit Cadence & Consistency",
+          "evidence": "Earned +23 pts for 60 commits in last 90 days (3-day active streak)"
+        },
+        {
+          "score": 13,
+          "max": 25,
+          "label": "Community Stars & Followers",
+          "evidence": "Earned +3 pts for 2 stars across repos and 1 followers"
+        },
+        {
+          "score": 35,
+          "max": 35,
+          "label": "Profile Completeness & Overview README",
+          "evidence": "Earned +20 pts for completing 5/5 profile fields and Profile README"
+        }
+      ],
+      "documentation": [
+        {
+          "score": 23,
+          "max": 35,
+          "label": "Repository Descriptions Coverage",
+          "evidence": "Earned +13 pts: 3/6 repos have descriptions (50%)"
+        },
+        {
+          "score": 23,
+          "max": 30,
+          "label": "Topic Tags & Categorization",
+          "evidence": "Earned +13 pts: 4/6 repos tagged with topics (67%)"
+        },
+        {
+          "score": 26,
+          "max": 35,
+          "label": "Repository README Content Depth",
+          "evidence": "Earned +11 pts based on project README depth (55/100 quality rating)"
+        }
+      ],
+      "projectQuality": [
+        {
+          "score": 30,
+          "max": 40,
+          "label": "Live Demo Deployments",
+          "evidence": "Earned +20 pts: 4/6 top projects have live demo links"
+        },
+        {
+          "score": 6,
+          "max": 15,
+          "label": "Tech Diversity",
+          "evidence": "2 different languages across top repositories"
+        }
+      ],
+      "portfolio": [
+        {
+          "score": 10,
+          "max": 10,
+          "label": "HTTPS Secure",
+          "evidence": "✅ HTTPS Secure — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Mobile Responsive",
+          "evidence": "✅ Mobile Responsive — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Meta Description",
+          "evidence": "✅ Meta Description — passing"
+        },
+        {
+          "score": 0,
+          "max": 8,
+          "label": "Contact Email",
+          "evidence": "❌ Contact Email — needs fix"
+        },
+        {
+          "score": 0,
+          "max": 8,
+          "label": "Resume Link",
+          "evidence": "❌ Resume Link — needs fix"
+        },
+        {
+          "score": 0,
+          "max": 8,
+          "label": "Projects Section",
+          "evidence": "❌ Projects Section — needs fix"
+        },
+        {
+          "score": 0,
+          "max": 5,
+          "label": "H1 Heading",
+          "evidence": "❌ H1 Heading — needs fix"
+        },
+        {
+          "score": 0,
+          "max": 5,
+          "label": "Open Graph Tags",
+          "evidence": "❌ Open Graph Tags — needs fix"
+        },
+        {
+          "score": 0,
+          "max": 5,
+          "label": "GitHub Link",
+          "evidence": "❌ GitHub Link — needs fix"
+        },
+        {
+          "score": 0,
+          "max": 5,
+          "label": "LinkedIn Link",
+          "evidence": "❌ LinkedIn Link — needs fix"
+        },
+        {
+          "score": 0,
+          "max": 5,
+          "label": "Contact Section",
+          "evidence": "❌ Contact Section — needs fix"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "Page Title",
+          "evidence": "✅ Page Title — passing"
+        },
+        {
+          "score": 4,
+          "max": 4,
+          "label": "Image Alt Tags",
+          "evidence": "✅ Image Alt Tags — passing"
+        },
+        {
+          "score": 0,
+          "max": 3,
+          "label": "Social Share Image",
+          "evidence": "❌ Social Share Image — needs fix"
+        },
+        {
+          "score": 3,
+          "max": 3,
+          "label": "Accessible",
+          "evidence": "✅ Accessible — passing"
+        },
+        {
+          "score": 0,
+          "max": 3,
+          "label": "Twitter/X Link",
+          "evidence": "❌ Twitter/X Link — needs fix"
+        },
+        {
+          "score": 2,
+          "max": 2,
+          "label": "Fast Loading",
+          "evidence": "✅ Fast Loading — passing"
+        }
+      ]
+    },
+    "improvements": [
+      {
+        "action": "Add concise descriptions to all public repositories",
+        "why": "Recruiters skip repositories without clear one-line explanations.",
+        "how": "Edit the header settings of your repositories on GitHub to add a 10-word summary.",
+        "points": 10,
+        "difficulty": "Easy",
+        "timeMinutes": 10,
+        "priority": 1,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Developer-Portfolio",
+          "leaveflow-hr",
+          "taskflow"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: Contact Email",
+        "why": "Contact issue — this reduces your professional credibility.",
+        "how": "Add your email address visibly on your site so recruiters can contact you.",
+        "points": 8,
+        "difficulty": "Medium",
+        "timeMinutes": 15,
+        "priority": 1,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: Resume Link",
+        "why": "Content issue — this reduces your professional credibility.",
+        "how": "Add a downloadable PDF resume link. This is the #1 thing recruiters look for.",
+        "points": 8,
+        "difficulty": "Medium",
+        "timeMinutes": 15,
+        "priority": 1,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "Resume Work Experience Section"
+      },
+      {
+        "action": "Fix: Projects Section",
+        "why": "Content issue — this reduces your professional credibility.",
+        "how": "Add a section showcasing your best 3–5 projects with descriptions and links.",
+        "points": 8,
+        "difficulty": "Medium",
+        "timeMinutes": 15,
+        "priority": 1,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Add detailed descriptions and topics to your top repositories",
+        "why": "Incomplete repos signal you don't care about presentation — which makes recruiters wonder about your code quality too.",
+        "how": "For each repo: add a 1-2 sentence description, add 3–5 relevant topics (react, nodejs, portfolio, etc.), and add a homepage link if deployed.",
+        "points": 8,
+        "difficulty": "Easy",
+        "timeMinutes": 20,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Developer-Portfolio",
+          "leaveflow-hr",
+          "taskflow"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: H1 Heading",
+        "why": "SEO issue — this reduces your professional credibility.",
+        "how": "Add exactly one <h1> tag on your page for SEO.",
+        "points": 5,
+        "difficulty": "Easy",
+        "timeMinutes": 5,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: Open Graph Tags",
+        "why": "SEO issue — this reduces your professional credibility.",
+        "how": "Add og:title, og:description, og:image meta tags for social sharing.",
+        "points": 5,
+        "difficulty": "Easy",
+        "timeMinutes": 5,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: GitHub Link",
+        "why": "Links issue — this reduces your professional credibility.",
+        "how": "Add a link to your GitHub profile in your navigation or footer.",
+        "points": 5,
+        "difficulty": "Easy",
+        "timeMinutes": 5,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: LinkedIn Link",
+        "why": "Links issue — this reduces your professional credibility.",
+        "how": "Add your LinkedIn profile link — many recruiters go straight there.",
+        "points": 5,
+        "difficulty": "Easy",
+        "timeMinutes": 5,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: Contact Section",
+        "why": "Contact issue — this reduces your professional credibility.",
+        "how": "Add a dedicated contact section or page.",
+        "points": 5,
+        "difficulty": "Easy",
+        "timeMinutes": 5,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      }
+    ],
+    "githubData": {
+      "profile": {
+        "username": "rakeshkumar0804",
+        "name": "Rakesh Kumar",
+        "bio": "Full-Stack Developer | MERN Stack\r\nJavaScript • React • Node.js • SQL\r\nBuilding scalable web applications",
+        "avatar": "https://avatars.githubusercontent.com/u/200815585?v=4",
+        "location": "Gurugram, Haryana, India",
+        "website": "https://developer-portfolio-nu-rouge.vercel.app/",
+        "company": "",
+        "email": "",
+        "githubUrl": "https://github.com/rakeshkumar0804",
+        "followers": 1,
+        "following": 0,
+        "publicRepos": 6,
+        "publicGists": 0,
+        "accountCreated": "2025-02-25T16:27:26Z",
+        "accountAgeYears": 1.4,
+        "isHireable": true,
+        "twitterUsername": ""
+      },
+      "stats": {
+        "totalStars": 2,
+        "totalForks": 0,
+        "totalRepos": 6,
+        "ownedRepos": 6,
+        "forkedRepos": 0,
+        "reposWithDescription": 3,
+        "reposWithTopics": 4,
+        "reposWithLicense": 3,
+        "reposWithHomepage": 4,
+        "reposWithGoodReadme": 3,
+        "avgReadmeScore": 55,
+        "commitCount90Days": 60,
+        "commitCount30Days": 51,
+        "totalContributionsYear": 61,
+        "currentStreak": 3,
+        "weeklyActivity": [
+          {
+            "week": "2026-05-17",
+            "count": 0
+          },
+          {
+            "week": "2026-05-24",
+            "count": 0
+          },
+          {
+            "week": "2026-05-31",
+            "count": 0
+          },
+          {
+            "week": "2026-06-07",
+            "count": 0
+          },
+          {
+            "week": "2026-06-14",
+            "count": 0
+          },
+          {
+            "week": "2026-06-21",
+            "count": 0
+          },
+          {
+            "week": "2026-06-28",
+            "count": 0
+          },
+          {
+            "week": "2026-07-05",
+            "count": 0
+          },
+          {
+            "week": "2026-07-12",
+            "count": 0
+          },
+          {
+            "week": "2026-07-19",
+            "count": 2
+          },
+          {
+            "week": "2026-07-26",
+            "count": 26
+          },
+          {
+            "week": "2026-08-02",
+            "count": 5
+          }
+        ]
+      },
+      "languageDistribution": [
+        {
+          "language": "JavaScript",
+          "count": 4,
+          "percentage": 100
+        }
+      ],
+      "topRepos": [
+        {
+          "name": "Developer-Portfolio",
+          "description": "Modern Full-Stack Developer Portfolio built with React and Vite, showcasing projects, technical skills, certifications, and experience with a responsive, recruiter-friendly design.",
+          "stars": 1,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "frontened",
+            "javascript",
+            "mern",
+            "portfolio",
+            "react",
+            "responsive-design",
+            "software-engineer",
+            "vite",
+            "web-development"
+          ],
+          "url": "https://github.com/rakeshkumar0804/Developer-Portfolio",
+          "lastPushed": "2026-08-02T15:54:02Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 100
+        },
+        {
+          "name": "leaveflow-hr",
+          "description": "Full-Stack Employee Leave Management System built with Node.js, SQLite, REST APIs and Role-Based Authentication.Live Demo: https://leaveflow-hr-hvfh.onrender.com",
+          "stars": 1,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "expressjs",
+            "fullstack",
+            "hrms",
+            "javascript",
+            "leave-management-system",
+            "mern",
+            "nodejs",
+            "rbac",
+            "rest-api",
+            "sqlite"
+          ],
+          "url": "https://github.com/rakeshkumar0804/leaveflow-hr",
+          "lastPushed": "2026-08-01T07:03:54Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 100
+        },
+        {
+          "name": "taskflow",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "expressjs",
+            "full-stack",
+            "javascript",
+            "jwt",
+            "mern",
+            "mongodb",
+            "nodejs",
+            "rbac",
+            "react",
+            "task-management"
+          ],
+          "url": "https://github.com/rakeshkumar0804/taskflow",
+          "lastPushed": "2026-08-02T16:02:18Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": false,
+          "readmeScore": 50
+        },
+        {
+          "name": "dev-portfolio-checker",
+          "description": "AI-powered career intelligence platform that analyzes GitHub profiles, portfolio websites, and resumes to evaluate hiring readiness with actionable insights, recruiter simulation, ATS analysis, and personalized improvement recommendations.",
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "ai",
+            "ats",
+            "career-development",
+            "developer-tools",
+            "express",
+            "full-stack",
+            "github-api",
+            "mongodb",
+            "nodejs",
+            "portfolio",
+            "react",
+            "resume",
+            "vite"
+          ],
+          "url": "https://github.com/rakeshkumar0804/dev-portfolio-checker",
+          "lastPushed": "2026-08-02T10:08:22Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 80
+        },
+        {
+          "name": "rakeshkumar0804",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "Unknown",
+          "topics": [],
+          "url": "https://github.com/rakeshkumar0804/rakeshkumar0804",
+          "lastPushed": "2026-07-31T10:18:27Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": false,
+          "hasReadme": false,
+          "readmeScore": 0
+        },
+        {
+          "name": "RPS-project",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "Unknown",
+          "topics": [],
+          "url": "https://github.com/rakeshkumar0804/RPS-project",
+          "lastPushed": "2026-04-05T07:29:32Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": false,
+          "hasReadme": false,
+          "readmeScore": 0
+        }
+      ],
+      "skills": [
+        "JavaScript",
+        "expressjs",
+        "full-stack",
+        "javascript",
+        "jwt",
+        "mern",
+        "mongodb",
+        "nodejs",
+        "rbac",
+        "react",
+        "task-management",
+        "Node.js",
+        "Express",
+        "React",
+        "MongoDB",
+        "Java",
+        "frontened",
+        "portfolio",
+        "responsive-design",
+        "software-engineer",
+        "vite",
+        "web-development",
+        "ai",
+        "ats",
+        "career-development",
+        "developer-tools",
+        "express",
+        "github-api",
+        "resume",
+        "fullstack",
+        "hrms",
+        "leave-management-system",
+        "rest-api",
+        "sqlite",
+        "SQL",
+        "REST API"
+      ],
+      "hasProfileReadme": true
+    },
+    "portfolioData": {
+      "url": "https://developer-portfolio-nu-rouge.vercel.app/",
+      "accessible": true,
+      "isHttps": true,
+      "statusCode": 200,
+      "responseTimeMs": 1501,
+      "seo": {
+        "title": "Rakesh Kumar | Software Engineer",
+        "titleLength": 32,
+        "metaDescription": "Rakesh Kumar - Software Engineer and MERN Stack Developer",
+        "metaDescriptionLength": 57,
+        "ogTitle": "",
+        "ogDescription": "",
+        "ogImage": "",
+        "h1Tags": [],
+        "h1Count": 0
+      },
+      "content": {
+        "hasProjectSection": false,
+        "hasContactSection": false,
+        "hasResumeLink": false,
+        "emailsFound": []
+      },
+      "accessibility": {
+        "hasGoodAltTags": true,
+        "imgsTotal": 0,
+        "imgsWithAlt": 0
+      },
+      "social": {
+        "hasGithubLink": false,
+        "hasLinkedinLink": false,
+        "hasTwitterLink": false
+      },
+      "checklist": {
+        "isHttps": {
+          "pass": true,
+          "label": "HTTPS Secure",
+          "importance": "critical",
+          "hint": "Deploy your site to HTTPS. Netlify and Vercel provide this automatically."
+        },
+        "isAccessible": {
+          "pass": true,
+          "label": "Site Accessible",
+          "importance": "critical",
+          "hint": "Make sure your site is publicly accessible."
+        },
+        "hasTitle": {
+          "pass": true,
+          "label": "Page Title",
+          "importance": "high",
+          "hint": "Add a <title> tag to your HTML head."
+        },
+        "hasTitleOptimal": {
+          "pass": true,
+          "label": "Title Length (20–70)",
+          "importance": "medium",
+          "hint": "Make your title 20–70 characters for best SEO."
+        },
+        "hasMetaDescription": {
+          "pass": true,
+          "label": "Meta Description",
+          "importance": "high",
+          "hint": "Add <meta name=\"description\" content=\"...\"> to your HTML head."
+        },
+        "hasMetaDescriptionOptimal": {
+          "pass": true,
+          "label": "Description Length (50–160)",
+          "importance": "medium",
+          "hint": "Keep your meta description 50–160 characters."
+        },
+        "hasH1": {
+          "pass": false,
+          "label": "H1 Heading",
+          "importance": "high",
+          "hint": "Add exactly one <h1> tag on your page for SEO."
+        },
+        "hasSingleH1": {
+          "pass": false,
+          "label": "Single H1",
+          "importance": "medium",
+          "hint": "Use exactly one <h1> per page — multiple H1s confuse search engines."
+        },
+        "hasOgTags": {
+          "pass": false,
+          "label": "Open Graph Tags",
+          "importance": "medium",
+          "hint": "Add og:title, og:description, og:image meta tags for social sharing."
+        },
+        "hasOgImage": {
+          "pass": false,
+          "label": "OG Social Image",
+          "importance": "low",
+          "hint": "Add <meta property=\"og:image\" content=\"...\"> for beautiful social previews."
+        },
+        "hasViewport": {
+          "pass": true,
+          "label": "Mobile Viewport",
+          "importance": "critical",
+          "hint": "Add <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> to your HTML head."
+        },
+        "hasEmail": {
+          "pass": false,
+          "label": "Email Address",
+          "importance": "high",
+          "hint": "Add your email address visibly on your site so recruiters can contact you."
+        },
+        "hasContactSection": {
+          "pass": false,
+          "label": "Contact Section",
+          "importance": "high",
+          "hint": "Add a dedicated contact section or page."
+        },
+        "hasGithubLink": {
+          "pass": false,
+          "label": "GitHub Link",
+          "importance": "high",
+          "hint": "Add a link to your GitHub profile in your navigation or footer."
+        },
+        "hasLinkedinLink": {
+          "pass": false,
+          "label": "LinkedIn Link",
+          "importance": "medium",
+          "hint": "Add your LinkedIn profile link — many recruiters go straight there."
+        },
+        "hasTwitterLink": {
+          "pass": false,
+          "label": "Twitter/X Link",
+          "importance": "low",
+          "hint": "Add your Twitter/X link if active in the developer community."
+        },
+        "hasResumeLink": {
+          "pass": false,
+          "label": "Resume/CV Link",
+          "importance": "critical",
+          "hint": "Add a downloadable PDF resume link. This is the #1 thing recruiters look for."
+        },
+        "hasProjectSection": {
+          "pass": false,
+          "label": "Projects Section",
+          "importance": "critical",
+          "hint": "Add a section showcasing your best 3–5 projects with descriptions and links."
+        },
+        "hasGoodAltTags": {
+          "pass": true,
+          "label": "Image Alt Texts",
+          "importance": "medium",
+          "hint": "Add alt attributes to all your <img> tags for accessibility and SEO."
+        },
+        "hasReasonableSize": {
+          "pass": true,
+          "label": "Page Size OK",
+          "importance": "low",
+          "hint": "Your page HTML is large. Optimize images and minimize unused code."
+        }
+      }
+    },
+    "aiFeedback": {
+      "overallSummary": "Analysis completed for FULLSTACK role.  @rakeshkumar0804 has 6 repos. Focus on strengthening quantifiable achievements to maximize interview call rates.",
+      "strengths": [
+        "Active GitHub activity: 60 commits in 90 days",
+        "Live portfolio website available"
+      ],
+      "weaknesses": [
+        "Add more quantifiable project impact metrics"
+      ],
+      "scoreExplanations": {
+        "github": "GitHub score of 86/100 reflects commits and public repos.",
+        "projectQuality": "Project quality at 78/100 based on repository completeness.",
+        "documentation": "Documentation score of 72/100.",
+        "portfolio": "Portfolio at 42/100."
+      },
+      "recruiterFirstImpression": {
+        "verdict": "Needs Polish",
+        "thought": "A recruiter evaluating this FULLSTACK application sees an incomplete profile. The candidate looks worth interviewing.",
+        "positives": [
+          "Active GitHub activity: 60 commits in 90 days",
+          "Live portfolio website available"
+        ],
+        "negatives": []
+      },
+      "careerRoadmap": {
+        "currentLevel": "Junior FULLSTACK Candidate",
+        "targetLevel": "Mid/Senior FULLSTACK Developer",
+        "estimatedWeeks": 4,
+        "milestones": [
+          {
+            "week": "Week 1–2",
+            "task": "Add quantifiable metrics to resume and top project READMEs",
+            "impact": "Directly improves ATS score and recruiter callback rate"
+          },
+          {
+            "week": "Week 3–4",
+            "task": "Build a production demo project aligned with FULLSTACK",
+            "impact": "Provides strong technical proof to interviewers"
+          }
+        ]
+      },
+      "hiringRecommendation": "maybe",
+      "topPriority": "Add concise descriptions to all public repositories"
+    },
+    "resumeAnalysis": null,
+    "skillsDetected": [
+      "JavaScript",
+      "expressjs",
+      "full-stack",
+      "javascript",
+      "jwt",
+      "mern",
+      "mongodb",
+      "nodejs",
+      "rbac",
+      "react",
+      "task-management",
+      "Node.js",
+      "Express",
+      "React",
+      "MongoDB",
+      "Java",
+      "frontened",
+      "portfolio",
+      "responsive-design",
+      "software-engineer",
+      "vite",
+      "web-development",
+      "ai",
+      "ats",
+      "career-development",
+      "developer-tools",
+      "express",
+      "github-api",
+      "resume",
+      "fullstack",
+      "hrms",
+      "leave-management-system",
+      "rest-api",
+      "sqlite",
+      "SQL",
+      "REST API"
+    ],
+    "recruiterDecision": {
+      "decision": "MAYBE",
+      "decisionLabel": "⚡ Promising Candidate — Strong Foundations to Build On",
+      "grade": "B+",
+      "seniorityLevel": "Mid-Level Developer Level",
+      "toneCategory": "mid",
+      "confidenceScore": 84,
+      "confidenceLevel": "Medium-High Confidence",
+      "confidenceRationale": "Verified against GitHub public data. Connect Portfolio & Resume for 100% full-spectrum confidence.",
+      "hiringRecommendation": "Proceed to Technical Screening Round with Targeted Follow-ups",
+      "salaryBandEstimate": "$95,000 – $125,000 USD (Mid-Level Developer Benchmark)",
+      "recruiterThought": "Solid technical foundation for FULLSTACK roles with 6 verified repositories. Adding quantified impact statements on resume bullet points will significantly increase interview shortlist rates.",
+      "interviewQuestions": [
+        "1. \"I noticed your public GitHub repos focus on fullstack projects. How do you approach state management and system architecture when scaling a production app?\"",
+        "2. \"Your profile shows 6 active project repositories. Can you walk me through the hardest technical bug you debugged in your main repository?\"",
+        "3. \"You have a live portfolio at https://developer-portfolio-nu-rouge.vercel.app/. How did you handle web performance, responsiveness, and deployment CI/CD for this site?\""
+      ],
+      "greenFlags": [
+        {
+          "title": "Active GitHub Contributor",
+          "evidence": "60 commits verified in last 90 days"
+        },
+        {
+          "title": "Profile README Active",
+          "evidence": "Dedicated GitHub Profile README file verified"
+        },
+        {
+          "title": "Public Repositories Published",
+          "evidence": "6 original code repositories on GitHub"
+        },
+        {
+          "title": "Live Portfolio Website",
+          "evidence": "Active at https://developer-portfolio-nu-rouge.vercel.app/"
+        }
+      ],
+      "redFlags": [
+        {
+          "title": "Upload a PDF Resume",
+          "risk": "Upload your resume to unlock ATS keyword matching for your target role."
+        }
+      ],
+      "dataFreshness": "Live GitHub & Resume Audit"
+    },
+    "consistencyMatrix": {
+      "consistencyScore": 100,
+      "verifiedInBoth": [],
+      "resumeOnly": [],
+      "githubOnly": [
+        "JavaScript",
+        "expressjs",
+        "full-stack",
+        "javascript",
+        "jwt",
+        "mern",
+        "mongodb",
+        "nodejs"
+      ],
+      "actionAuditList": [
+        {
+          "skill": "JavaScript",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add JavaScript to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "expressjs",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add expressjs to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "full-stack",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add full-stack to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "javascript",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add javascript to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "jwt",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add jwt to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "mern",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add mern to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "mongodb",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add mongodb to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "nodejs",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add nodejs to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "rbac",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add rbac to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "react",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add react to your resume skills section",
+          "impact": "High"
+        }
+      ],
+      "warnings": [
+        "You have active GitHub code in JavaScript, expressjs, full-stack, but these are missing from your resume!"
+      ]
+    },
+    "createdAt": 1785686752708
+  },
+  {
+    "shareId": "sd50YzCxfP",
+    "userId": "zefcZQ1UB-8AoL",
+    "githubUsername": "rakeshkumar0804",
+    "portfolioUrl": "https://developer-portfolio-nu-rouge.vercel.app/",
+    "targetRole": "fullstack",
+    "analysisMode": "github_portfolio",
+    "scores": {
+      "github": 86,
+      "documentation": 72,
+      "projectQuality": 78,
+      "portfolio": 88,
+      "hiringReadiness": 82,
+      "overall": 84
+    },
+    "scoreBreakdowns": {
+      "github": [
+        {
+          "score": 38,
+          "max": 40,
+          "label": "Commit Cadence & Consistency",
+          "evidence": "Earned +23 pts for 60 commits in last 90 days (3-day active streak)"
+        },
+        {
+          "score": 13,
+          "max": 25,
+          "label": "Community Stars & Followers",
+          "evidence": "Earned +3 pts for 2 stars across repos and 1 followers"
+        },
+        {
+          "score": 35,
+          "max": 35,
+          "label": "Profile Completeness & Overview README",
+          "evidence": "Earned +20 pts for completing 5/5 profile fields and Profile README"
+        }
+      ],
+      "documentation": [
+        {
+          "score": 23,
+          "max": 35,
+          "label": "Repository Descriptions Coverage",
+          "evidence": "Earned +13 pts: 3/6 repos have descriptions (50%)"
+        },
+        {
+          "score": 23,
+          "max": 30,
+          "label": "Topic Tags & Categorization",
+          "evidence": "Earned +13 pts: 4/6 repos tagged with topics (67%)"
+        },
+        {
+          "score": 26,
+          "max": 35,
+          "label": "Repository README Content Depth",
+          "evidence": "Earned +11 pts based on project README depth (55/100 quality rating)"
+        }
+      ],
+      "projectQuality": [
+        {
+          "score": 30,
+          "max": 40,
+          "label": "Live Demo Deployments",
+          "evidence": "Earned +20 pts: 4/6 top projects have live demo links"
+        },
+        {
+          "score": 6,
+          "max": 15,
+          "label": "Tech Diversity",
+          "evidence": "2 different languages across top repositories"
+        }
+      ],
+      "portfolio": [
+        {
+          "score": 10,
+          "max": 10,
+          "label": "HTTPS Secure",
+          "evidence": "✅ HTTPS Secure — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Mobile Responsive",
+          "evidence": "✅ Mobile Responsive — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Meta Description",
+          "evidence": "✅ Meta Description — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Contact Email",
+          "evidence": "✅ Contact Email — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Resume Link",
+          "evidence": "✅ Resume Link — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Projects Section",
+          "evidence": "✅ Projects Section — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "H1 Heading",
+          "evidence": "✅ H1 Heading — passing"
+        },
+        {
+          "score": 0,
+          "max": 5,
+          "label": "Open Graph Tags",
+          "evidence": "❌ Open Graph Tags — needs fix"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "GitHub Link",
+          "evidence": "✅ GitHub Link — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "LinkedIn Link",
+          "evidence": "✅ LinkedIn Link — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "Contact Section",
+          "evidence": "✅ Contact Section — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "Page Title",
+          "evidence": "✅ Page Title — passing"
+        },
+        {
+          "score": 4,
+          "max": 4,
+          "label": "Image Alt Tags",
+          "evidence": "✅ Image Alt Tags — passing"
+        },
+        {
+          "score": 0,
+          "max": 3,
+          "label": "Social Share Image",
+          "evidence": "❌ Social Share Image — needs fix"
+        },
+        {
+          "score": 3,
+          "max": 3,
+          "label": "Accessible",
+          "evidence": "✅ Accessible — passing"
+        },
+        {
+          "score": 0,
+          "max": 3,
+          "label": "Twitter/X Link",
+          "evidence": "❌ Twitter/X Link — needs fix"
+        },
+        {
+          "score": 2,
+          "max": 2,
+          "label": "Fast Loading",
+          "evidence": "✅ Fast Loading — passing"
+        }
+      ]
+    },
+    "improvements": [
+      {
+        "action": "Add concise descriptions to all public repositories",
+        "why": "Recruiters skip repositories without clear one-line explanations.",
+        "how": "Edit the header settings of your repositories on GitHub to add a 10-word summary.",
+        "points": 10,
+        "difficulty": "Easy",
+        "timeMinutes": 10,
+        "priority": 1,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Developer-Portfolio",
+          "leaveflow-hr",
+          "taskflow"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Add detailed descriptions and topics to your top repositories",
+        "why": "Incomplete repos signal you don't care about presentation — which makes recruiters wonder about your code quality too.",
+        "how": "For each repo: add a 1-2 sentence description, add 3–5 relevant topics (react, nodejs, portfolio, etc.), and add a homepage link if deployed.",
+        "points": 8,
+        "difficulty": "Easy",
+        "timeMinutes": 20,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Developer-Portfolio",
+          "leaveflow-hr",
+          "taskflow"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: Open Graph Tags",
+        "why": "SEO issue — this reduces your professional credibility.",
+        "how": "Add og:title, og:description, og:image meta tags for social sharing.",
+        "points": 5,
+        "difficulty": "Easy",
+        "timeMinutes": 5,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      }
+    ],
+    "githubData": {
+      "profile": {
+        "username": "rakeshkumar0804",
+        "name": "Rakesh Kumar",
+        "bio": "Full-Stack Developer | MERN Stack\r\nJavaScript • React • Node.js • SQL\r\nBuilding scalable web applications",
+        "avatar": "https://avatars.githubusercontent.com/u/200815585?v=4",
+        "location": "Gurugram, Haryana, India",
+        "website": "https://developer-portfolio-nu-rouge.vercel.app/",
+        "company": "",
+        "email": "",
+        "githubUrl": "https://github.com/rakeshkumar0804",
+        "followers": 1,
+        "following": 0,
+        "publicRepos": 6,
+        "publicGists": 0,
+        "accountCreated": "2025-02-25T16:27:26Z",
+        "accountAgeYears": 1.4,
+        "isHireable": true,
+        "twitterUsername": ""
+      },
+      "stats": {
+        "totalStars": 2,
+        "totalForks": 0,
+        "totalRepos": 6,
+        "ownedRepos": 6,
+        "forkedRepos": 0,
+        "reposWithDescription": 3,
+        "reposWithTopics": 4,
+        "reposWithLicense": 3,
+        "reposWithHomepage": 4,
+        "reposWithGoodReadme": 3,
+        "avgReadmeScore": 55,
+        "commitCount90Days": 60,
+        "commitCount30Days": 51,
+        "totalContributionsYear": 61,
+        "currentStreak": 3,
+        "weeklyActivity": [
+          {
+            "week": "2026-05-17",
+            "count": 0
+          },
+          {
+            "week": "2026-05-24",
+            "count": 0
+          },
+          {
+            "week": "2026-05-31",
+            "count": 0
+          },
+          {
+            "week": "2026-06-07",
+            "count": 0
+          },
+          {
+            "week": "2026-06-14",
+            "count": 0
+          },
+          {
+            "week": "2026-06-21",
+            "count": 0
+          },
+          {
+            "week": "2026-06-28",
+            "count": 0
+          },
+          {
+            "week": "2026-07-05",
+            "count": 0
+          },
+          {
+            "week": "2026-07-12",
+            "count": 0
+          },
+          {
+            "week": "2026-07-19",
+            "count": 2
+          },
+          {
+            "week": "2026-07-26",
+            "count": 26
+          },
+          {
+            "week": "2026-08-02",
+            "count": 5
+          }
+        ]
+      },
+      "languageDistribution": [
+        {
+          "language": "JavaScript",
+          "count": 4,
+          "percentage": 100
+        }
+      ],
+      "topRepos": [
+        {
+          "name": "Developer-Portfolio",
+          "description": "Modern Full-Stack Developer Portfolio built with React and Vite, showcasing projects, technical skills, certifications, and experience with a responsive, recruiter-friendly design.",
+          "stars": 1,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "frontened",
+            "javascript",
+            "mern",
+            "portfolio",
+            "react",
+            "responsive-design",
+            "software-engineer",
+            "vite",
+            "web-development"
+          ],
+          "url": "https://github.com/rakeshkumar0804/Developer-Portfolio",
+          "lastPushed": "2026-08-02T15:54:02Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 100
+        },
+        {
+          "name": "leaveflow-hr",
+          "description": "Full-Stack Employee Leave Management System built with Node.js, SQLite, REST APIs and Role-Based Authentication.Live Demo: https://leaveflow-hr-hvfh.onrender.com",
+          "stars": 1,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "expressjs",
+            "fullstack",
+            "hrms",
+            "javascript",
+            "leave-management-system",
+            "mern",
+            "nodejs",
+            "rbac",
+            "rest-api",
+            "sqlite"
+          ],
+          "url": "https://github.com/rakeshkumar0804/leaveflow-hr",
+          "lastPushed": "2026-08-01T07:03:54Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 100
+        },
+        {
+          "name": "taskflow",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "expressjs",
+            "full-stack",
+            "javascript",
+            "jwt",
+            "mern",
+            "mongodb",
+            "nodejs",
+            "rbac",
+            "react",
+            "task-management"
+          ],
+          "url": "https://github.com/rakeshkumar0804/taskflow",
+          "lastPushed": "2026-08-02T16:02:18Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": false,
+          "readmeScore": 50
+        },
+        {
+          "name": "dev-portfolio-checker",
+          "description": "AI-powered career intelligence platform that analyzes GitHub profiles, portfolio websites, and resumes to evaluate hiring readiness with actionable insights, recruiter simulation, ATS analysis, and personalized improvement recommendations.",
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "ai",
+            "ats",
+            "career-development",
+            "developer-tools",
+            "express",
+            "full-stack",
+            "github-api",
+            "mongodb",
+            "nodejs",
+            "portfolio",
+            "react",
+            "resume",
+            "vite"
+          ],
+          "url": "https://github.com/rakeshkumar0804/dev-portfolio-checker",
+          "lastPushed": "2026-08-02T10:08:22Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 80
+        },
+        {
+          "name": "rakeshkumar0804",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "Unknown",
+          "topics": [],
+          "url": "https://github.com/rakeshkumar0804/rakeshkumar0804",
+          "lastPushed": "2026-07-31T10:18:27Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": false,
+          "hasReadme": false,
+          "readmeScore": 0
+        },
+        {
+          "name": "RPS-project",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "Unknown",
+          "topics": [],
+          "url": "https://github.com/rakeshkumar0804/RPS-project",
+          "lastPushed": "2026-04-05T07:29:32Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": false,
+          "hasReadme": false,
+          "readmeScore": 0
+        }
+      ],
+      "skills": [
+        "JavaScript",
+        "expressjs",
+        "full-stack",
+        "javascript",
+        "jwt",
+        "mern",
+        "mongodb",
+        "nodejs",
+        "rbac",
+        "react",
+        "task-management",
+        "Node.js",
+        "Express",
+        "React",
+        "MongoDB",
+        "Java",
+        "frontened",
+        "portfolio",
+        "responsive-design",
+        "software-engineer",
+        "vite",
+        "web-development",
+        "ai",
+        "ats",
+        "career-development",
+        "developer-tools",
+        "express",
+        "github-api",
+        "resume",
+        "fullstack",
+        "hrms",
+        "leave-management-system",
+        "rest-api",
+        "sqlite",
+        "SQL",
+        "REST API"
+      ],
+      "hasProfileReadme": true
+    },
+    "portfolioData": {
+      "url": "https://developer-portfolio-nu-rouge.vercel.app/",
+      "accessible": true,
+      "isHttps": true,
+      "statusCode": 200,
+      "responseTimeMs": 308,
+      "seo": {
+        "title": "Rakesh Kumar | Software Engineer",
+        "titleLength": 32,
+        "metaDescription": "Rakesh Kumar - Software Engineer and MERN Stack Developer",
+        "metaDescriptionLength": 57,
+        "ogTitle": "",
+        "ogDescription": "",
+        "ogImage": "",
+        "h1Tags": [
+          "Hi, I'mRakesh KumarFull-StackDeveloper."
+        ],
+        "h1Count": 1
+      },
+      "content": {
+        "hasProjectSection": true,
+        "hasContactSection": true,
+        "hasResumeLink": true,
+        "emailsFound": [
+          "rakeshchauhan6651@gmail.com"
+        ]
+      },
+      "accessibility": {
+        "hasGoodAltTags": true,
+        "imgsTotal": 0,
+        "imgsWithAlt": 0
+      },
+      "social": {
+        "hasGithubLink": true,
+        "hasLinkedinLink": true,
+        "hasTwitterLink": false
+      },
+      "checklist": {
+        "isHttps": {
+          "pass": true,
+          "label": "HTTPS Secure",
+          "importance": "critical",
+          "hint": "Deploy your site to HTTPS. Netlify and Vercel provide this automatically."
+        },
+        "isAccessible": {
+          "pass": true,
+          "label": "Site Accessible",
+          "importance": "critical",
+          "hint": "Make sure your site is publicly accessible."
+        },
+        "hasTitle": {
+          "pass": true,
+          "label": "Page Title",
+          "importance": "high",
+          "hint": "Add a <title> tag to your HTML head."
+        },
+        "hasTitleOptimal": {
+          "pass": true,
+          "label": "Title Length (20–70)",
+          "importance": "medium",
+          "hint": "Make your title 20–70 characters for best SEO."
+        },
+        "hasMetaDescription": {
+          "pass": true,
+          "label": "Meta Description",
+          "importance": "high",
+          "hint": "Add <meta name=\"description\" content=\"...\"> to your HTML head."
+        },
+        "hasMetaDescriptionOptimal": {
+          "pass": true,
+          "label": "Description Length (50–160)",
+          "importance": "medium",
+          "hint": "Keep your meta description 50–160 characters."
+        },
+        "hasH1": {
+          "pass": true,
+          "label": "H1 Heading",
+          "importance": "high",
+          "hint": "Add exactly one <h1> tag on your page for SEO."
+        },
+        "hasSingleH1": {
+          "pass": true,
+          "label": "Single H1",
+          "importance": "medium",
+          "hint": "Use exactly one <h1> per page — multiple H1s confuse search engines."
+        },
+        "hasOgTags": {
+          "pass": false,
+          "label": "Open Graph Tags",
+          "importance": "medium",
+          "hint": "Add og:title, og:description, og:image meta tags for social sharing."
+        },
+        "hasOgImage": {
+          "pass": false,
+          "label": "OG Social Image",
+          "importance": "low",
+          "hint": "Add <meta property=\"og:image\" content=\"...\"> for beautiful social previews."
+        },
+        "hasViewport": {
+          "pass": true,
+          "label": "Mobile Viewport",
+          "importance": "critical",
+          "hint": "Add <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> to your HTML head."
+        },
+        "hasEmail": {
+          "pass": true,
+          "label": "Email Address",
+          "importance": "high",
+          "hint": "Add your email address visibly on your site so recruiters can contact you."
+        },
+        "hasContactSection": {
+          "pass": true,
+          "label": "Contact Section",
+          "importance": "high",
+          "hint": "Add a dedicated contact section or page."
+        },
+        "hasGithubLink": {
+          "pass": true,
+          "label": "GitHub Link",
+          "importance": "high",
+          "hint": "Add a link to your GitHub profile in your navigation or footer."
+        },
+        "hasLinkedinLink": {
+          "pass": true,
+          "label": "LinkedIn Link",
+          "importance": "medium",
+          "hint": "Add your LinkedIn profile link — many recruiters go straight there."
+        },
+        "hasTwitterLink": {
+          "pass": false,
+          "label": "Twitter/X Link",
+          "importance": "low",
+          "hint": "Add your Twitter/X link if active in the developer community."
+        },
+        "hasResumeLink": {
+          "pass": true,
+          "label": "Resume/CV Link",
+          "importance": "critical",
+          "hint": "Add a downloadable PDF resume link. This is the #1 thing recruiters look for."
+        },
+        "hasProjectSection": {
+          "pass": true,
+          "label": "Projects Section",
+          "importance": "critical",
+          "hint": "Add a section showcasing your best 3–5 projects with descriptions and links."
+        },
+        "hasGoodAltTags": {
+          "pass": true,
+          "label": "Image Alt Texts",
+          "importance": "medium",
+          "hint": "Add alt attributes to all your <img> tags for accessibility and SEO."
+        },
+        "hasReasonableSize": {
+          "pass": true,
+          "label": "Page Size OK",
+          "importance": "low",
+          "hint": "Your page HTML is large. Optimize images and minimize unused code."
+        }
+      }
+    },
+    "aiFeedback": {
+      "overallSummary": "Analysis completed for FULLSTACK role.  @rakeshkumar0804 has 6 repos. Focus on strengthening quantifiable achievements to maximize interview call rates.",
+      "strengths": [
+        "Active GitHub activity: 60 commits in 90 days",
+        "Live portfolio website available"
+      ],
+      "weaknesses": [
+        "Add more quantifiable project impact metrics"
+      ],
+      "scoreExplanations": {
+        "github": "GitHub score of 86/100 reflects commits and public repos.",
+        "projectQuality": "Project quality at 78/100 based on repository completeness.",
+        "documentation": "Documentation score of 72/100.",
+        "portfolio": "Portfolio at 88/100."
+      },
+      "recruiterFirstImpression": {
+        "verdict": "Promising Developer",
+        "thought": "A recruiter evaluating this FULLSTACK application sees an incomplete profile. The candidate looks worth interviewing.",
+        "positives": [
+          "Active GitHub activity: 60 commits in 90 days",
+          "Live portfolio website available"
+        ],
+        "negatives": []
+      },
+      "careerRoadmap": {
+        "currentLevel": "Mid-Level FULLSTACK Candidate",
+        "targetLevel": "Mid/Senior FULLSTACK Developer",
+        "estimatedWeeks": 4,
+        "milestones": [
+          {
+            "week": "Week 1–2",
+            "task": "Add quantifiable metrics to resume and top project READMEs",
+            "impact": "Directly improves ATS score and recruiter callback rate"
+          },
+          {
+            "week": "Week 3–4",
+            "task": "Build a production demo project aligned with FULLSTACK",
+            "impact": "Provides strong technical proof to interviewers"
+          }
+        ]
+      },
+      "hiringRecommendation": "hire",
+      "topPriority": "Add concise descriptions to all public repositories"
+    },
+    "resumeAnalysis": null,
+    "skillsDetected": [
+      "JavaScript",
+      "expressjs",
+      "full-stack",
+      "javascript",
+      "jwt",
+      "mern",
+      "mongodb",
+      "nodejs",
+      "rbac",
+      "react",
+      "task-management",
+      "Node.js",
+      "Express",
+      "React",
+      "MongoDB",
+      "Java",
+      "frontened",
+      "portfolio",
+      "responsive-design",
+      "software-engineer",
+      "vite",
+      "web-development",
+      "ai",
+      "ats",
+      "career-development",
+      "developer-tools",
+      "express",
+      "github-api",
+      "resume",
+      "fullstack",
+      "hrms",
+      "leave-management-system",
+      "rest-api",
+      "sqlite",
+      "SQL",
+      "REST API"
+    ],
+    "recruiterDecision": {
+      "decision": "YES",
+      "decisionLabel": "🌟 Shortlist: YES — High Priority Candidate",
+      "grade": "A",
+      "seniorityLevel": "Senior Candidate Level",
+      "toneCategory": "senior",
+      "confidenceScore": 84,
+      "confidenceLevel": "Medium-High Confidence",
+      "confidenceRationale": "Verified against GitHub public data. Connect Portfolio & Resume for 100% full-spectrum confidence.",
+      "hiringRecommendation": "Fast-Track to Technical Interview & Team Matching",
+      "salaryBandEstimate": "$130,000 – $160,000 USD (Senior Developer Benchmark)",
+      "recruiterThought": "Strong candidate for FULLSTACK roles. Public GitHub commit velocity, repository structure, and technical documentation demonstrate high readiness for senior engineering environments.",
+      "interviewQuestions": [
+        "1. \"I noticed your public GitHub repos focus on fullstack projects. How do you approach state management and system architecture when scaling a production app?\"",
+        "2. \"Your profile shows 6 active project repositories. Can you walk me through the hardest technical bug you debugged in your main repository?\"",
+        "3. \"You have a live portfolio at https://developer-portfolio-nu-rouge.vercel.app/. How did you handle web performance, responsiveness, and deployment CI/CD for this site?\""
+      ],
+      "greenFlags": [
+        {
+          "title": "Active GitHub Contributor",
+          "evidence": "60 commits verified in last 90 days"
+        },
+        {
+          "title": "Profile README Active",
+          "evidence": "Dedicated GitHub Profile README file verified"
+        },
+        {
+          "title": "Public Repositories Published",
+          "evidence": "6 original code repositories on GitHub"
+        },
+        {
+          "title": "Live Portfolio Website",
+          "evidence": "Active at https://developer-portfolio-nu-rouge.vercel.app/"
+        }
+      ],
+      "redFlags": [
+        {
+          "title": "Upload a PDF Resume",
+          "risk": "Upload your resume to unlock ATS keyword matching for your target role."
+        }
+      ],
+      "dataFreshness": "Live GitHub & Resume Audit"
+    },
+    "consistencyMatrix": {
+      "consistencyScore": 100,
+      "verifiedInBoth": [],
+      "resumeOnly": [],
+      "githubOnly": [
+        "JavaScript",
+        "expressjs",
+        "full-stack",
+        "javascript",
+        "jwt",
+        "mern",
+        "mongodb",
+        "nodejs"
+      ],
+      "actionAuditList": [
+        {
+          "skill": "JavaScript",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add JavaScript to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "expressjs",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add expressjs to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "full-stack",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add full-stack to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "javascript",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add javascript to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "jwt",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add jwt to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "mern",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add mern to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "mongodb",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add mongodb to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "nodejs",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add nodejs to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "rbac",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add rbac to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "react",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add react to your resume skills section",
+          "impact": "High"
+        }
+      ],
+      "warnings": [
+        "You have active GitHub code in JavaScript, expressjs, full-stack, but these are missing from your resume!"
+      ]
+    },
+    "createdAt": 1785688010367
+  },
+  {
+    "shareId": "sd50YzCxfP",
+    "userId": "zefcZQ1UB-8AoL",
+    "githubUsername": "rakeshkumar0804",
+    "portfolioUrl": "https://developer-portfolio-nu-rouge.vercel.app/",
+    "targetRole": "fullstack",
+    "analysisMode": "github_portfolio",
+    "scores": {
+      "github": 86,
+      "documentation": 72,
+      "projectQuality": 78,
+      "portfolio": 88,
+      "hiringReadiness": 82,
+      "overall": 84
+    },
+    "scoreBreakdowns": {
+      "github": [
+        {
+          "score": 38,
+          "max": 40,
+          "label": "Commit Cadence & Consistency",
+          "evidence": "Earned +23 pts for 60 commits in last 90 days (3-day active streak)"
+        },
+        {
+          "score": 13,
+          "max": 25,
+          "label": "Community Stars & Followers",
+          "evidence": "Earned +3 pts for 2 stars across repos and 1 followers"
+        },
+        {
+          "score": 35,
+          "max": 35,
+          "label": "Profile Completeness & Overview README",
+          "evidence": "Earned +20 pts for completing 5/5 profile fields and Profile README"
+        }
+      ],
+      "documentation": [
+        {
+          "score": 23,
+          "max": 35,
+          "label": "Repository Descriptions Coverage",
+          "evidence": "Earned +13 pts: 3/6 repos have descriptions (50%)"
+        },
+        {
+          "score": 23,
+          "max": 30,
+          "label": "Topic Tags & Categorization",
+          "evidence": "Earned +13 pts: 4/6 repos tagged with topics (67%)"
+        },
+        {
+          "score": 26,
+          "max": 35,
+          "label": "Repository README Content Depth",
+          "evidence": "Earned +11 pts based on project README depth (55/100 quality rating)"
+        }
+      ],
+      "projectQuality": [
+        {
+          "score": 30,
+          "max": 40,
+          "label": "Live Demo Deployments",
+          "evidence": "Earned +20 pts: 4/6 top projects have live demo links"
+        },
+        {
+          "score": 6,
+          "max": 15,
+          "label": "Tech Diversity",
+          "evidence": "2 different languages across top repositories"
+        }
+      ],
+      "portfolio": [
+        {
+          "score": 10,
+          "max": 10,
+          "label": "HTTPS Secure",
+          "evidence": "✅ HTTPS Secure — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Mobile Responsive",
+          "evidence": "✅ Mobile Responsive — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Meta Description",
+          "evidence": "✅ Meta Description — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Contact Email",
+          "evidence": "✅ Contact Email — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Resume Link",
+          "evidence": "✅ Resume Link — passing"
+        },
+        {
+          "score": 8,
+          "max": 8,
+          "label": "Projects Section",
+          "evidence": "✅ Projects Section — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "H1 Heading",
+          "evidence": "✅ H1 Heading — passing"
+        },
+        {
+          "score": 0,
+          "max": 5,
+          "label": "Open Graph Tags",
+          "evidence": "❌ Open Graph Tags — needs fix"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "GitHub Link",
+          "evidence": "✅ GitHub Link — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "LinkedIn Link",
+          "evidence": "✅ LinkedIn Link — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "Contact Section",
+          "evidence": "✅ Contact Section — passing"
+        },
+        {
+          "score": 5,
+          "max": 5,
+          "label": "Page Title",
+          "evidence": "✅ Page Title — passing"
+        },
+        {
+          "score": 4,
+          "max": 4,
+          "label": "Image Alt Tags",
+          "evidence": "✅ Image Alt Tags — passing"
+        },
+        {
+          "score": 0,
+          "max": 3,
+          "label": "Social Share Image",
+          "evidence": "❌ Social Share Image — needs fix"
+        },
+        {
+          "score": 3,
+          "max": 3,
+          "label": "Accessible",
+          "evidence": "✅ Accessible — passing"
+        },
+        {
+          "score": 0,
+          "max": 3,
+          "label": "Twitter/X Link",
+          "evidence": "❌ Twitter/X Link — needs fix"
+        },
+        {
+          "score": 2,
+          "max": 2,
+          "label": "Fast Loading",
+          "evidence": "✅ Fast Loading — passing"
+        }
+      ]
+    },
+    "improvements": [
+      {
+        "action": "Add concise descriptions to all public repositories",
+        "why": "Recruiters skip repositories without clear one-line explanations.",
+        "how": "Edit the header settings of your repositories on GitHub to add a 10-word summary.",
+        "points": 10,
+        "difficulty": "Easy",
+        "timeMinutes": 10,
+        "priority": 1,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Developer-Portfolio",
+          "leaveflow-hr",
+          "taskflow"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Add detailed descriptions and topics to your top repositories",
+        "why": "Incomplete repos signal you don't care about presentation — which makes recruiters wonder about your code quality too.",
+        "how": "For each repo: add a 1-2 sentence description, add 3–5 relevant topics (react, nodejs, portfolio, etc.), and add a homepage link if deployed.",
+        "points": 8,
+        "difficulty": "Easy",
+        "timeMinutes": 20,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Developer-Portfolio",
+          "leaveflow-hr",
+          "taskflow"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      },
+      {
+        "action": "Fix: Open Graph Tags",
+        "why": "SEO issue — this reduces your professional credibility.",
+        "how": "Add og:title, og:description, og:image meta tags for social sharing.",
+        "points": 5,
+        "difficulty": "Easy",
+        "timeMinutes": 5,
+        "priority": 2,
+        "confidenceLevel": "High Confidence",
+        "affectedRepos": [
+          "Public Profile"
+        ],
+        "affectedResumeSection": "GitHub Public Repositories"
+      }
+    ],
+    "githubData": {
+      "profile": {
+        "username": "rakeshkumar0804",
+        "name": "Rakesh Kumar",
+        "bio": "Full-Stack Developer | MERN Stack\r\nJavaScript • React • Node.js • SQL\r\nBuilding scalable web applications",
+        "avatar": "https://avatars.githubusercontent.com/u/200815585?v=4",
+        "location": "Gurugram, Haryana, India",
+        "website": "https://developer-portfolio-nu-rouge.vercel.app/",
+        "company": "",
+        "email": "",
+        "githubUrl": "https://github.com/rakeshkumar0804",
+        "followers": 1,
+        "following": 0,
+        "publicRepos": 6,
+        "publicGists": 0,
+        "accountCreated": "2025-02-25T16:27:26Z",
+        "accountAgeYears": 1.4,
+        "isHireable": true,
+        "twitterUsername": ""
+      },
+      "stats": {
+        "totalStars": 2,
+        "totalForks": 0,
+        "totalRepos": 6,
+        "ownedRepos": 6,
+        "forkedRepos": 0,
+        "reposWithDescription": 3,
+        "reposWithTopics": 4,
+        "reposWithLicense": 3,
+        "reposWithHomepage": 4,
+        "reposWithGoodReadme": 3,
+        "avgReadmeScore": 55,
+        "commitCount90Days": 60,
+        "commitCount30Days": 51,
+        "totalContributionsYear": 61,
+        "currentStreak": 3,
+        "weeklyActivity": [
+          {
+            "week": "2026-05-17",
+            "count": 0
+          },
+          {
+            "week": "2026-05-24",
+            "count": 0
+          },
+          {
+            "week": "2026-05-31",
+            "count": 0
+          },
+          {
+            "week": "2026-06-07",
+            "count": 0
+          },
+          {
+            "week": "2026-06-14",
+            "count": 0
+          },
+          {
+            "week": "2026-06-21",
+            "count": 0
+          },
+          {
+            "week": "2026-06-28",
+            "count": 0
+          },
+          {
+            "week": "2026-07-05",
+            "count": 0
+          },
+          {
+            "week": "2026-07-12",
+            "count": 0
+          },
+          {
+            "week": "2026-07-19",
+            "count": 2
+          },
+          {
+            "week": "2026-07-26",
+            "count": 26
+          },
+          {
+            "week": "2026-08-02",
+            "count": 5
+          }
+        ]
+      },
+      "languageDistribution": [
+        {
+          "language": "JavaScript",
+          "count": 4,
+          "percentage": 100
+        }
+      ],
+      "topRepos": [
+        {
+          "name": "Developer-Portfolio",
+          "description": "Modern Full-Stack Developer Portfolio built with React and Vite, showcasing projects, technical skills, certifications, and experience with a responsive, recruiter-friendly design.",
+          "stars": 1,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "frontened",
+            "javascript",
+            "mern",
+            "portfolio",
+            "react",
+            "responsive-design",
+            "software-engineer",
+            "vite",
+            "web-development"
+          ],
+          "url": "https://github.com/rakeshkumar0804/Developer-Portfolio",
+          "lastPushed": "2026-08-02T15:54:02Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 100
+        },
+        {
+          "name": "leaveflow-hr",
+          "description": "Full-Stack Employee Leave Management System built with Node.js, SQLite, REST APIs and Role-Based Authentication.Live Demo: https://leaveflow-hr-hvfh.onrender.com",
+          "stars": 1,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "expressjs",
+            "fullstack",
+            "hrms",
+            "javascript",
+            "leave-management-system",
+            "mern",
+            "nodejs",
+            "rbac",
+            "rest-api",
+            "sqlite"
+          ],
+          "url": "https://github.com/rakeshkumar0804/leaveflow-hr",
+          "lastPushed": "2026-08-01T07:03:54Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 100
+        },
+        {
+          "name": "taskflow",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "expressjs",
+            "full-stack",
+            "javascript",
+            "jwt",
+            "mern",
+            "mongodb",
+            "nodejs",
+            "rbac",
+            "react",
+            "task-management"
+          ],
+          "url": "https://github.com/rakeshkumar0804/taskflow",
+          "lastPushed": "2026-08-02T16:02:18Z",
+          "isForked": false,
+          "hasLicense": true,
+          "hasHomepage": true,
+          "hasReadme": false,
+          "readmeScore": 50
+        },
+        {
+          "name": "dev-portfolio-checker",
+          "description": "AI-powered career intelligence platform that analyzes GitHub profiles, portfolio websites, and resumes to evaluate hiring readiness with actionable insights, recruiter simulation, ATS analysis, and personalized improvement recommendations.",
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [
+            "ai",
+            "ats",
+            "career-development",
+            "developer-tools",
+            "express",
+            "full-stack",
+            "github-api",
+            "mongodb",
+            "nodejs",
+            "portfolio",
+            "react",
+            "resume",
+            "vite"
+          ],
+          "url": "https://github.com/rakeshkumar0804/dev-portfolio-checker",
+          "lastPushed": "2026-08-02T10:08:22Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": true,
+          "hasReadme": true,
+          "readmeScore": 80
+        },
+        {
+          "name": "rakeshkumar0804",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "Unknown",
+          "topics": [],
+          "url": "https://github.com/rakeshkumar0804/rakeshkumar0804",
+          "lastPushed": "2026-07-31T10:18:27Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": false,
+          "hasReadme": false,
+          "readmeScore": 0
+        },
+        {
+          "name": "RPS-project",
+          "description": "",
+          "stars": 0,
+          "forks": 0,
+          "language": "Unknown",
+          "topics": [],
+          "url": "https://github.com/rakeshkumar0804/RPS-project",
+          "lastPushed": "2026-04-05T07:29:32Z",
+          "isForked": false,
+          "hasLicense": false,
+          "hasHomepage": false,
+          "hasReadme": false,
+          "readmeScore": 0
+        }
+      ],
+      "skills": [
+        "JavaScript",
+        "expressjs",
+        "full-stack",
+        "javascript",
+        "jwt",
+        "mern",
+        "mongodb",
+        "nodejs",
+        "rbac",
+        "react",
+        "task-management",
+        "Node.js",
+        "Express",
+        "React",
+        "MongoDB",
+        "Java",
+        "frontened",
+        "portfolio",
+        "responsive-design",
+        "software-engineer",
+        "vite",
+        "web-development",
+        "ai",
+        "ats",
+        "career-development",
+        "developer-tools",
+        "express",
+        "github-api",
+        "resume",
+        "fullstack",
+        "hrms",
+        "leave-management-system",
+        "rest-api",
+        "sqlite",
+        "SQL",
+        "REST API"
+      ],
+      "hasProfileReadme": true
+    },
+    "portfolioData": {
+      "url": "https://developer-portfolio-nu-rouge.vercel.app/",
+      "accessible": true,
+      "isHttps": true,
+      "statusCode": 200,
+      "responseTimeMs": 308,
+      "seo": {
+        "title": "Rakesh Kumar | Software Engineer",
+        "titleLength": 32,
+        "metaDescription": "Rakesh Kumar - Software Engineer and MERN Stack Developer",
+        "metaDescriptionLength": 57,
+        "ogTitle": "",
+        "ogDescription": "",
+        "ogImage": "",
+        "h1Tags": [
+          "Hi, I'mRakesh KumarFull-StackDeveloper."
+        ],
+        "h1Count": 1
+      },
+      "content": {
+        "hasProjectSection": true,
+        "hasContactSection": true,
+        "hasResumeLink": true,
+        "emailsFound": [
+          "rakeshchauhan6651@gmail.com"
+        ]
+      },
+      "accessibility": {
+        "hasGoodAltTags": true,
+        "imgsTotal": 0,
+        "imgsWithAlt": 0
+      },
+      "social": {
+        "hasGithubLink": true,
+        "hasLinkedinLink": true,
+        "hasTwitterLink": false
+      },
+      "checklist": {
+        "isHttps": {
+          "pass": true,
+          "label": "HTTPS Secure",
+          "importance": "critical",
+          "hint": "Deploy your site to HTTPS. Netlify and Vercel provide this automatically."
+        },
+        "isAccessible": {
+          "pass": true,
+          "label": "Site Accessible",
+          "importance": "critical",
+          "hint": "Make sure your site is publicly accessible."
+        },
+        "hasTitle": {
+          "pass": true,
+          "label": "Page Title",
+          "importance": "high",
+          "hint": "Add a <title> tag to your HTML head."
+        },
+        "hasTitleOptimal": {
+          "pass": true,
+          "label": "Title Length (20–70)",
+          "importance": "medium",
+          "hint": "Make your title 20–70 characters for best SEO."
+        },
+        "hasMetaDescription": {
+          "pass": true,
+          "label": "Meta Description",
+          "importance": "high",
+          "hint": "Add <meta name=\"description\" content=\"...\"> to your HTML head."
+        },
+        "hasMetaDescriptionOptimal": {
+          "pass": true,
+          "label": "Description Length (50–160)",
+          "importance": "medium",
+          "hint": "Keep your meta description 50–160 characters."
+        },
+        "hasH1": {
+          "pass": true,
+          "label": "H1 Heading",
+          "importance": "high",
+          "hint": "Add exactly one <h1> tag on your page for SEO."
+        },
+        "hasSingleH1": {
+          "pass": true,
+          "label": "Single H1",
+          "importance": "medium",
+          "hint": "Use exactly one <h1> per page — multiple H1s confuse search engines."
+        },
+        "hasOgTags": {
+          "pass": false,
+          "label": "Open Graph Tags",
+          "importance": "medium",
+          "hint": "Add og:title, og:description, og:image meta tags for social sharing."
+        },
+        "hasOgImage": {
+          "pass": false,
+          "label": "OG Social Image",
+          "importance": "low",
+          "hint": "Add <meta property=\"og:image\" content=\"...\"> for beautiful social previews."
+        },
+        "hasViewport": {
+          "pass": true,
+          "label": "Mobile Viewport",
+          "importance": "critical",
+          "hint": "Add <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> to your HTML head."
+        },
+        "hasEmail": {
+          "pass": true,
+          "label": "Email Address",
+          "importance": "high",
+          "hint": "Add your email address visibly on your site so recruiters can contact you."
+        },
+        "hasContactSection": {
+          "pass": true,
+          "label": "Contact Section",
+          "importance": "high",
+          "hint": "Add a dedicated contact section or page."
+        },
+        "hasGithubLink": {
+          "pass": true,
+          "label": "GitHub Link",
+          "importance": "high",
+          "hint": "Add a link to your GitHub profile in your navigation or footer."
+        },
+        "hasLinkedinLink": {
+          "pass": true,
+          "label": "LinkedIn Link",
+          "importance": "medium",
+          "hint": "Add your LinkedIn profile link — many recruiters go straight there."
+        },
+        "hasTwitterLink": {
+          "pass": false,
+          "label": "Twitter/X Link",
+          "importance": "low",
+          "hint": "Add your Twitter/X link if active in the developer community."
+        },
+        "hasResumeLink": {
+          "pass": true,
+          "label": "Resume/CV Link",
+          "importance": "critical",
+          "hint": "Add a downloadable PDF resume link. This is the #1 thing recruiters look for."
+        },
+        "hasProjectSection": {
+          "pass": true,
+          "label": "Projects Section",
+          "importance": "critical",
+          "hint": "Add a section showcasing your best 3–5 projects with descriptions and links."
+        },
+        "hasGoodAltTags": {
+          "pass": true,
+          "label": "Image Alt Texts",
+          "importance": "medium",
+          "hint": "Add alt attributes to all your <img> tags for accessibility and SEO."
+        },
+        "hasReasonableSize": {
+          "pass": true,
+          "label": "Page Size OK",
+          "importance": "low",
+          "hint": "Your page HTML is large. Optimize images and minimize unused code."
+        }
+      }
+    },
+    "aiFeedback": {
+      "overallSummary": "Analysis completed for FULLSTACK role.  @rakeshkumar0804 has 6 repos. Focus on strengthening quantifiable achievements to maximize interview call rates.",
+      "strengths": [
+        "Active GitHub activity: 60 commits in 90 days",
+        "Live portfolio website available"
+      ],
+      "weaknesses": [
+        "Add more quantifiable project impact metrics"
+      ],
+      "scoreExplanations": {
+        "github": "GitHub score of 86/100 reflects commits and public repos.",
+        "projectQuality": "Project quality at 78/100 based on repository completeness.",
+        "documentation": "Documentation score of 72/100.",
+        "portfolio": "Portfolio at 88/100."
+      },
+      "recruiterFirstImpression": {
+        "verdict": "Promising Developer",
+        "thought": "A recruiter evaluating this FULLSTACK application sees an incomplete profile. The candidate looks worth interviewing.",
+        "positives": [
+          "Active GitHub activity: 60 commits in 90 days",
+          "Live portfolio website available"
+        ],
+        "negatives": []
+      },
+      "careerRoadmap": {
+        "currentLevel": "Mid-Level FULLSTACK Candidate",
+        "targetLevel": "Mid/Senior FULLSTACK Developer",
+        "estimatedWeeks": 4,
+        "milestones": [
+          {
+            "week": "Week 1–2",
+            "task": "Add quantifiable metrics to resume and top project READMEs",
+            "impact": "Directly improves ATS score and recruiter callback rate"
+          },
+          {
+            "week": "Week 3–4",
+            "task": "Build a production demo project aligned with FULLSTACK",
+            "impact": "Provides strong technical proof to interviewers"
+          }
+        ]
+      },
+      "hiringRecommendation": "hire",
+      "topPriority": "Add concise descriptions to all public repositories"
+    },
+    "resumeAnalysis": null,
+    "skillsDetected": [
+      "JavaScript",
+      "expressjs",
+      "full-stack",
+      "javascript",
+      "jwt",
+      "mern",
+      "mongodb",
+      "nodejs",
+      "rbac",
+      "react",
+      "task-management",
+      "Node.js",
+      "Express",
+      "React",
+      "MongoDB",
+      "Java",
+      "frontened",
+      "portfolio",
+      "responsive-design",
+      "software-engineer",
+      "vite",
+      "web-development",
+      "ai",
+      "ats",
+      "career-development",
+      "developer-tools",
+      "express",
+      "github-api",
+      "resume",
+      "fullstack",
+      "hrms",
+      "leave-management-system",
+      "rest-api",
+      "sqlite",
+      "SQL",
+      "REST API"
+    ],
+    "recruiterDecision": {
+      "decision": "YES",
+      "decisionLabel": "🌟 Shortlist: YES — High Priority Candidate",
+      "grade": "A",
+      "seniorityLevel": "Senior Candidate Level",
+      "toneCategory": "senior",
+      "confidenceScore": 84,
+      "confidenceLevel": "Medium-High Confidence",
+      "confidenceRationale": "Verified against GitHub public data. Connect Portfolio & Resume for 100% full-spectrum confidence.",
+      "hiringRecommendation": "Fast-Track to Technical Interview & Team Matching",
+      "salaryBandEstimate": "$130,000 – $160,000 USD (Senior Developer Benchmark)",
+      "recruiterThought": "Strong candidate for FULLSTACK roles. Public GitHub commit velocity, repository structure, and technical documentation demonstrate high readiness for senior engineering environments.",
+      "interviewQuestions": [
+        "1. \"I noticed your public GitHub repos focus on fullstack projects. How do you approach state management and system architecture when scaling a production app?\"",
+        "2. \"Your profile shows 6 active project repositories. Can you walk me through the hardest technical bug you debugged in your main repository?\"",
+        "3. \"You have a live portfolio at https://developer-portfolio-nu-rouge.vercel.app/. How did you handle web performance, responsiveness, and deployment CI/CD for this site?\""
+      ],
+      "greenFlags": [
+        {
+          "title": "Active GitHub Contributor",
+          "evidence": "60 commits verified in last 90 days"
+        },
+        {
+          "title": "Profile README Active",
+          "evidence": "Dedicated GitHub Profile README file verified"
+        },
+        {
+          "title": "Public Repositories Published",
+          "evidence": "6 original code repositories on GitHub"
+        },
+        {
+          "title": "Live Portfolio Website",
+          "evidence": "Active at https://developer-portfolio-nu-rouge.vercel.app/"
+        }
+      ],
+      "redFlags": [
+        {
+          "title": "Upload a PDF Resume",
+          "risk": "Upload your resume to unlock ATS keyword matching for your target role."
+        }
+      ],
+      "dataFreshness": "Live GitHub & Resume Audit"
+    },
+    "consistencyMatrix": {
+      "consistencyScore": 100,
+      "verifiedInBoth": [],
+      "resumeOnly": [],
+      "githubOnly": [
+        "JavaScript",
+        "expressjs",
+        "full-stack",
+        "javascript",
+        "jwt",
+        "mern",
+        "mongodb",
+        "nodejs"
+      ],
+      "actionAuditList": [
+        {
+          "skill": "JavaScript",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add JavaScript to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "expressjs",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add expressjs to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "full-stack",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add full-stack to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "javascript",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add javascript to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "jwt",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add jwt to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "mern",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add mern to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "mongodb",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add mongodb to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "nodejs",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add nodejs to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "rbac",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add rbac to your resume skills section",
+          "impact": "High"
+        },
+        {
+          "skill": "react",
+          "status": "GitHub Only (Hidden Gem)",
+          "evidenceFound": "Active code found in public GitHub repos",
+          "evidenceMissing": "Missing from uploaded resume PDF",
+          "actionableFix": "Add react to your resume skills section",
+          "impact": "High"
+        }
+      ],
+      "warnings": [
+        "You have active GitHub code in JavaScript, expressjs, full-stack, but these are missing from your resume!"
+      ]
+    },
+    "createdAt": 1785688010367
+  }
+]

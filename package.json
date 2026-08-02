@@ -1,0 +1,36 @@
+{
+  "name": "dev-portfolio-checker",
+  "version": "3.0.1",
+  "description": "PortfolioPulse - a SaaS career intelligence workspace for developers.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "node --watch server.js",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@sparticuz/chromium-min": "^149.0.0",
+    "axios": "^1.7.7",
+    "cheerio": "^1.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "mongoose": "^8.7.0",
+    "multer": "^2.0.2",
+    "nanoid": "^5.0.7",
+    "pdf-parse": "^1.1.1",
+    "puppeteer-core": "^25.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.2",
+    "vite": "^5.4.8"
+  }
+}
