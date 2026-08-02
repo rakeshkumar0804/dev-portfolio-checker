@@ -25,15 +25,11 @@ const MODES = [
   { id: "custom",     label: "Custom Combo",   icon: "⚡", desc: "Choose any inputs" },
 ];
 
-const FEATURES = [
-  "GitHub profile, repos & activity analysis",
-  "Portfolio SEO, accessibility & performance audit",
-  "AI-powered feedback with improvement estimates",
-  "10-Second recruiter scan simulation",
-  "Skill gap detection by target role",
-  "Resume ATS compatibility checker",
-  "Career roadmap with weekly milestones",
-  "Shareable public report link",
+const TRUST_SIGNALS = [
+  { icon: "🔒", label: "Read-Only GitHub API (No Credentials Required)" },
+  { icon: "📄", label: "ATS Resume Compatibility Audit" },
+  { icon: "🌐", label: "Portfolio SEO & Web Vitals Audit" },
+  { icon: "📊", label: "100% Deterministic Evidence Scores" },
 ];
 
 export default function HomePage() {
@@ -75,7 +71,6 @@ export default function HomePage() {
     try {
       let initialResumeResult = null;
 
-      // Handle resume upload first if provided
       if (resumeFile) {
         try {
           const formData = new FormData();
@@ -98,8 +93,9 @@ export default function HomePage() {
       sessionStorage.setItem("portfolioReport", JSON.stringify(result));
       navigate(`/results/${result.shareId}`);
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || "Analysis failed. Please try again.";
-      setError(msg);
+      console.error("HomePage submit error:", err);
+      // Friendly, non-technical error handling as requested
+      setError("Analysis couldn't be completed right now. Our service might be temporarily busy. Please try again.");
       setLoading(false);
     }
   }
@@ -111,204 +107,220 @@ export default function HomePage() {
       {/* Hero */}
       <div className="hero">
         <div className="hero-grid">
-          {/* Left */}
+          {/* Left Hero Header */}
           <div className="anim-fade-up">
             <div className="hero-badge">
               <span className="hero-badge-dot" />
-              Evidence-Based Developer Audit · Gemini AI Summary
+              PortfolioPulse · AI Career Intelligence Workspace
             </div>
 
             <h1 className="hero-title">
-              Know What Recruiters{" "}
+              Know What Technical Recruiters{" "}
               <span className="hero-title-grad">Actually See in 10 Seconds</span>
             </h1>
 
             <p className="hero-subtitle">
-              Enter your GitHub, Portfolio, or Resume — get a deterministic, evidence-based profile audit with Gemini AI executive summaries and actionable fixes.
+              Connect your GitHub, Portfolio, or Resume — get a deterministic, evidence-based profile audit with AI executive summaries and high-impact score fixes.
             </p>
 
+            {/* Product Value Metrics */}
             <div className="hero-stats">
               <div className="hero-stat-item">
-                <span className="hero-stat-value">100%</span>
-                <span className="hero-stat-label">Deterministic Scores</span>
+                <span className="hero-stat-value">20+</span>
+                <span className="hero-stat-label">Hiring Signals</span>
               </div>
               <div className="hero-stat-item">
-                <span className="hero-stat-value">Gemini</span>
-                <span className="hero-stat-label">AI Summary Text</span>
+                <span className="hero-stat-value">3</span>
+                <span className="hero-stat-label">Analysis Sources</span>
               </div>
               <div className="hero-stat-item">
-                <span className="hero-stat-value">Free</span>
-                <span className="hero-stat-label">No Signup Needed</span>
+                <span className="hero-stat-value">90s</span>
+                <span className="hero-stat-label">Automated Report</span>
               </div>
             </div>
 
-            <div className="features-list">
-              {FEATURES.map((f, i) => (
-                <div key={i} className="feature-item anim-fade-up" style={{ animationDelay: `${i * 0.05}s` }}>
-                  <div className="feature-item-dot" />
-                  <span>{f}</span>
+            {/* Trust Signals */}
+            <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 10 }}>
+              {TRUST_SIGNALS.map((ts, idx) => (
+                <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: "0.82rem", color: "var(--txt-2)" }}>
+                  <span style={{ fontSize: "1rem" }}>{ts.icon}</span>
+                  <span>{ts.label}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right — form */}
-          <div className="anim-fade-up anim-delay-2">
-            <div className="analysis-card">
-              <h2 className="analysis-card-title">Analyze Profile</h2>
-              <p className="analysis-card-sub">
-                Select your audit mode & target role below
-              </p>
+          {/* Right Input Card */}
+          <div className="anim-fade-up anim-delay-1">
+            <div className="card hero-form-card">
+              <h2 className="form-title" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span>Analyze Your Profile</span>
+                <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--cyan)", background: "rgba(56, 189, 248, 0.1)", padding: "4px 10px", borderRadius: 12 }}>
+                  Read-Only Security
+                </span>
+              </h2>
+              <p className="form-sub">Select an audit mode and input your profile details below.</p>
 
-              {/* Mode Selector Tabs */}
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+              {/* Mode Selectors */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 8, marginBottom: 20 }}>
                 {MODES.map((m) => (
                   <button
                     key={m.id}
                     type="button"
-                    className={`role-btn ${activeMode === m.id ? "active" : ""}`}
-                    style={{ fontSize: "0.76rem", padding: "6px 12px" }}
-                    onClick={() => {
-                      setActiveMode(m.id);
-                      if (m.id === "github_only") { setPortfolioUrl(""); }
-                      else if (m.id === "portfolio_only") { setGithubUsername(""); }
-                      else if (m.id === "resume_only") { setGithubUsername(""); setPortfolioUrl(""); }
+                    onClick={() => setActiveMode(m.id)}
+                    style={{
+                      padding: "8px 10px",
+                      borderRadius: 10,
+                      border: `1px solid ${activeMode === m.id ? "rgba(56, 189, 248, 0.5)" : "var(--border)"}`,
+                      background: activeMode === m.id ? "rgba(56, 189, 248, 0.12)" : "rgba(255,255,255,0.02)",
+                      color: activeMode === m.id ? "var(--cyan)" : "var(--txt-2)",
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      textAlign: "center",
+                      transition: "all 0.2s ease",
                     }}
                   >
-                    {m.icon} {m.label}
+                    <div>{m.icon} {m.label}</div>
                   </button>
                 ))}
               </div>
 
+              {/* Form inputs */}
               <form onSubmit={handleSubmit}>
-                {/* Target Role Selector */}
+                {/* Target Role Dropdown */}
                 <div className="form-group">
-                  <label className="form-label">
-                    <span className="form-label-icon">🎯</span>
-                    Target Role
-                  </label>
-                  <div className="role-selector" style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                    {ROLES.map((role) => (
-                      <button
-                        key={role.id}
-                        type="button"
-                        className={`role-btn ${targetRole === role.id ? "active" : ""}`}
-                        onClick={() => setTargetRole(role.id)}
-                      >
-                        {role.icon} {role.label}
-                      </button>
+                  <label className="form-label">Target Role Specialty</label>
+                  <select
+                    className="input-select"
+                    value={targetRole}
+                    onChange={(e) => setTargetRole(e.target.value)}
+                  >
+                    {ROLES.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.icon} {r.label}
+                      </option>
                     ))}
-                  </div>
+                  </select>
                 </div>
 
-                {/* GitHub Username */}
-                {(activeMode !== "portfolio_only" && activeMode !== "resume_only") && (
+                {/* GitHub Input */}
+                {(activeMode === "full_360" || activeMode === "github_only" || activeMode === "custom") && (
                   <div className="form-group">
-                    <label className="form-label" htmlFor="github-username">
-                      <span className="form-label-icon">🐙</span>
-                      GitHub Username
-                      {activeMode === "github_only" ? (
-                        <span style={{ color: "var(--red)" }}> *</span>
-                      ) : (
-                        <span style={{ color: "var(--txt-3)", fontWeight: 400, textTransform: "none", fontSize: "0.78rem" }}> (optional)</span>
-                      )}
-                    </label>
-                    <input
-                      id="github-username"
-                      type="text"
-                      className="form-input"
-                      placeholder="e.g. torvalds"
-                      value={githubUsername}
-                      onChange={(e) => setGithubUsername(e.target.value)}
-                      autoComplete="off"
-                      spellCheck="false"
-                    />
-                    <p className="form-hint">💡 Just the username, e.g. "rakeshkumar0804"</p>
+                    <label className="form-label">GitHub Username</label>
+                    <div className="input-prefix-wrap">
+                      <span className="input-prefix">github.com/</span>
+                      <input
+                        type="text"
+                        className="input-field prefixed"
+                        placeholder="username"
+                        value={githubUsername}
+                        onChange={(e) => setGithubUsername(e.target.value)}
+                      />
+                    </div>
                   </div>
                 )}
 
-                {/* Portfolio */}
-                {(activeMode !== "github_only" && activeMode !== "resume_only") && (
+                {/* Portfolio Input */}
+                {(activeMode === "full_360" || activeMode === "portfolio_only" || activeMode === "custom") && (
                   <div className="form-group">
-                    <label className="form-label" htmlFor="portfolio-url">
-                      <span className="form-label-icon">🌐</span>
-                      Portfolio URL
-                      {activeMode === "portfolio_only" ? (
-                        <span style={{ color: "var(--red)" }}> *</span>
-                      ) : (
-                        <span style={{ color: "var(--txt-3)", fontWeight: 400, textTransform: "none", fontSize: "0.78rem" }}> (optional)</span>
-                      )}
-                    </label>
+                    <label className="form-label">Portfolio Website URL</label>
                     <input
-                      id="portfolio-url"
                       type="url"
-                      className="form-input"
-                      placeholder="https://yourportfolio.com"
+                      className="input-field"
+                      placeholder="https://yourportfolio.dev"
                       value={portfolioUrl}
                       onChange={(e) => setPortfolioUrl(e.target.value)}
                     />
-                    <p className="form-hint">🔍 We audit SEO, accessibility, content & performance</p>
                   </div>
                 )}
 
-                {/* Resume Upload */}
-                {(activeMode !== "github_only" && activeMode !== "portfolio_only") && (
+                {/* Resume Upload Input */}
+                {(activeMode === "full_360" || activeMode === "resume_only" || activeMode === "custom") && (
                   <div className="form-group">
-                    <label className="form-label">
-                      <span className="form-label-icon">📄</span>
-                      Resume / CV
-                      {activeMode === "resume_only" ? (
-                        <span style={{ color: "var(--red)" }}> *</span>
+                    <label className="form-label">Resume PDF (ATS Keyword Match)</label>
+                    <div
+                      className={`dropzone ${dragOver ? "dragover" : ""} ${resumeFile ? "has-file" : ""}`}
+                      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                      onDragLeave={() => setDragOver(false)}
+                      onDrop={handleResumeDrop}
+                      onClick={() => fileRef.current?.click()}
+                    >
+                      <input
+                        ref={fileRef}
+                        type="file"
+                        accept="application/pdf"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file && file.type === "application/pdf") setResumeFile(file);
+                        }}
+                      />
+                      {resumeFile ? (
+                        <div className="dropzone-file">
+                          <span style={{ fontSize: 24 }}>📄</span>
+                          <div>
+                            <div style={{ fontWeight: 600, color: "var(--txt-1)", fontSize: "0.85rem" }}>{resumeFile.name}</div>
+                            <div style={{ fontSize: "0.75rem", color: "var(--green)" }}>Ready for ATS keyword extraction</div>
+                          </div>
+                        </div>
                       ) : (
-                        <span style={{ color: "var(--txt-3)", fontWeight: 400, textTransform: "none", fontSize: "0.78rem" }}> (optional, PDF)</span>
+                        <div className="dropzone-prompt">
+                          <span style={{ fontSize: 22, marginBottom: 4 }}>📄</span>
+                          <div style={{ fontSize: "0.83rem", fontWeight: 600, color: "var(--txt-1)" }}>
+                            Drop your Resume PDF here or click to browse
+                          </div>
+                          <div style={{ fontSize: "0.73rem", color: "var(--txt-3)" }}>Maximum 5MB PDF</div>
+                        </div>
                       )}
-                    </label>
-                    {resumeFile ? (
-                      <div className="resume-file-selected">
-                        <span>✅</span>
-                        <span style={{ flex: 1 }}>{resumeFile.name}</span>
-                        <button
-                          type="button"
-                          onClick={() => setResumeFile(null)}
-                          style={{ color: "var(--txt-3)", fontSize: "0.8rem" }}
-                        >
-                          ✕ Remove
-                        </button>
-                      </div>
-                    ) : (
-                      <div
-                        className={`resume-dropzone ${dragOver ? "drag-over" : ""}`}
-                        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                        onDragLeave={() => setDragOver(false)}
-                        onDrop={handleResumeDrop}
-                        onClick={() => fileRef.current?.click()}
-                      >
-                        <input
-                          ref={fileRef}
-                          type="file"
-                          accept=".pdf"
-                          onChange={(e) => {
-                            const f = e.target.files[0];
-                            if (f) setResumeFile(f);
-                          }}
-                          style={{ display: "none" }}
-                        />
-                        <div className="resume-dropzone-icon">📎</div>
-                        <div className="resume-dropzone-text">Drop PDF here or click to browse</div>
-                        <div className="resume-dropzone-sub">Max 5MB · PDF only · ATS & keyword analysis</div>
-                      </div>
-                    )}
+                    </div>
                   </div>
                 )}
 
+                {/* Friendly Error Box */}
                 {error && (
-                  <div className="error-banner">⚠️ {error}</div>
+                  <div
+                    style={{
+                      background: "rgba(239, 68, 68, 0.1)",
+                      border: "1px solid rgba(239, 68, 68, 0.3)",
+                      borderRadius: 12,
+                      padding: "12px 16px",
+                      marginBottom: 16,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 8,
+                    }}
+                  >
+                    <div style={{ color: "#f87171", fontSize: "0.83rem", fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+                      <span>⚠️</span> {error}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      style={{
+                        alignSelf: "flex-start",
+                        padding: "4px 12px",
+                        background: "rgba(239, 68, 68, 0.2)",
+                        border: "1px solid rgba(239, 68, 68, 0.4)",
+                        color: "#f87171",
+                        borderRadius: 6,
+                        fontSize: "0.75rem",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      🔄 Retry Analysis
+                    </button>
+                  </div>
                 )}
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
-                  <button id="analyze-btn" type="submit" className="btn-primary">
-                    <span>Get My Hiring Score →</span>
-                  </button>
+                {/* Primary CTA */}
+                <button type="submit" className="btn-primary form-submit-btn" style={{ width: "100%", padding: "14px", fontSize: "1rem", fontWeight: 700 }}>
+                  Get My Hiring Score →
+                </button>
+
+                {/* 1-Click Sample Demo Report Button */}
+                <div style={{ marginTop: 12, textAlign: "center" }}>
                   <button
                     type="button"
                     onClick={() => {
@@ -328,30 +340,26 @@ export default function HomePage() {
                         sessionStorage.setItem("portfolioReport", JSON.stringify(result));
                         navigate(`/results/${result.shareId}`);
                       }).catch((err) => {
-                        setError(err.message);
+                        setError("Sample report load couldn't be completed. Please try again.");
                         setLoading(false);
                       });
                     }}
                     style={{
+                      width: "100%",
                       padding: "10px",
                       borderRadius: 10,
-                      background: "rgba(255,255,255,0.04)",
+                      background: "rgba(255,255,255,0.03)",
                       border: "1px solid var(--border)",
                       color: "var(--cyan)",
                       fontWeight: 600,
                       fontSize: "0.83rem",
                       cursor: "pointer",
-                      textAlign: "center",
                     }}
                   >
                     ⚡ Try Live Sample Demo Report (1-Click)
                   </button>
                 </div>
               </form>
-
-              <p style={{ textAlign: "center", marginTop: 14, fontSize: "0.73rem", color: "var(--txt-3)" }}>
-                🔒 Read-only GitHub access · Auto-synced every 5 mins · No data sold
-              </p>
             </div>
           </div>
         </div>
