@@ -10,13 +10,17 @@ import { evaluateRecruiterDecision } from "../services/recruiterEngine.js";
 import { generateConsistencyMatrix } from "../services/consistencyService.js";
 import { consumeAnalysis } from "../services/accountService.js";
 
+import os from "os";
+
 // ── In-memory & Disk fallback store (used when MongoDB is not available) ──────
 export const memoryStore = new Map(); // shareId → reportData
 const lastForceRefreshMap = new Map(); // username → timestamp
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes (short TTL for quick data sync)
 const REFRESH_COOLDOWN_MS = 30 * 1000; // 30 seconds
 
-const STORAGE_FILE = path.join(process.cwd(), "saved_reports_storage.json");
+const STORAGE_FILE = (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)
+  ? path.join(os.tmpdir(), "saved_reports_storage.json")
+  : path.join(process.cwd(), "saved_reports_storage.json");
 
 function loadPersistedReports() {
   try {

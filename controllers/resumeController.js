@@ -62,7 +62,7 @@ export async function analyzeResumeController(req, res) {
   let resumeText = "";
 
   try {
-    const pdfParse = (await import("pdf-parse/lib/pdf-parse.js")).default;
+    const pdfParse = (await import("pdf-parse")).default;
     const dataBuffer = fs.readFileSync(file.path);
     const pdfData = await pdfParse(dataBuffer);
     resumeText = pdfData.text || "";

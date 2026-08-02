@@ -17,10 +17,10 @@ const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
   .filter(Boolean);
 
 function isAllowedOrigin(origin) {
-  // Do not make local development depend on a particular Vite port or hostname.
-  // Hosted environments (Vercel or NODE_ENV=production) remain allow-listed.
+  if (!origin) return true;
   if (!process.env.VERCEL && process.env.NODE_ENV !== "production") return true;
-  if (!origin || allowedOrigins.includes(origin)) return true;
+  if (origin.endsWith(".vercel.app")) return true;
+  if (allowedOrigins.includes(origin)) return true;
 
   return false;
 }

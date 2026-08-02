@@ -4,8 +4,12 @@ import path from "path";
 import { nanoid } from "nanoid";
 import { dbConnected } from "../utils/connectDatabase.js";
 
+import os from "os";
+
 const memoryUsers = new Map();
-const USERS_FILE = path.join(process.cwd(), "saved_users_storage.json");
+const USERS_FILE = (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)
+  ? path.join(os.tmpdir(), "saved_users_storage.json")
+  : path.join(process.cwd(), "saved_users_storage.json");
 
 function loadPersistedUsers() {
   try {
