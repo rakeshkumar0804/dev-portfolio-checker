@@ -34,8 +34,8 @@ app.use(
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
-    service: "Developer Portfolio Health Checker API",
-    version: "2.0.0",
+    service: "PortfolioPulse API",
+    version: "3.0.1",
     docs: "/api/health",
   });
 });
@@ -43,8 +43,8 @@ app.get("/", (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    service: "Developer Portfolio Health Checker API",
-    version: "2.0.0",
+    service: "PortfolioPulse API",
+    version: "3.0.1",
     timestamp: new Date().toISOString(),
   });
 });

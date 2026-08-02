@@ -6,7 +6,7 @@ export default function Navbar() {
       <div className="navbar-inner">
         <Link to="/" className="navbar-brand">
           <div className="navbar-logo">🔍</div>
-          <span>Dev Portfolio Health Checker</span>
+          <span>PortfolioPulse</span>
           <span className="navbar-badge" style={{ background: "rgba(56, 189, 248, 0.12)", color: "var(--cyan)", border: "1px solid rgba(56, 189, 248, 0.3)" }}>
             Evidence-Based Analysis
           </span>
