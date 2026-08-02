@@ -1,6 +1,7 @@
 {
-  "name": "developer-portfolio-frontend",
-  "version": "1.0.0",
+  "name": "portfoliopulse-frontend",
+  "version": "3.0.1",
+  "description": "PortfolioPulse - AI career intelligence workspace for developers.",
   "type": "module",
   "scripts": {
     "dev": "vite",

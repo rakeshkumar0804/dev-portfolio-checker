@@ -1,6 +1,7 @@
 {
-  "name": "developer-portfolio-backend",
-  "version": "1.0.0",
+  "name": "portfoliopulse-backend",
+  "version": "3.0.1",
+  "description": "PortfolioPulse - AI career intelligence workspace for developers.",
   "type": "module",
   "main": "server.js",
   "scripts": {
@@ -16,7 +17,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "mongoose": "^8.7.0",
-    "multer": "^1.4.5-lts.1",
+    "multer": "^2.0.2",
     "nanoid": "^5.0.7",
     "pdf-parse": "^1.1.1",
     "puppeteer-core": "^25.4.0"
