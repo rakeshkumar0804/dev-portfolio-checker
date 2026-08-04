@@ -149,48 +149,36 @@ export async function recentReports(req, res) {
 
 export async function saveReportToAccount(req, res) {
   try {
-    const { shareId } = req.body;
+    const { shareId, report: incomingReport } = req.body;
     const userId = req.user.id;
 
     if (!shareId) return res.status(400).json({ message: "Share ID is required." });
 
-    let targetReport = null;
+    let targetReport = incomingReport || null;
     for (const [key, item] of memoryStore.entries()) {
       if (item && item.shareId === shareId) {
-        targetReport = item;
+        targetReport = { ...item, ...(incomingReport || {}) };
         item.userId = userId;
         memoryStore.set(key, item);
       }
     }
 
-    // Check for duplicate reports with identical scores and username created within 30 minutes
     if (targetReport) {
-      for (const [key, item] of memoryStore.entries()) {
-        if (
-          item && item.shareId !== shareId &&
-          item.userId === userId &&
-          item.githubUsername === targetReport.githubUsername &&
-          item.scores?.overall === targetReport.scores?.overall &&
-          Math.abs(Date.now() - (item.createdAt || 0)) < 30 * 60 * 1000
-        ) {
-          console.log(`🔁 [DUPLICATE PREVENTION] Consolidating duplicate report snapshot ${shareId} with ${item.shareId}`);
-          item.createdAt = Date.now();
-          memoryStore.delete(shareId);
-          persistReportsToDisk();
-          return res.json({
-            success: true,
-            isDuplicate: true,
-            message: "Report updated. Existing baseline retained to prevent duplicate snapshots.",
-            shareId: item.shareId,
-          });
-        }
-      }
+      targetReport.userId = userId;
+      memoryStore.set(shareId, targetReport);
+      persistReportsToDisk();
     }
 
-    persistReportsToDisk();
-
     if (dbConnected) {
-      await Report.updateOne({ shareId }, { $set: { userId } });
+      if (incomingReport) {
+        await Report.findOneAndUpdate(
+          { shareId },
+          { ...incomingReport, shareId, userId, createdAt: new Date() },
+          { upsert: true, new: true }
+        );
+      } else {
+        await Report.updateOne({ shareId }, { $set: { userId } });
+      }
     }
 
     return res.json({ success: true, message: "Report successfully saved to your workspace library.", shareId, userId });

@@ -49,7 +49,7 @@ export async function saveReportToWorkspace(shareId, reportObj = null) {
   console.log("🌐 [SAVE DEBUG Step 2] Sending POST /api/auth/save-report with shareId:", shareId, "Token:", localStorage.getItem("saas_token") ? "PRESENT" : "MISSING");
   let resData = null;
   try {
-    const res = await api.post("/auth/save-report", { shareId });
+    const res = await api.post("/auth/save-report", { shareId, report: reportObj });
     resData = res.data;
     console.log("📥 [SAVE DEBUG Step 2b] Backend response received:", resData);
   } catch (e) {

@@ -309,7 +309,7 @@ export default function ResultsPage() {
               </button>
               <button
                 className="btn-secondary"
-                onClick={() => handleGatedAction("pdf", () => window.print())}
+                onClick={() => window.print()}
                 style={{ background: "rgba(56, 189, 248, 0.12)", color: "var(--cyan)", border: "1px solid rgba(56, 189, 248, 0.3)" }}
               >
                 📄 Download / Export PDF
