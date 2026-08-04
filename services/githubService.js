@@ -62,17 +62,7 @@ async function fallbackPublicProfile(cleanUsername) {
     if (fallbackErr.response?.status === 404) {
       throw new Error(`GitHub user "${cleanUsername}" not found.`);
     }
-    return {
-      login: cleanUsername,
-      username: cleanUsername,
-      name: cleanUsername,
-      avatar_url: `https://github.com/${cleanUsername}.png`,
-      avatar: `https://github.com/${cleanUsername}.png`,
-      public_repos: 10,
-      publicRepos: 10,
-      followers: 2,
-      githubUrl: `https://github.com/${cleanUsername}`,
-    };
+    throw new Error(`GitHub API rate limit reached. Please try again in a few minutes or configure a GITHUB_TOKEN.`);
   }
 }
 

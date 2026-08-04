@@ -84,18 +84,14 @@ export async function registerAccount({ name, email, password }) {
 
 export async function authenticateAccount({ email, password }) {
   const cleanEmail = email?.trim().toLowerCase();
+  if (!cleanEmail || !password) throw new Error("Email and password are required.");
+  
   const Model = await User();
-  let user = Model ? await Model.findOne({ email: cleanEmail }) : memoryUsers.get(cleanEmail);
+  const user = Model ? await Model.findOne({ email: cleanEmail }) : memoryUsers.get(cleanEmail);
 
-  if (!user && !Model && cleanEmail && password && password.length >= 8) {
-    const autoName = cleanEmail.split("@")[0] || "Developer";
-    user = { id: nanoid(14), name: autoName, email: cleanEmail, passwordHash: hashPassword(password), plan: "unlimited", analysesUsed: 0, usagePeriod: periodKey() };
-    memoryUsers.set(cleanEmail, user);
-    persistUsersToDisk();
-    return safeUser(user);
+  if (!user || !verifyPassword(password || "", user.passwordHash)) {
+    throw new Error("Email or password is incorrect.");
   }
-
-  if (!user || !verifyPassword(password || "", user.passwordHash)) throw new Error("Email or password is incorrect.");
   return safeUser(user);
 }
 

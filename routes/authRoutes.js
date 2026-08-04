@@ -8,6 +8,7 @@ router.post("/login", login);
 router.get("/me", requireAuth, me);
 router.get("/reports", requireAuth, recentReports);
 router.post("/save-report", requireAuth, saveReportToAccount);
+router.post("/claim-report", requireAuth, saveReportToAccount);
 router.delete("/report/:shareId", requireAuth, deleteReport);
 
 export default router;

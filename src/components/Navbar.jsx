@@ -1,20 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const signedIn = Boolean(localStorage.getItem("saas_token"));
-  const storedUserRaw = localStorage.getItem("saas_user");
-  let userObj = null;
-  try {
-    userObj = storedUserRaw ? JSON.parse(storedUserRaw) : null;
-  } catch (_) {}
-
-  const displayName = userObj?.name || userObj?.email?.split("@")[0] || "Developer";
+  const displayName = user?.name || user?.email?.split("@")[0] || "Developer";
   const userInitial = displayName.charAt(0).toUpperCase();
 
   const minimal = ["/auth"].includes(location.pathname);
@@ -30,9 +25,8 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  function logout() {
-    localStorage.removeItem("saas_token");
-    localStorage.removeItem("saas_user");
+  function handleLogout() {
+    logout();
     setDropdownOpen(false);
     navigate("/");
   }
@@ -48,7 +42,7 @@ export default function Navbar() {
           <span className="navbar-badge">Career intelligence</span>
         </Link>
         <div className="nav-actions">
-          {signedIn ? (
+          {isAuthenticated ? (
             <div className="nav-user-dropdown-wrap" ref={dropdownRef} style={{ position: "relative" }}>
               <button
                 type="button"
@@ -80,7 +74,7 @@ export default function Navbar() {
                     fontSize: "0.75rem",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
+                    justify: "center",
                   }}
                 >
                   {userInitial}
@@ -108,7 +102,7 @@ export default function Navbar() {
                 >
                   <div style={{ padding: "8px 16px", borderBottom: "1px solid var(--border)" }}>
                     <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "var(--txt-1)" }}>{displayName}</div>
-                    <div style={{ fontSize: "0.75rem", color: "var(--txt-3)", truncate: "true" }}>{userObj?.email || "Account Active"}</div>
+                    <div style={{ fontSize: "0.75rem", color: "var(--txt-3)" }}>{user?.email || "Account Active"}</div>
                   </div>
 
                   <Link
@@ -149,7 +143,7 @@ export default function Navbar() {
 
                   <button
                     type="button"
-                    onClick={logout}
+                    onClick={handleLogout}
                     style={{
                       width: "100%",
                       display: "flex",

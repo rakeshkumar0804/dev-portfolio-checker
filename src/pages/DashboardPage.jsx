@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAccount, getRecentReports, deleteReportFromWorkspace, getLocalSavedReports } from "../services/apiService.js";
 import { getScoringTier } from "../../services/scoringService.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 function getCleanDisplayName(user) {
   if (!user) return { firstName: "Developer", fullName: "Developer" };
@@ -49,45 +50,28 @@ export default function DashboardPage() {
 
   const navigate = useNavigate();
 
+  const { user: authUser, logout } = useAuth();
+
   useEffect(() => {
-    if (!localStorage.getItem("saas_token")) {
-      navigate("/auth");
-      return;
-    }
     fetchDashboardData();
-  }, [navigate]);
+  }, []);
 
   function fetchDashboardData() {
     setLoading(true);
+    setUser(authUser);
 
-    Promise.all([getAccount(), getRecentReports()])
-      .then(([accountRes, reportsRes]) => {
-        setUser(accountRes.user);
+    getRecentReports()
+      .then((reportsRes) => {
         const serverReports = reportsRes.reports || [];
-
-        console.log("🌐 [FRONTEND FETCH DEBUG STEP 5] GET /api/auth/reports returned:", serverReports.length, "reports (ShareIDs:", serverReports.map(r => r.shareId).join(", ") || "none", ")");
-
         setReports(serverReports);
         setStats(reportsRes.stats || null);
-
-        // Sync local storage to mirror authoritative server state
-        try {
-          localStorage.setItem("portfolio_saved_reports_global", JSON.stringify(serverReports));
-          localStorage.setItem("portfolio_saved_reports_current", JSON.stringify(serverReports));
-        } catch (_) {}
       })
       .catch((err) => {
         if (err.response?.status === 401) {
-          localStorage.removeItem("saas_token");
-          localStorage.removeItem("saas_user");
+          logout();
           navigate("/auth");
         } else {
-          const fallbackLocal = getLocalSavedReports("current");
-          if (fallbackLocal && fallbackLocal.length > 0) {
-            setReports(fallbackLocal);
-          } else {
-            setError("Failed to load workspace data. Please refresh.");
-          }
+          setError("Failed to load workspace data. Please refresh.");
         }
       })
       .finally(() => setLoading(false));
