@@ -9,7 +9,7 @@ import { generateAIFeedback } from "../services/aiService.js";
 import { evaluateRecruiterDecision } from "../services/recruiterEngine.js";
 import { generateConsistencyMatrix } from "../services/consistencyService.js";
 import { consumeAnalysis } from "../services/accountService.js";
-
+import Report from "../models/Report.js";
 import os from "os";
 
 // ── In-memory & Disk fallback store (used when MongoDB is not available) ──────
@@ -178,7 +178,7 @@ export async function analyzeFullProfile(req, res) {
     if (memoryStore.has(cacheKey)) {
       shareId = memoryStore.get(cacheKey).shareId;
     }
-    if (!shareId && Report) {
+    if (!shareId && dbConnected) {
       try {
         const existing = await Report.findOne({ githubUsername: username, portfolioUrl: normalizedPortfolio });
         if (existing) shareId = existing.shareId;
@@ -207,7 +207,7 @@ export async function analyzeFullProfile(req, res) {
     };
 
     // Save to DB if available, else memory (updating existing shareId entry)
-    if (Report) {
+    if (dbConnected) {
       try {
         await Report.findOneAndUpdate(
           { shareId },

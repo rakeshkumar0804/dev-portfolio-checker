@@ -3,6 +3,7 @@ import { memoryStore, persistReportsToDisk } from "./analyzeController.js";
 import { issueToken } from "../utils/auth.js";
 import { dbConnected } from "../utils/connectDatabase.js";
 import { getScoringTier } from "../services/scoringService.js";
+import Report from "../models/Report.js";
 
 export async function register(req, res) {
   try {
@@ -36,7 +37,6 @@ export async function recentReports(req, res) {
 
   if (dbConnected) {
     try {
-      const { default: Report } = await import("../models/Report.js");
       reports = await Report.find({ userId })
         .sort({ createdAt: -1 })
         .limit(20)
@@ -190,7 +190,6 @@ export async function saveReportToAccount(req, res) {
     persistReportsToDisk();
 
     if (dbConnected) {
-      const { default: Report } = await import("../models/Report.js");
       await Report.updateOne({ shareId }, { $set: { userId } });
     }
 
@@ -219,7 +218,6 @@ export async function deleteReport(req, res) {
 
     let dbDeletedCount = 0;
     if (dbConnected) {
-      const { default: Report } = await import("../models/Report.js");
       const result = await Report.deleteMany({ shareId });
       dbDeletedCount = result.deletedCount || 0;
       console.log(`🗄️ [BACKEND DELETE DEBUG STEP 3] MongoDB deleteMany({ shareId: "${shareId}" }) removed ${dbDeletedCount} documents`);
