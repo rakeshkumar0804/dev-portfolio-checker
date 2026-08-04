@@ -105,13 +105,14 @@ export async function analyzeFullProfile(req, res) {
       lastForceRefreshMap.set(username, Date.now());
     }
 
-    // ── Check in-memory cache first (skipped if forceRefresh is true) ─────────
+    // ── Always fetch fresh live data for explicit user analysis requests ───────
     if (!isForce && memoryStore.has(cacheKey)) {
       const cached = memoryStore.get(cacheKey);
-      if (Date.now() - cached.createdAt < CACHE_TTL_MS) {
+      // Only serve cache if created within the last 10 seconds
+      if (Date.now() - cached.createdAt < 10 * 1000) {
         console.log(`♻️ Memory cache hit for key "${cacheKey}"`);
         const missingSkills = detectMissingSkills(cached.skillsDetected || [], cached.targetRole || "fullstack");
-        const cacheAge = Math.round((Date.now() - cached.createdAt) / 60000);
+        const cacheAge = Math.round((Date.now() - cached.createdAt) / 1000);
         return res.json({ success: true, fromCache: true, cacheAge, ...cached, missingSkills });
       }
     }

@@ -121,20 +121,21 @@ export default function ResultsPage() {
   }
 
   async function handleForceRefresh() {
-    if (!data?.githubData?.profile?.username) return;
+    const username = data?.githubData?.profile?.username || data?.githubUsername || data?.githubData?.profile?.login;
+    if (!username) return;
     setRefreshing(true);
     setRefreshMsg("");
     try {
       const result = await analyzeFullProfile({
-        githubUsername: data.githubData.profile.username,
-        portfolioUrl: data.portfolioData?.url || null,
-        targetRole: data.targetRole || "fullstack",
+        githubUsername: username,
+        portfolioUrl: data?.portfolioData?.url || data?.portfolioUrl || null,
+        targetRole: data?.targetRole || "fullstack",
         forceRefresh: true,
       });
       sessionStorage.setItem("portfolioReport", JSON.stringify(result));
       setData(result);
       setFromCache(false);
-      setRefreshMsg("✅ Fresh data loaded!");
+      setRefreshMsg("✅ Fresh GitHub data synced!");
       setTimeout(() => setRefreshMsg(""), 4000);
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "Refresh failed";
@@ -314,6 +315,19 @@ export default function ResultsPage() {
               >
                 📄 Download / Export PDF
               </button>
+              <button
+                className="btn-secondary"
+                disabled={refreshing}
+                onClick={handleForceRefresh}
+                style={{ background: "rgba(52, 211, 153, 0.12)", color: "#34d399", border: "1px solid rgba(52, 211, 153, 0.3)" }}
+              >
+                {refreshing ? "🔄 Syncing GitHub…" : "🔄 Re-sync Live GitHub Data"}
+              </button>
+              {refreshMsg && (
+                <div style={{ fontSize: "0.75rem", color: refreshMsg.startsWith("✅") ? "#4ade80" : "#f87171", textAlign: "center" }}>
+                  {refreshMsg}
+                </div>
+              )}
               <button
                 className="btn-secondary"
                 onClick={() => {
