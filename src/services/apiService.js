@@ -8,6 +8,22 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Auto-clear stale tokens on 401 from auth-only routes.
+// This handles the Vercel cold-start case where server memory is wiped
+// and the user's JWT is no longer valid server-side.
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const url = error.config?.url || "";
+    const isAuthRoute = url.startsWith("/auth/") && !url.startsWith("/auth/login") && !url.startsWith("/auth/register");
+    if (error.response?.status === 401 && isAuthRoute) {
+      console.warn("🔑 Stale token detected — clearing session from localStorage.");
+      localStorage.removeItem("saas_token");
+    }
+    return Promise.reject(error);
+  }
+);
+
 export async function registerAccount(data) {
   const res = await api.post("/auth/register", data);
   return res.data;

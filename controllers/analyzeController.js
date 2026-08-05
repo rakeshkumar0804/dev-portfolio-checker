@@ -122,7 +122,11 @@ export async function analyzeFullProfile(req, res) {
       try {
         accountUsage = await consumeAnalysis(req.user.id);
       } catch (usageError) {
-        return res.status(403).json({ message: usageError.message });
+        // If user session can't be found in memory/DB (cold-start wipe),
+        // silently proceed as a guest — DO NOT block the analysis
+        console.warn("⚠️ Usage tracking skipped (session not in memory):", usageError.message);
+        req.user = null;
+        accountUsage = null;
       }
     }
 
