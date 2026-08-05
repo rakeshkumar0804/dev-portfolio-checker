@@ -104,7 +104,7 @@ export async function getAccount(id) {
 export async function consumeAnalysis(userId) {
   const Model = await User();
   const user = Model ? await Model.findById(userId) : [...memoryUsers.values()].find((entry) => entry.id === userId);
-  if (!user) throw new Error("Your session has expired. Please sign in again.");
+  if (!user) return null; // Session gone (cold-start wipe) — caller treats as guest
   const currentPeriod = periodKey();
   if (user.usagePeriod !== currentPeriod) { user.usagePeriod = currentPeriod; user.analysesUsed = 0; }
   user.analysesUsed += 1;

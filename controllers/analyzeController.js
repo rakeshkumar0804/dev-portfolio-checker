@@ -117,16 +117,15 @@ export async function analyzeFullProfile(req, res) {
       }
     }
 
+    // Usage tracking: always optional, never blocks analysis
     let accountUsage = null;
     if (req.user?.id) {
       try {
         accountUsage = await consumeAnalysis(req.user.id);
-      } catch (usageError) {
-        // If user session can't be found in memory/DB (cold-start wipe),
-        // silently proceed as a guest — DO NOT block the analysis
-        console.warn("⚠️ Usage tracking skipped (session not in memory):", usageError.message);
+      } catch (_) {
+        // Session not found in memory/DB (e.g. cold-start wipe)
+        // Silently proceed as guest — analysis is NEVER blocked
         req.user = null;
-        accountUsage = null;
       }
     }
 
