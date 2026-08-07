@@ -1,61 +1,96 @@
-# PortfolioPulse
+# 🚀 PortfolioPulse
+> **Built to help developers understand how recruiters evaluate technical profiles before the interview stage.**
 
-PortfolioPulse is a SaaS career intelligence workspace for developers. Members create a private account, run evidence-based analyses of their GitHub, portfolio, and resume, and keep their reports in one workspace.
+PortfolioPulse is a full-stack developer career intelligence platform that analyzes **GitHub profiles, portfolio websites, and resumes** to generate evidence-based hiring insights.
 
-## SaaS capabilities
+Instead of relying on vanity metrics, it evaluates repository quality, documentation, portfolio structure, resume readiness, and technical presentation using **deterministic, rule-based scoring** — every score is backed by real, explainable evidence, not a black-box guess.
 
-- Account registration and sign-in with seven-day signed sessions
-- Starter, Pro, and Team plans with monthly analysis credits
-- Private workspace with account usage and saved report history
-- Public share links for reports, without exposing account credentials
-- Pricing page ready for Stripe Checkout integration
-- Deterministic scoring plus optional Gemini AI narrative feedback
+## ✨ Features
 
-## Product tiers
+- 🔍 GitHub Repository Analysis
+- 🌐 Portfolio Website Evaluation
+- 📄 Resume & ATS Analysis
+- 📊 Hiring Readiness Score (rule-based, fully explainable)
+- 🎭 Recruiter Screening Simulation (illustrative walkthrough of what a recruiter checks)
+- 📈 Personalized Career Roadmap
+- 📑 PDF Report Export
+- 💾 Workspace for Saved Reports
 
-| Plan | Analyses / month | Intended customer |
-| --- | ---: | --- |
-| Starter | 3 | Individual developer trying the product |
-| Pro | 25 | Active job seeker |
-| Team | 100 | Mentor, bootcamp, or career team |
+---
 
-## Run locally
+## 🛠️ Tech Stack
 
-Requires Node.js 20+.
+**Frontend**
+- React
+- Vite
+- React Router
+- Axios
 
-```powershell
-npm install
-Copy-Item .env.example .env
-npm run start
+**Backend**
+- Node.js
+- Express.js
+- MongoDB Atlas
+- JWT Authentication
+
+**APIs**
+- GitHub REST API
+
+**Deployment**
+- Vercel
+
+---
+
+## 🚀 Getting Started
+
+Clone the repository
+```bash
+git clone https://github.com/rakeshkumar0804/dev-portfolio-checker.git
 ```
 
-In another terminal:
+Install dependencies (run in both `client` and `server` folders if applicable)
+```bash
+npm install
+```
 
-```powershell
+Create a `.env` file (see `.env.example`)
+```env
+MONGODB_URI=
+JWT_SECRET=
+GITHUB_TOKEN=
+```
+
+> Note: You'll need a GitHub Personal Access Token with `public_repo` and `read:user` scopes. Generate one at github.com → Settings → Developer settings → Personal access tokens.
+
+Run the project
+```bash
 npm run dev
 ```
 
-Open the app at the URL Vite prints (normally `http://localhost:5173`). Create a free account before running an analysis.
+---
 
-## Environment variables
+## 📸 Preview
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `CLIENT_URL` | No | The deployed frontend origin. |
-| `PORT` | No | API port; defaults to `5000`. |
-| `MONGODB_URI` | No | Durable accounts and report history. Without it, development uses temporary in-memory storage. |
-| `JWT_SECRET` | Yes in production | Long random value used to sign sessions. |
-| `GEMINI_API_KEY` | No | Enables generated executive summaries. |
-| `GITHUB_TOKEN` | No | Raises GitHub API rate limits. |
+> Add screenshots of:
+- Home Page
+- GitHub Analysis
+- Hiring Dashboard
+- Resume Analysis
+- Workspace
 
-## Taking payments live
+---
 
-The product and plan entitlements are in place. To enable real payment collection, connect Stripe Checkout and webhooks, then update a user's `plan` only from a verified Stripe webhook. Keep `JWT_SECRET`, MongoDB, Stripe keys, and Gemini keys in your host's secret manager.
+## 💡 Why PortfolioPulse?
 
-## Safety
+Most profile analyzers only display raw GitHub statistics with no context. PortfolioPulse combines GitHub analysis, portfolio evaluation, resume review, and hiring intelligence into a single report — and every score is deterministic and rule-based, with the underlying evidence shown next to each number. Nothing is a black box: if a score is low, you can see exactly why, and exactly what to fix.
 
-- Public-URL scanning blocks local and private network destinations.
-- Reports receive server-generated share IDs.
-- Resume files are signature-checked and deleted after parsing.
-- Passwords are salted with Node's `scrypt`; no plaintext password is stored.
-- Local development accepts local browser origins; production allows only `CLIENT_URL`.
+---
+
+## 👨‍💻 Author
+
+**Rakesh Kumar**
+- GitHub: https://github.com/rakeshkumar0804
+- Portfolio: https://dev-portfolio-checker.vercel.app
+
+---
+
+⭐ If you found this project useful, consider giving it a star.
