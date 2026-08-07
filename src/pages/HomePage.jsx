@@ -28,7 +28,7 @@ const MODES = [
 const FEATURES = [
   "GitHub profile, repositories & activity",
   "Portfolio SEO, accessibility & performance",
-  "AI-powered recommendations with estimated impact",
+  "Rule-based recommendations with estimated impact",
   "Recruiter 10-second review",
   "Skill gap detection by target role",
   "Resume ATS compatibility check",
@@ -127,7 +127,7 @@ export default function HomePage() {
           <div className="anim-fade-up">
             <div className="hero-badge">
               <span className="hero-badge-dot" />
-              AI Technical Hiring Intelligence
+              Evidence-Based Hiring Intelligence
             </div>
 
             <h1 className="hero-title">

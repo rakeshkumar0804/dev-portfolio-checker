@@ -15,7 +15,7 @@ export default function LoadingScreen({ githubUsername, portfolioUrl, resumeFile
   if (resumeFile) {
     steps.push({ icon: "📄", label: "Analyzing resume PDF & ATS keywords…" });
   }
-  steps.push({ icon: "🤖", label: "Generating AI-powered insights & roadmap…" });
+  steps.push({ icon: "📊", label: "Calculating scores & building your roadmap…" });
   steps.push({ icon: "✨", label: "Building your personalized report…" });
 
   useEffect(() => {

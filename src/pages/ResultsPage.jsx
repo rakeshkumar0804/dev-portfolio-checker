@@ -517,7 +517,7 @@ export default function ResultsPage() {
             )}
 
             {aiFeedback?.overallSummary && (
-              <Card title="AI Summary" icon="✨">
+              <Card title="Key Takeaway" icon="📋">
                 <div className="ai-summary-box">{aiFeedback.overallSummary}</div>
                 {aiFeedback.topPriority && (
                   <div style={{ padding: "12px 16px", borderRadius: "var(--r-md)", background: "rgba(248,113,113,0.06)", border: "1px solid rgba(248,113,113,0.15)", fontSize: "0.88rem", color: "var(--red)" }}>
@@ -663,7 +663,7 @@ export default function ResultsPage() {
             {aiFeedback?.overallSummary && (
               <Card title="Executive Candidate Summary" icon="📝">
                 <div style={{ fontSize: "0.78rem", color: "var(--txt-3)", marginBottom: 12 }}>
-                  ℹ️ Written by Gemini AI based on your rule-based scores — all numeric scores are 100% deterministic calculations.
+                  ℹ️ Written from your rule-based scores — all numeric scores are 100% deterministic calculations.
                 </div>
                 <div className="ai-summary-box">{aiFeedback.overallSummary}</div>
               </Card>
