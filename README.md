@@ -70,12 +70,13 @@ npm run dev
 
 ## 📸 Preview
 
-> Add screenshots of:
-- Home Page
-- GitHub Analysis
-- Hiring Dashboard
-- Resume Analysis
-- Workspace
+
+- Home Page<img width="1893" height="973" alt="home page " src="https://github.com/user-attachments/assets/0878dc8a-8a91-4c1c-b0a5-f5a06e045759" />
+
+- GitHub Analysis<img width="1907" height="967" alt="GitHub Analysis" src="https://github.com/user-attachments/assets/ed88dd3b-780f-410d-af03-6c0c6c9597bd" />
+
+- Hiring Dashboard<img width="1895" height="967" alt="Hiring Dashboard" src="https://github.com/user-attachments/assets/9e531a3b-d284-47bf-bdd6-d98b6382e20d" />
+
 
 ---
 
