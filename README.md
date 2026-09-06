@@ -16,7 +16,7 @@ Instead of relying on vanity metrics, it evaluates repository quality, documenta
 - 📑 PDF Report Export
 - 💾 Workspace for Saved Reports
 
----
+--
 
 ## 🛠️ Tech Stack
 
