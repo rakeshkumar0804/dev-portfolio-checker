@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Icon from "./Icon.jsx";
 
 export default function ConsistencyMatrixCard({ matrix }) {
   const [showFullAudit, setShowFullAudit] = useState(false);
@@ -6,13 +7,22 @@ export default function ConsistencyMatrixCard({ matrix }) {
   if (!matrix) return null;
 
   const {
-    consistencyScore = 100,
+    consistencyScore,
     verifiedInBoth = [],
     resumeOnly = [],
     githubOnly = [],
     actionAuditList = [],
     warnings = [],
   } = matrix;
+
+  // Do not render a fake consistency matrix if neither source had skills to compare
+  if (verifiedInBoth.length === 0 && resumeOnly.length === 0 && githubOnly.length === 0) {
+    return null;
+  }
+
+  const totalResume = verifiedInBoth.length + resumeOnly.length;
+  const isScoreValid = typeof consistencyScore === "number" && Number.isFinite(consistencyScore) && consistencyScore >= 0 && consistencyScore <= 100;
+  const overlapRate = totalResume > 0 ? Math.round((verifiedInBoth.length / totalResume) * 100) : null;
 
   return (
     <div
@@ -27,21 +37,41 @@ export default function ConsistencyMatrixCard({ matrix }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
         <div>
           <h3 style={{ fontSize: "1.1rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
-            <span>🔄</span> Section 4: Skill Verification Matrix
+            <Icon name="refresh" size={16} style={{ color: "var(--cyan)" }} />
+            <span>Section 4: Skill Verification Matrix</span>
           </h3>
           <p style={{ color: "var(--txt-3)", fontSize: "0.82rem", marginTop: 4, margin: 0 }}>
-            Cross-referencing technical skills claimed on resume against public GitHub repository code proof.
+            Cross-referencing technical skills claimed on resume against inspected GitHub evidence.
           </p>
         </div>
 
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: "0.75rem", color: "var(--txt-3)", textTransform: "uppercase", letterSpacing: 0.5 }}>Consistency Index</div>
-          <div style={{ fontSize: "1.6rem", fontWeight: 800, color: consistencyScore >= 75 ? "var(--green)" : "var(--yellow)" }}>
-            {consistencyScore}%
+          <div
+            className="matrix-score"
+            style={{
+              fontSize: isScoreValid ? "1.6rem" : "1.15rem",
+              fontWeight: 800,
+              color: isScoreValid ? (consistencyScore >= 75 ? "var(--green)" : "var(--yellow)") : "var(--txt-3)",
+            }}
+          >
+            {isScoreValid ? `${consistencyScore}%` : "Not available"}
           </div>
-          <div style={{ fontSize: "0.7rem", color: "var(--txt-3)", marginTop: 2 }}>
-            Formula: ({verifiedInBoth.length} verified / {verifiedInBoth.length + resumeOnly.length} resume skills) × 100
-          </div>
+          {totalResume > 0 ? (
+            <div
+              className="matrix-formula"
+              style={{ fontSize: "0.7rem", color: "var(--txt-3)", marginTop: 2 }}
+            >
+              Skill Overlap: ({verifiedInBoth.length} verified / {totalResume} resume skills) · {overlapRate}%
+            </div>
+          ) : (
+            <div
+              className="matrix-formula"
+              style={{ fontSize: "0.7rem", color: "var(--txt-3)", marginTop: 2 }}
+            >
+              Skill Overlap: Not applicable (0 resume skills detected)
+            </div>
+          )}
         </div>
       </div>
 
@@ -49,8 +79,9 @@ export default function ConsistencyMatrixCard({ matrix }) {
       {warnings.length > 0 && (
         <div style={{ marginBottom: 16 }}>
           {warnings.map((w, idx) => (
-            <div key={idx} className="info-box" style={{ background: "rgba(234, 179, 8, 0.08)", border: "1px solid rgba(234, 179, 8, 0.2)", color: "var(--yellow)", marginBottom: 8, fontSize: "0.83rem" }}>
-              💡 {w}
+            <div key={idx} className="info-box" style={{ background: "rgba(234, 179, 8, 0.08)", border: "1px solid rgba(234, 179, 8, 0.2)", color: "var(--yellow)", marginBottom: 8, fontSize: "0.83rem", display: "flex", alignItems: "center", gap: 8 }}>
+              <Icon name="info" size={14} style={{ color: "var(--yellow)" }} />
+              <span>{w}</span>
             </div>
           ))}
         </div>
@@ -59,13 +90,15 @@ export default function ConsistencyMatrixCard({ matrix }) {
       {/* Compact Summary for Verified Skills */}
       <div style={{ background: "rgba(34, 197, 94, 0.06)", borderRadius: 12, padding: "14px 18px", border: "1px solid rgba(34, 197, 94, 0.18)", marginBottom: 16 }}>
         <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--green)", marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
-          <span>✅</span> {verifiedInBoth.length} Skills Verified via GitHub Code & Repositories
+          <Icon name="check-circle" size={16} style={{ color: "var(--green)" }} />
+          <span>{verifiedInBoth.length} Skills Verified via Inspected GitHub Evidence</span>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
           {verifiedInBoth.length > 0 ? (
             verifiedInBoth.map((s) => (
-              <span key={s} className="skill-tag skill-have" style={{ background: "rgba(34, 197, 94, 0.15)", color: "#4ade80", border: "1px solid rgba(34, 197, 94, 0.3)", fontSize: "0.78rem" }}>
-                ✓ {s}
+              <span key={s} className="skill-tag skill-have" style={{ background: "rgba(34, 197, 94, 0.15)", color: "#4ade80", border: "1px solid rgba(34, 197, 94, 0.3)", fontSize: "0.78rem", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <Icon name="check" size={11} />
+                <span>{s}</span>
               </span>
             ))
           ) : (
@@ -78,8 +111,11 @@ export default function ConsistencyMatrixCard({ matrix }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, marginBottom: 16 }}>
         {/* Resume Only */}
         <div style={{ background: "rgba(234, 179, 8, 0.04)", borderRadius: 12, padding: "16px", border: "1px solid rgba(234, 179, 8, 0.12)" }}>
-          <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--yellow)", marginBottom: 10, display: "flex", justifyContent: "space-between" }}>
-            <span>📄 Claimed on Resume Only</span>
+          <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--yellow)", marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Icon name="file-text" size={14} style={{ color: "var(--yellow)" }} />
+              <span>Claimed on Resume Only</span>
+            </span>
             <span>{resumeOnly.length}</span>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -90,15 +126,18 @@ export default function ConsistencyMatrixCard({ matrix }) {
                 </span>
               ))
             ) : (
-              <span style={{ fontSize: "0.78rem", color: "var(--txt-3)" }}>All resume skills backed by code!</span>
+              <span style={{ fontSize: "0.78rem", color: "var(--txt-3)" }}>All resume skills supported by inspected GitHub evidence</span>
             )}
           </div>
         </div>
 
         {/* GitHub Only */}
         <div style={{ background: "rgba(56, 189, 248, 0.04)", borderRadius: 12, padding: "16px", border: "1px solid rgba(56, 189, 248, 0.12)" }}>
-          <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--cyan)", marginBottom: 10, display: "flex", justifyContent: "space-between" }}>
-            <span>🐙 Built on GitHub (Missing from Resume)</span>
+          <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--cyan)", marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Icon name="github" size={14} style={{ color: "var(--cyan)" }} />
+              <span>Detected in GitHub Evidence (Missing from Resume)</span>
+            </span>
             <span>{githubOnly.length}</span>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>

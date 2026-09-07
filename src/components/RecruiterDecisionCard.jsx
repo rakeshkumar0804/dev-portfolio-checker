@@ -1,4 +1,5 @@
 import React from "react";
+import Icon from "./Icon.jsx";
 
 export default function RecruiterDecisionCard({ decisionData, targetRole }) {
   if (!decisionData) return null;
@@ -20,6 +21,12 @@ export default function RecruiterDecisionCard({ decisionData, targetRole }) {
   const badgeColor = isYes ? "var(--green)" : isMaybe ? "var(--yellow)" : "var(--red)";
   const badgeBg = isYes ? "rgba(34,197,94,0.12)" : isMaybe ? "rgba(234,179,8,0.12)" : "rgba(239,68,68,0.12)";
   const badgeBorder = isYes ? "rgba(34,197,94,0.3)" : isMaybe ? "rgba(234,179,8,0.3)" : "rgba(239,68,68,0.3)";
+
+  const hasProbability = typeof interviewProbability === "number" && !isNaN(interviewProbability);
+  const displayProbability = hasProbability ? `${interviewProbability}%` : "Not calculated";
+
+  const hasConfidence = typeof confidenceScore === "number" && !isNaN(confidenceScore);
+  const displayConfidence = hasConfidence ? `Confidence: ${confidenceScore}%` : "Confidence unavailable";
 
   const renderFlagText = (flag) => {
     if (!flag) return "";
@@ -46,8 +53,8 @@ export default function RecruiterDecisionCard({ decisionData, targetRole }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
         {/* Left: Decision Badge & Thought */}
         <div style={{ flex: 1, minWidth: 280 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-            <span style={{ fontSize: "1.4rem" }}>👔</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <Icon name="briefcase" size={16} style={{ color: "var(--cyan)" }} />
             <span style={{ fontSize: "0.82rem", color: "var(--txt-3)", textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}>
               Recruiter Decision Engine
             </span>
@@ -68,7 +75,7 @@ export default function RecruiterDecisionCard({ decisionData, targetRole }) {
               marginBottom: 16,
             }}
           >
-            <span>{isYes ? "🟢" : isMaybe ? "🟡" : "🔴"}</span>
+            <Icon name={isYes ? "check-circle" : isMaybe ? "alert-triangle" : "alert-circle"} size={16} />
             <span>{decisionLabel}</span>
           </div>
 
@@ -77,11 +84,15 @@ export default function RecruiterDecisionCard({ decisionData, targetRole }) {
           </p>
 
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: "0.82rem", color: "var(--txt-2)" }}>
-            <div>
-              💼 Target Role: <strong style={{ color: "var(--txt-1)" }}>{(targetRole || "Full Stack").toUpperCase()}</strong>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <Icon name="briefcase" size={14} style={{ color: "var(--txt-3)" }} />
+              <span>Target Role: </span>
+              <strong style={{ color: "var(--txt-1)" }}>{(targetRole || "Full Stack").toUpperCase()}</strong>
             </div>
-            <div>
-              📊 Seniority & Market Benchmark: <strong style={{ color: "var(--cyan)" }}>{seniorityLevel}</strong>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <Icon name="bar-chart" size={14} style={{ color: "var(--txt-3)" }} />
+              <span>Seniority & Market Benchmark: </span>
+              <strong style={{ color: "var(--cyan)" }}>{seniorityLevel}</strong>
             </div>
           </div>
         </div>
@@ -100,11 +111,14 @@ export default function RecruiterDecisionCard({ decisionData, targetRole }) {
           <div style={{ fontSize: "0.75rem", color: "var(--txt-3)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>
             Interview Call Likelihood
           </div>
-          <div style={{ fontSize: "2.4rem", fontWeight: 800, color: badgeColor, lineHeight: 1 }}>
-            {interviewProbability}%
+          <div
+            className="interview-likelihood-value"
+            style={{ fontSize: hasProbability ? "2.4rem" : "1.25rem", fontWeight: 800, color: hasProbability ? badgeColor : "var(--txt-3)", lineHeight: 1.2 }}
+          >
+            {displayProbability}
           </div>
           <div style={{ fontSize: "0.72rem", color: "var(--txt-3)", marginTop: 6 }}>
-            Confidence: {confidenceScore}%
+            {displayConfidence}
           </div>
         </div>
       </div>
@@ -114,11 +128,13 @@ export default function RecruiterDecisionCard({ decisionData, targetRole }) {
         {/* Green Flags */}
         <div style={{ background: "rgba(34, 197, 94, 0.05)", borderRadius: 10, padding: "12px 16px", border: "1px solid rgba(34, 197, 94, 0.15)" }}>
           <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--green)", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
-            <span>💪</span> Green Flags (Recruiters Love This)
+            <Icon name="star" size={15} />
+            <span>Green Flags (Recruiters Love This)</span>
           </div>
           {greenFlags.map((flag, idx) => (
             <div key={idx} style={{ fontSize: "0.8rem", color: "var(--txt-2)", marginBottom: 4, display: "flex", alignItems: "flex-start", gap: 6 }}>
-              <span>✓</span> <span>{renderFlagText(flag)}</span>
+              <Icon name="check" size={12} style={{ color: "var(--green)", marginTop: 3 }} />
+              <span>{renderFlagText(flag)}</span>
             </div>
           ))}
         </div>
@@ -126,11 +142,13 @@ export default function RecruiterDecisionCard({ decisionData, targetRole }) {
         {/* Red Flags */}
         <div style={{ background: "rgba(239, 68, 68, 0.05)", borderRadius: 10, padding: "12px 16px", border: "1px solid rgba(239, 68, 68, 0.15)" }}>
           <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--red)", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
-            <span>⚠️</span> Critical Hiring Risks (Fix These)
+            <Icon name="alert-triangle" size={15} />
+            <span>Critical Hiring Risks (Fix These)</span>
           </div>
           {redFlags.map((flag, idx) => (
             <div key={idx} style={{ fontSize: "0.8rem", color: "var(--txt-2)", marginBottom: 4, display: "flex", alignItems: "flex-start", gap: 6 }}>
-              <span>✗</span> <span>{renderFlagText(flag)}</span>
+              <Icon name="x" size={12} style={{ color: "var(--red)", marginTop: 3 }} />
+              <span>{renderFlagText(flag)}</span>
             </div>
           ))}
         </div>

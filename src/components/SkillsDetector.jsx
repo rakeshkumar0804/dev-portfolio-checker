@@ -1,10 +1,12 @@
+import Icon from "./Icon.jsx";
+
 export default function SkillsDetector({ missingSkills = {}, detectedSkills = [], targetRole }) {
   const categories = Object.entries(missingSkills);
 
   if (!categories.length) {
     return (
       <div style={{ color: "var(--txt-3)", fontSize: "0.88rem" }}>
-        No skill data available. Add topic tags to your repositories to enable skill detection.
+        No skill data available. Add skills to your resume or topic tags to your repositories to enable skill detection.
       </div>
     );
   }
@@ -29,7 +31,7 @@ export default function SkillsDetector({ missingSkills = {}, detectedSkills = []
             <div style={{ height: "100%", borderRadius: 4, width: `${matchPct}%`, background: matchPct >= 60 ? "var(--green)" : matchPct >= 40 ? "var(--yellow)" : "var(--red)", transition: "width 0.8s ease" }} />
           </div>
           <div style={{ fontSize: "0.78rem", color: "var(--txt-3)", marginTop: 4 }}>
-            {presentSkills}/{totalSkills} expected skills detected in your repositories
+            {presentSkills}/{totalSkills} expected skills detected in evaluated profile sources
           </div>
         </div>
       </div>
@@ -40,19 +42,33 @@ export default function SkillsDetector({ missingSkills = {}, detectedSkills = []
             <div className="skill-cat-title">{category}</div>
             <div className="skill-tags">
               {present.map((s) => (
-                <span key={s} className="skill-tag skill-have">✓ {s}</span>
+                <span key={s} className="skill-tag skill-have" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  <Icon name="check" size={11} />
+                  <span>{s}</span>
+                </span>
               ))}
               {missing.map((s) => (
-                <span key={s} className="skill-tag skill-miss">✗ {s}</span>
+                <span key={s} className="skill-tag skill-miss" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  <Icon name="x" size={11} />
+                  <span>{s}</span>
+                </span>
               ))}
             </div>
           </div>
         ))}
       </div>
 
-      <div style={{ marginTop: 16, fontSize: "0.78rem", color: "var(--txt-3)", display: "flex", gap: 16 }}>
-        <span><span className="skill-tag skill-have" style={{ fontSize: "0.7rem", padding: "2px 8px" }}>✓ Have</span> — detected in GitHub repos/topics</span>
-        <span><span className="skill-tag skill-miss" style={{ fontSize: "0.7rem", padding: "2px 8px" }}>✗ Missing</span> — add as repo topics to improve score</span>
+      <div style={{ marginTop: 16, fontSize: "0.78rem", color: "var(--txt-3)", display: "flex", gap: 16, flexWrap: "wrap" }}>
+        <span>
+          <span className="skill-tag skill-have" style={{ fontSize: "0.7rem", padding: "2px 8px", display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <Icon name="check" size={10} /> Have
+          </span> — detected in evaluated profile sources
+        </span>
+        <span>
+          <span className="skill-tag skill-miss" style={{ fontSize: "0.7rem", padding: "2px 8px", display: "inline-flex", alignItems: "center", gap: 4 }}>
+            <Icon name="x" size={10} /> Missing
+          </span> — recommended for target role
+        </span>
       </div>
     </div>
   );

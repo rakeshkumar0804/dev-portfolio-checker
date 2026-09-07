@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Icon from "./Icon.jsx";
 
 export default function ProgressTimeline({ currentScore, currentUsername }) {
   const [history, setHistory] = useState([]);
@@ -46,7 +47,7 @@ export default function ProgressTimeline({ currentScore, currentUsername }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 12 }}>
         <div>
           <h3 style={{ fontSize: "1.05rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
-            <span>📈</span> Audit Progression & Score History Timeline
+            <Icon name="trending-up" size={16} style={{ color: "var(--cyan)" }} /> Audit Progression & Score History Timeline
           </h3>
           <p style={{ color: "var(--txt-3)", fontSize: "0.8rem", marginTop: 4, margin: 0 }}>
             Tracking score evolution over time for @{currentUsername}.

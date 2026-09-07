@@ -228,17 +228,26 @@ export function calculateProjectQualityScore(githubData) {
   const negativeSignals = [];
 
   if (!topRepos || topRepos.length === 0) {
+    const isUnavailable = stats.repoFetchStatus === "unavailable" || stats.reposUnavailable;
     return {
       score: 30,
       tier: getScoringTier(30),
-      breakdown: [{ score: 30, max: 100, label: "Public Repositories", evidence: "No public repositories found" }],
-      improvements: [{
+      breakdown: [{
+        score: 30,
+        max: 100,
+        label: "Public Repositories",
+        evidence: isUnavailable
+          ? "Repository inspection temporarily unavailable due to GitHub API rate limits"
+          : "No public repositories found"
+      }],
+      improvements: isUnavailable ? [] : [{
         action: "Publish your first public code repository on GitHub",
         why: "Recruiters cannot verify technical ability without public code proof.",
         how: "Push a clean project repository with a README.",
         points: 30, difficulty: "Medium", timeMinutes: 45, priority: 1,
       }],
-      positiveSignals: [], negativeSignals: ["No public code repositories found"],
+      positiveSignals: [],
+      negativeSignals: [isUnavailable ? "Repository inspection temporarily unavailable" : "No public code repositories found"],
     };
   }
 

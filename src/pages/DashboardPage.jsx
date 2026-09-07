@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getAccount, getRecentReports, deleteReportFromWorkspace, getLocalSavedReports } from "../services/apiService.js";
+import { getRecentReports, deleteReportFromWorkspace } from "../services/apiService.js";
 import { getScoringTier } from "../../services/scoringService.js";
 import { useAuth } from "../context/AuthContext.jsx";
 
@@ -40,7 +40,6 @@ export default function DashboardPage() {
   const [copiedId, setCopiedId] = useState(null);
   const [error, setError] = useState("");
 
-  // Interactive SaaS Features State (#2, #8)
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [sortBy, setSortBy] = useState("latest");
@@ -49,7 +48,6 @@ export default function DashboardPage() {
   const [showCompareModal, setShowCompareModal] = useState(false);
 
   const navigate = useNavigate();
-
   const { user: authUser, logout } = useAuth();
 
   useEffect(() => {
@@ -82,15 +80,11 @@ export default function DashboardPage() {
     e.stopPropagation();
     if (!window.confirm("Are you sure you want to delete this report from your library?")) return;
     setDeletingId(shareId);
-    console.log(`🌐 [FRONTEND DELETE DEBUG STEP 1] Sending DELETE /api/auth/report/${shareId} with shareId:`, shareId);
     try {
-      const res = await deleteReportFromWorkspace(shareId);
-      console.log("📥 [FRONTEND DELETE DEBUG STEP 1b] Server response received:", res);
-
+      await deleteReportFromWorkspace(shareId);
       setReports((prev) => prev.filter((r) => r.shareId !== shareId));
       setSelectedForCompare((prev) => prev.filter((id) => id !== shareId));
     } catch (err) {
-      console.error("❌ [FRONTEND DELETE DEBUG Error]:", err.message);
       alert("Could not delete report. Please try again.");
     } finally {
       setDeletingId(null);
@@ -130,7 +124,7 @@ export default function DashboardPage() {
     );
   }
 
-  const { firstName } = getCleanDisplayName(user);
+  const { firstName } = getCleanDisplayName(user || authUser);
   const userInitial = firstName.charAt(0).toUpperCase();
 
   const totalReports = reports.length;
@@ -142,7 +136,6 @@ export default function DashboardPage() {
   const bestTier = bestScore ? getScoringTier(bestScore) : null;
   const targetScoreGoal = 85;
 
-  // Filter & Sort Logic (#8)
   const filteredReports = reports.filter((r) => {
     const matchesSearch =
       (r.githubUsername || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -155,14 +148,12 @@ export default function DashboardPage() {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
-  // Actionable Gap Computations (#7)
   const topActionableGaps = [
     { title: "Add descriptions to unlabelled repositories", impact: "+5 pts", category: "Documentation" },
     { title: "Align resume skills with target role keywords", impact: "+4 pts", category: "ATS Alignment" },
     { title: "Add topic tags & live deployment URLs to top repos", impact: "+3 pts", category: "Project Engineering" },
   ];
 
-  // Contextual Score Reason (#1 & #6)
   let scoreExplanation = "";
   if (latestScore >= 85) {
     const ghText = latestReport?.scores?.github ? `${latestReport.scores.github}/100` : "high cadence";
@@ -177,7 +168,6 @@ export default function DashboardPage() {
     scoreExplanation = `No scans run yet. Run your first analysis to set your baseline hireability score.`;
   }
 
-  // Compare Reports Pair
   const compareReportsList = reports.filter((r) => selectedForCompare.includes(r.shareId));
 
   return (
@@ -189,13 +179,12 @@ export default function DashboardPage() {
         padding: "110px 20px 48px",
       }}
     >
-      {/* 1. Header */}
       <header
         style={{
           display: "flex",
           flexWrap: "wrap",
           alignItems: "center",
-          justifyContent: "space-between",
+          justify: "space-between",
           gap: 16,
           marginBottom: 24,
         }}
@@ -253,12 +242,11 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* 2. Core Objective & Score Context Banner (#1 Hero Summary Tightened) */}
       <div
         className="card"
         style={{
           marginBottom: 24,
-          padding: "16px 20px", // Reduced padding by 12% for tighter, cleaner height
+          padding: "16px 20px",
           background: "linear-gradient(135deg, rgba(11, 23, 41, 0.9), rgba(15, 23, 42, 0.95))",
           border: "1px solid rgba(56, 189, 248, 0.25)",
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
@@ -293,7 +281,6 @@ export default function DashboardPage() {
           {scoreExplanation}
         </p>
 
-        {/* Actionable Gap Explanations (#7) */}
         {latestScore < targetScoreGoal && (
           <div
             style={{
@@ -317,7 +304,6 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* 3. 4 Key Metrics Cards (#2 Identical Heights & Alignment) */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 16, marginBottom: 28 }}>
         <div className="card" style={{ background: "var(--bg-card)", border: "1px solid var(--border)", padding: 18, display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 110 }}>
           <div>
@@ -389,7 +375,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 4. Report Library Section with Search, Filter & Sort Toolbar (#2 Breathing Room) */}
       <section className="reports-panel" style={{ marginBottom: 36, width: "100%" }}>
         <div style={{ marginBottom: 16 }}>
           <span className="signal-eyebrow" style={{ fontSize: "0.72rem", letterSpacing: "0.05em" }}>Saved Private Analyses</span>
@@ -398,7 +383,6 @@ export default function DashboardPage() {
           </h2>
         </div>
 
-        {/* Search, Filter, & Sort Full-Width Toolbar (#4 Perfect Flush Alignment) */}
         {totalReports > 0 && (
           <div
             style={{
@@ -473,7 +457,6 @@ export default function DashboardPage() {
             </Link>
           </div>
         ) : (
-          /* Intelligent Adaptive Responsive Grid (100% Fluid - Never Clips on DevTools or Mobile) */
           <div
             style={{
               display: "grid",
@@ -508,7 +491,6 @@ export default function DashboardPage() {
                   }}
                 >
                   <div>
-                    {/* Header Row with Compare Checkbox, Latest Badge & Date (#1 & #3) */}
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                       <label style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: "0.75rem", color: "#94a3b8", cursor: "pointer", userSelect: "none" }}>
                         <input
@@ -538,7 +520,6 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    {/* Profile Title (@username primary focus) */}
                     <div style={{ marginBottom: 12 }}>
                       <div style={{ fontWeight: 700, fontSize: "1.05rem", color: "#ffffff", letterSpacing: "-0.01em" }}>
                         @{report.githubUsername || "developer"}
@@ -548,7 +529,6 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    {/* Score & Status Badge Container */}
                     <div
                       style={{
                         display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -575,28 +555,8 @@ export default function DashboardPage() {
                         </span>
                       )}
                     </div>
-
-                    {/* Unique Diff Badges */}
-                    {report.deltas?.highlights && report.deltas.highlights.length > 0 && (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-                        {report.deltas.highlights.map((h, i) => (
-                          <span
-                            key={i}
-                            style={{
-                              fontSize: "0.7rem", padding: "2px 7px", borderRadius: 6, fontWeight: 600,
-                              background: h.includes("+") ? "rgba(34, 197, 94, 0.12)" : "rgba(255, 255, 255, 0.05)",
-                              color: h.includes("+") ? "#4ade80" : "#94a3b8",
-                              border: h.includes("+") ? "1px solid rgba(34, 197, 94, 0.25)" : "1px solid var(--border)",
-                            }}
-                          >
-                            {h}
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
-                  {/* Actions Bar (#4 Enhanced Hover Feedback) */}
                   <div
                     style={{
                       display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -654,7 +614,6 @@ export default function DashboardPage() {
         )}
       </section>
 
-      {/* 5. Detailed Inspect Report Modal (#2) */}
       {inspectingReport && (
         <div
           style={{
@@ -693,7 +652,6 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            {/* Score & Recruiter Readiness Summary */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
               <div style={{ padding: 14, borderRadius: 8, background: "rgba(15, 23, 42, 0.6)", border: "1px solid var(--border)" }}>
                 <span style={{ fontSize: "0.75rem", color: "var(--txt-2)" }}>HIRING SCORE</span>
@@ -704,61 +662,8 @@ export default function DashboardPage() {
                   {getScoringTier(inspectingReport.scores?.overall)?.label}
                 </span>
               </div>
-              <div style={{ padding: 14, borderRadius: 8, background: "rgba(15, 23, 42, 0.6)", border: "1px solid var(--border)" }}>
-                <span style={{ fontSize: "0.75rem", color: "var(--txt-2)" }}>PROGRESS DELTA</span>
-                <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#4ade80", margin: "6px 0 2px" }}>
-                  {inspectingReport.deltas?.highlights?.join(" • ") || "Baseline Assessment"}
-                </div>
-                <span style={{ fontSize: "0.75rem", color: "var(--txt-3)" }}>Scanned against profile history</span>
-              </div>
             </div>
 
-            {/* 4 Pillar Scores Breakdown */}
-            <div style={{ marginBottom: 20 }}>
-              <h4 style={{ fontSize: "0.95rem", color: "var(--txt-1)", marginBottom: 12 }}>Readiness Pillar Scores</h4>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                {[
-                  { label: "GitHub Code Signal", score: inspectingReport.scores?.github ?? 0 },
-                  { label: "Project Engineering", score: inspectingReport.scores?.projectQuality ?? 0 },
-                  { label: "Portfolio SEO & Tech", score: inspectingReport.scores?.portfolio ?? 0 },
-                  { label: "Resume ATS Alignment", score: inspectingReport.scores?.hiringReadiness ?? 0 },
-                ].map((p, i) => (
-                  <div key={i} style={{ padding: 10, borderRadius: 6, background: "rgba(15, 23, 42, 0.5)", border: "1px solid var(--border)" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem", marginBottom: 4 }}>
-                      <span style={{ color: "var(--txt-2)" }}>{p.label}</span>
-                      <span style={{ fontWeight: 700, color: "var(--cyan)" }}>{p.score} / 100</span>
-                    </div>
-                    <div style={{ height: 4, borderRadius: 2, background: "rgba(255,255,255,0.1)", overflow: "hidden" }}>
-                      <div style={{ width: `${p.score}%`, height: "100%", background: "var(--cyan)" }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Explainable Evidence Breakdown List */}
-            <div style={{ marginBottom: 20 }}>
-              <h4 style={{ fontSize: "0.95rem", color: "var(--txt-1)", marginBottom: 10 }}>Explainable Evidence Breakdown</h4>
-              <div style={{ display: "grid", gap: 8, maxHeight: 200, overflowY: "auto", paddingRight: 4 }}>
-                {Object.entries(inspectingReport.scoreBreakdowns || {}).flatMap(([cat, items]) => items || []).map((item, idx) => {
-                  const pts = item.score || 0;
-                  const isPositive = pts > 0;
-                  return (
-                    <div key={idx} style={{ padding: "8px 12px", borderRadius: 6, background: "rgba(15, 23, 42, 0.5)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "#ffffff" }}>{item.label}</div>
-                        <div style={{ fontSize: "0.76rem", color: "var(--txt-2)", marginTop: 2 }}>{item.evidence}</div>
-                      </div>
-                      <div style={{ fontSize: "0.85rem", fontWeight: 800, color: isPositive ? "#4ade80" : "#f87171", flexShrink: 0 }}>
-                        {isPositive ? `+${pts}` : `${pts}`} pts
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Action CTA */}
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
               <button className="btn-secondary" onClick={() => setInspectingReport(null)}>
                 Close
@@ -775,7 +680,6 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* 6. Compare Reports Modal (#8) */}
       {showCompareModal && compareReportsList.length === 2 && (
         <div
           style={{
@@ -811,12 +715,6 @@ export default function DashboardPage() {
                   </div>
                   <div style={{ fontSize: "0.8rem", color: "var(--txt-2)", marginBottom: 12 }}>
                     {formatExactTimestamp(rep?.createdAt)}
-                  </div>
-                  <div style={{ fontSize: "0.78rem", display: "grid", gap: 6 }}>
-                    <div>GitHub Signal: <strong>{rep?.scores?.github || 0}</strong></div>
-                    <div>Projects Code: <strong>{rep?.scores?.projectQuality || 0}</strong></div>
-                    <div>Portfolio SEO: <strong>{rep?.scores?.portfolio || 0}</strong></div>
-                    <div>Resume ATS: <strong>{rep?.scores?.hiringReadiness || 0}</strong></div>
                   </div>
                 </div>
               ))}

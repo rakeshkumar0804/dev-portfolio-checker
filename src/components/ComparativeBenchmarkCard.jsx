@@ -1,4 +1,5 @@
 import React from "react";
+import Icon from "./Icon.jsx";
 
 export default function ComparativeBenchmarkCard({ comparative, targetRole }) {
   if (!comparative) return null;
@@ -30,7 +31,8 @@ export default function ComparativeBenchmarkCard({ comparative, targetRole }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 }}>
         <div>
           <h3 style={{ fontSize: "1.1rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
-            <span>📊</span> Section 3: Deterministic Seniority Benchmarks
+            <Icon name="bar-chart" size={16} style={{ color: "var(--cyan)" }} />
+            <span>Section 3: Deterministic Seniority Benchmarks</span>
           </h3>
           <p style={{ color: "var(--txt-3)", fontSize: "0.82rem", marginTop: 4, margin: 0 }}>
             Comparing your calculated score against deterministic readiness thresholds for {(targetRole || "fullstack").toUpperCase()} roles.

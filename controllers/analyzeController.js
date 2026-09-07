@@ -66,6 +66,32 @@ function isCacheValid(report) {
   return (g.profile?.followers ?? 0) > 0 || (g.stats?.totalRepos ?? 0) > 0;
 }
 
+// ── Defence-in-depth: strip rawText from resumeAnalysis before persistence/response ──
+// Uses an explicit allowlist so a future service regression cannot re-introduce PII exposure.
+const SAFE_RESUME_FIELDS = [
+  "atsScore", "atsBreakdown", "strengths", "issues", "missingKeywords",
+  "hasActionVerbs", "hasMetrics", "skillsExtracted", "skillsText",
+  "githubConsistency", "improvements", "overallVerdict",
+  "wordCount", "quantifiedMetricsCount", "actionVerbCount", "matchedKeywords",
+];
+
+function sanitizeResumeAnalysis(ra) {
+  if (!ra || typeof ra !== "object") return ra;
+  const safe = {};
+  for (const key of SAFE_RESUME_FIELDS) {
+    if (key in ra) safe[key] = ra[key];
+  }
+  return safe;
+}
+
+export function sanitizeReport(report) {
+  if (!report) return report;
+  if (report.resumeAnalysis) {
+    report.resumeAnalysis = sanitizeResumeAnalysis(report.resumeAnalysis);
+  }
+  return report;
+}
+
 // POST /api/analyze/full
 export async function analyzeFullProfile(req, res) {
   try {
@@ -105,52 +131,103 @@ export async function analyzeFullProfile(req, res) {
       lastForceRefreshMap.set(username, Date.now());
     }
 
-    // ── Always fetch fresh live data for explicit user analysis requests ───────
+    // ── Check in-memory cache first (skipped if forceRefresh is true) ─────────
     if (!isForce && memoryStore.has(cacheKey)) {
       const cached = memoryStore.get(cacheKey);
-      // Only serve cache if created within the last 10 seconds
-      if (Date.now() - cached.createdAt < 10 * 1000) {
+      if (Date.now() - cached.createdAt < CACHE_TTL_MS) {
         console.log(`♻️ Memory cache hit for key "${cacheKey}"`);
         const missingSkills = detectMissingSkills(cached.skillsDetected || [], cached.targetRole || "fullstack");
-        const cacheAge = Math.round((Date.now() - cached.createdAt) / 1000);
+        const cacheAge = Math.round((Date.now() - cached.createdAt) / 60000);
         return res.json({ success: true, fromCache: true, cacheAge, ...cached, missingSkills });
       }
     }
 
-    // Usage tracking: always optional, never blocks analysis
     let accountUsage = null;
     if (req.user?.id) {
       try {
         accountUsage = await consumeAnalysis(req.user.id);
-      } catch (_) {
-        // Session not found in memory/DB (e.g. cold-start wipe)
-        // Silently proceed as guest — analysis is NEVER blocked
-        req.user = null;
+      } catch (usageError) {
+        return res.status(403).json({ message: usageError.message });
       }
     }
 
     // ── Fresh analysis ───────────────────────────────────────────────────────
     console.log(`🔍 Fresh analysis [Mode: ${analysisMode}] [Role: ${targetRole}] (DB: ${dbConnected ? "✅" : "⚠️ memory-only"})`);
 
+    // ── Run GitHub & Portfolio analyses concurrently ──────────────────────────
+    const [githubResult, portfolioResult] = await Promise.allSettled([
+      username ? fetchGitHubData(username) : Promise.resolve(null),
+      normalizedPortfolio ? fetchPortfolioData(normalizedPortfolio) : Promise.resolve(null),
+    ]);
+
     let githubData = null;
+    let githubStatus = null;
     if (username) {
-      try {
-        githubData = await fetchGitHubData(username);
-      } catch (err) {
+      if (githubResult.status === "fulfilled") {
+        githubData = githubResult.value;
+      } else {
+        const err = githubResult.reason;
+        const errMsg = err?.message || "Could not retrieve GitHub profile data.";
+        githubStatus = err?.statusCode || (errMsg.includes("not found") ? 404 : (errMsg.includes("timeout") ? 504 : 502));
         if (analysisMode === "github_only") {
-          return res.status(400).json({ message: err.message });
+          return res.status(githubStatus).json({ message: errMsg });
         }
+        console.warn("⚠️ GitHub analysis failed in combined mode:", errMsg);
         githubData = null;
       }
     }
 
     let portfolioData = null;
+    let portfolioStatus = null;
     if (normalizedPortfolio) {
-      try {
-        portfolioData = await fetchPortfolioData(normalizedPortfolio);
-      } catch (_) {
+      if (portfolioResult.status === "fulfilled") {
+        portfolioData = portfolioResult.value;
+        if (portfolioData && !portfolioData.accessible) {
+          const fetchErr = portfolioData.fetchError || "";
+          if (
+            fetchErr.includes("Private or local") ||
+            fetchErr.includes("Enter a valid") ||
+            fetchErr.includes("Only public") ||
+            fetchErr.includes("could not be resolved")
+          ) {
+            portfolioStatus = 400;
+          } else if (fetchErr.includes("timed out") || fetchErr.includes("timeout")) {
+            portfolioStatus = 504;
+          } else {
+            portfolioStatus = 502;
+          }
+
+          if (analysisMode === "portfolio_only") {
+            const errMsg = fetchErr
+              ? `Could not access portfolio website (${fetchErr}). Please verify the URL.`
+              : "Could not access portfolio website. Please verify the URL.";
+            return res.status(portfolioStatus).json({ message: errMsg });
+          }
+        }
+      } else {
+        const err = portfolioResult.reason;
+        const errMsg = err?.message || "Could not analyze portfolio website.";
+        portfolioStatus = err?.statusCode || (errMsg.includes("timeout") ? 504 : 400);
+        if (analysisMode === "portfolio_only") {
+          return res.status(portfolioStatus).json({ message: errMsg });
+        }
+        console.warn("⚠️ Portfolio analysis failed in combined mode:", errMsg);
         portfolioData = null;
       }
+    }
+
+    // If both requested sources failed, return a controlled stage error
+    if (!githubData && (!portfolioData || !portfolioData.accessible) && !resumeAnalysis) {
+      let combinedStatus = 400;
+      if (githubStatus === 504 || portfolioStatus === 504) {
+        return res.status(504).json({ message: "Analysis took longer than expected. Please retry in a moment." });
+      }
+      if (githubStatus === 502 || portfolioStatus === 502) {
+        combinedStatus = 502;
+      }
+      return res.status(combinedStatus).json({
+        message: "Unable to complete analysis. Please verify that your GitHub username and portfolio URL are publicly reachable.",
+      });
     }
 
     const { scores, scoreBreakdowns, improvements } = calculateAllScores(
@@ -171,9 +248,10 @@ export async function analyzeFullProfile(req, res) {
 
     let aiFeedback = null;
     try {
+      // Bound AI feedback internally with native cancellation
       aiFeedback = await generateAIFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis);
     } catch (aiErr) {
-      console.warn("AI feedback failed (non-critical):", aiErr.message?.slice(0, 80));
+      console.warn("AI feedback skipped or timed out (non-critical):", aiErr.message?.slice(0, 80));
     }
 
     // Share IDs are server-owned. Never accept a caller-provided ID because it
@@ -190,6 +268,9 @@ export async function analyzeFullProfile(req, res) {
     }
     if (!shareId) shareId = nanoid(10);
 
+    // Sanitize resumeAnalysis at persistence boundary (defence-in-depth)
+    const safeResumeAnalysis = sanitizeResumeAnalysis(resumeAnalysis);
+
     const reportPayload = {
       shareId,
       userId: req.user?.id || null,
@@ -203,7 +284,8 @@ export async function analyzeFullProfile(req, res) {
       githubData,
       portfolioData,
       aiFeedback,
-      resumeAnalysis,
+      careerRoadmap: aiFeedback?.careerRoadmap || null,
+      resumeAnalysis: safeResumeAnalysis,
       skillsDetected,
       recruiterDecision,
       consistencyMatrix,
@@ -237,7 +319,7 @@ export async function analyzeFullProfile(req, res) {
       analysisMode,
       githubData,
       portfolioData,
-      resumeAnalysis,
+      resumeAnalysis: safeResumeAnalysis,
       scores,
       scoreBreakdowns,
       improvements,
@@ -274,6 +356,7 @@ export async function getReport(req, res) {
             createdAt: dbReport.createdAt?.getTime ? dbReport.createdAt.getTime() : new Date(dbReport.createdAt).getTime(),
             githubUsername: dbReport.githubUsername,
             portfolioUrl: dbReport.portfolioUrl,
+            analysisMode: dbReport.analysisMode,
             githubData: dbReport.githubData,
             portfolioData: dbReport.portfolioData,
             scores: dbReport.scores,
@@ -293,6 +376,9 @@ export async function getReport(req, res) {
     if (!report) {
       return res.status(404).json({ message: "Report not found. It may have expired — please run a new analysis." });
     }
+
+    // Defence-in-depth: strip rawText from legacy records before API response
+    sanitizeReport(report);
 
     const missingSkills = detectMissingSkills(report.skillsDetected || [], report.targetRole || "fullstack");
     const createdAtMs = typeof report.createdAt === "number" ? report.createdAt : new Date(report.createdAt).getTime();

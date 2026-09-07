@@ -5,6 +5,7 @@ import os from "os";
 import { fileURLToPath } from "url";
 import { dbConnected } from "../utils/connectDatabase.js";
 import { analyzeResume, buildFallbackResumeAnalysis } from "../services/resumeService.js";
+import { memoryStore, persistReportsToDisk } from "./analyzeController.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +22,14 @@ try {
 }
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
+  destination: (req, file, cb) => {
+    try {
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+    } catch (_) {}
+    cb(null, uploadDir);
+  },
   filename: (req, file, cb) => {
     const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, "resume-" + unique + ".pdf");
@@ -87,13 +95,18 @@ export async function analyzeResumeController(req, res) {
   try {
     let githubData = null;
 
-    if (shareId && dbConnected) {
-      try {
-        const { default: Report } = await import("../models/Report.js");
-        const report = await Report.findOne({ shareId });
-        if (report) githubData = report.githubData;
-      } catch (e) {
-        console.warn("Could not query DB for resume consistency check:", e.message);
+    if (shareId) {
+      if (dbConnected) {
+        try {
+          const { default: Report } = await import("../models/Report.js");
+          const report = await Report.findOne({ shareId });
+          if (report) githubData = report.githubData;
+        } catch (e) {
+          console.warn("Could not query DB for resume consistency check:", e.message);
+        }
+      }
+      if (!githubData && memoryStore.has(shareId)) {
+        githubData = memoryStore.get(shareId)?.githubData;
       }
     }
 
@@ -103,12 +116,22 @@ export async function analyzeResumeController(req, res) {
       targetRole || "fullstack"
     );
 
-    if (shareId && dbConnected) {
-      try {
-        const { default: Report } = await import("../models/Report.js");
-        await Report.updateOne({ shareId }, { $set: { resumeAnalysis } });
-      } catch (e) {
-        console.warn("Could not save resume analysis to DB:", e.message);
+    if (shareId) {
+      if (dbConnected) {
+        try {
+          const { default: Report } = await import("../models/Report.js");
+          await Report.updateOne({ shareId }, { $set: { resumeAnalysis } });
+        } catch (e) {
+          console.warn("Could not save resume analysis to DB:", e.message);
+        }
+      }
+      if (memoryStore.has(shareId)) {
+        const existing = memoryStore.get(shareId);
+        if (existing) {
+          existing.resumeAnalysis = resumeAnalysis;
+          memoryStore.set(shareId, existing);
+          persistReportsToDisk();
+        }
       }
     }
 

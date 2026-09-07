@@ -1,5 +1,5 @@
 import { authenticateAccount, getAccount, registerAccount } from "../services/accountService.js";
-import { memoryStore, persistReportsToDisk } from "./analyzeController.js";
+import { memoryStore, persistReportsToDisk, sanitizeReport } from "./analyzeController.js";
 import { issueToken } from "../utils/auth.js";
 import { dbConnected } from "../utils/connectDatabase.js";
 import { getScoringTier } from "../services/scoringService.js";
@@ -37,6 +37,7 @@ export async function recentReports(req, res) {
 
   if (dbConnected) {
     try {
+      const { default: Report } = await import("../models/Report.js");
       reports = await Report.find({ userId })
         .sort({ createdAt: -1 })
         .limit(20)
@@ -133,6 +134,9 @@ export async function recentReports(req, res) {
   const scoreDiff = (latestScore !== null && previousScore !== null) ? (latestScore - previousScore) : null;
   const currentTier = latestScore ? getScoringTier(latestScore) : null;
 
+  // Defence-in-depth: strip rawText from any legacy records before response
+  reports.forEach(sanitizeReport);
+
   return res.json({
     reports,
     stats: {
@@ -149,36 +153,49 @@ export async function recentReports(req, res) {
 
 export async function saveReportToAccount(req, res) {
   try {
-    const { shareId, report: incomingReport } = req.body;
+    const { shareId } = req.body;
     const userId = req.user.id;
 
     if (!shareId) return res.status(400).json({ message: "Share ID is required." });
 
-    let targetReport = incomingReport || null;
+    let targetReport = null;
     for (const [key, item] of memoryStore.entries()) {
       if (item && item.shareId === shareId) {
-        targetReport = { ...item, ...(incomingReport || {}) };
+        targetReport = item;
         item.userId = userId;
         memoryStore.set(key, item);
       }
     }
 
+    // Check for duplicate reports with identical scores and username created within 30 minutes
     if (targetReport) {
-      targetReport.userId = userId;
-      memoryStore.set(shareId, targetReport);
-      persistReportsToDisk();
+      for (const [key, item] of memoryStore.entries()) {
+        if (
+          item && item.shareId !== shareId &&
+          item.userId === userId &&
+          item.githubUsername === targetReport.githubUsername &&
+          item.scores?.overall === targetReport.scores?.overall &&
+          Math.abs(Date.now() - (item.createdAt || 0)) < 30 * 60 * 1000
+        ) {
+          console.log(`🔁 [DUPLICATE PREVENTION] Consolidating duplicate report snapshot ${shareId} with ${item.shareId}`);
+          item.createdAt = Date.now();
+          memoryStore.delete(shareId);
+          persistReportsToDisk();
+          return res.json({
+            success: true,
+            isDuplicate: true,
+            message: "Report updated. Existing baseline retained to prevent duplicate snapshots.",
+            shareId: item.shareId,
+          });
+        }
+      }
     }
 
+    persistReportsToDisk();
+
     if (dbConnected) {
-      if (incomingReport) {
-        await Report.findOneAndUpdate(
-          { shareId },
-          { ...incomingReport, shareId, userId, createdAt: new Date() },
-          { upsert: true, new: true }
-        );
-      } else {
-        await Report.updateOne({ shareId }, { $set: { userId } });
-      }
+      const { default: Report } = await import("../models/Report.js");
+      await Report.updateOne({ shareId }, { $set: { userId } });
     }
 
     return res.json({ success: true, message: "Report successfully saved to your workspace library.", shareId, userId });
@@ -206,6 +223,7 @@ export async function deleteReport(req, res) {
 
     let dbDeletedCount = 0;
     if (dbConnected) {
+      const { default: Report } = await import("../models/Report.js");
       const result = await Report.deleteMany({ shareId });
       dbDeletedCount = result.deletedCount || 0;
       console.log(`🗄️ [BACKEND DELETE DEBUG STEP 3] MongoDB deleteMany({ shareId: "${shareId}" }) removed ${dbDeletedCount} documents`);

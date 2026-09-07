@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Icon from "./Icon.jsx";
 
 export default function ExecutiveSummaryHero({ score, recruiterDecision, targetRole }) {
   const [showQuestions, setShowQuestions] = useState(false);
@@ -14,7 +15,7 @@ export default function ExecutiveSummaryHero({ score, recruiterDecision, targetR
     confidenceLevel = "High Confidence",
     confidenceRationale = "Verified strictly against public GitHub API commits and repository metadata.",
     hiringRecommendation = "Proceed to Technical Screening Round",
-    salaryBandEstimate = "$95,000 – $125,000 USD (Mid-Level Developer Benchmark)",
+    seniorityLevel = "Mid-Level Developer Level",
     recruiterThought = "",
     interviewQuestions = [],
     greenFlags = [],
@@ -27,6 +28,10 @@ export default function ExecutiveSummaryHero({ score, recruiterDecision, targetR
   const badgeColor = isSenior ? "var(--green)" : isBeginner ? "var(--cyan)" : "var(--yellow)";
   const badgeBg = isSenior ? "rgba(34,197,94,0.12)" : isBeginner ? "rgba(56,189,248,0.12)" : "rgba(234,179,8,0.12)";
   const badgeBorder = isSenior ? "rgba(34,197,94,0.3)" : isBeginner ? "rgba(56,189,248,0.3)" : "rgba(234,179,8,0.3)";
+
+  const sanitizedThought = (recruiterThought || "")
+    .replace(/will significantly increase interview shortlist rates/gi, "may strengthen the profile evidence")
+    .replace(/significantly increase interview shortlist rates/gi, "strengthen profile evidence");
 
   const renderFlagText = (flag) => {
     if (!flag) return "";
@@ -109,9 +114,13 @@ export default function ExecutiveSummaryHero({ score, recruiterDecision, targetR
                   background: "rgba(34, 197, 94, 0.12)",
                   color: "var(--green)",
                   border: "1px solid rgba(34, 197, 94, 0.3)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
                 }}
               >
-                ✓ {confidenceLevel} ({confidenceScore}% Evidence Match)
+                <Icon name="check" size={12} />
+                <span>{confidenceLevel} ({confidenceScore}% Evidence Match)</span>
               </span>
             </div>
 
@@ -130,13 +139,13 @@ export default function ExecutiveSummaryHero({ score, recruiterDecision, targetR
                 marginTop: 4,
               }}
             >
-              <span>{isSenior ? "🌟" : isBeginner ? "🌱" : "⚡"}</span>
+              <Icon name={isSenior ? "star" : isBeginner ? "zap" : "trending-up"} size={16} />
               <span>{decisionLabel}</span>
             </div>
           </div>
         </div>
 
-        {/* Right: Recommendation & Market Salary Benchmark */}
+        {/* Right: Recommendation & Evaluated Target Role */}
         <div
           style={{
             background: "rgba(15, 23, 42, 0.7)",
@@ -152,8 +161,9 @@ export default function ExecutiveSummaryHero({ score, recruiterDecision, targetR
           <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--txt-1)", marginBottom: 8, lineHeight: 1.3 }}>
             {hiringRecommendation}
           </div>
-          <div style={{ fontSize: "0.74rem", color: "var(--cyan)", fontWeight: 600 }}>
-            💰 Market Band: {salaryBandEstimate}
+          <div style={{ fontSize: "0.74rem", color: "var(--cyan)", fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+            <Icon name="briefcase" size={13} />
+            <span>Target Level: {seniorityLevel || `${(targetRole || "Full Stack").toUpperCase()} Candidate`}</span>
           </div>
         </div>
       </div>
@@ -161,10 +171,11 @@ export default function ExecutiveSummaryHero({ score, recruiterDecision, targetR
       {/* Recruiter Executive Notes */}
       <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "14px 18px", marginBottom: 16, border: "1px solid rgba(255,255,255,0.06)" }}>
         <div style={{ fontSize: "0.78rem", color: "var(--txt-3)", textTransform: "uppercase", letterSpacing: 1, fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}>
-          <span>👔</span> Executive Recruiter Assessment Note
+          <Icon name="briefcase" size={14} style={{ color: "var(--cyan)" }} />
+          <span>Executive Recruiter Assessment Note</span>
         </div>
         <p style={{ color: "var(--txt-1)", fontSize: "0.92rem", lineHeight: 1.5, margin: 0 }}>
-          "{recruiterThought}"
+          "{sanitizedThought}"
         </p>
       </div>
 
@@ -173,11 +184,12 @@ export default function ExecutiveSummaryHero({ score, recruiterDecision, targetR
         {/* Strengths */}
         <div style={{ background: "rgba(34, 197, 94, 0.05)", borderRadius: 12, padding: "14px 18px", border: "1px solid rgba(34, 197, 94, 0.18)" }}>
           <div style={{ fontSize: "0.83rem", fontWeight: 700, color: "var(--green)", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
-            <span>💪</span> Verified Positive Strengths
+            <Icon name="star" size={15} />
+            <span>Verified Positive Strengths</span>
           </div>
           {greenFlags.map((flag, idx) => (
             <div key={idx} style={{ fontSize: "0.8rem", color: "var(--txt-2)", marginBottom: 4, display: "flex", alignItems: "flex-start", gap: 6 }}>
-              <span style={{ color: "var(--green)", fontWeight: 700 }}>✓</span>
+              <Icon name="check" size={12} style={{ color: "var(--green)", marginTop: 3 }} />
               <span>{renderFlagText(flag)}</span>
             </div>
           ))}
@@ -186,11 +198,12 @@ export default function ExecutiveSummaryHero({ score, recruiterDecision, targetR
         {/* Improvement Areas */}
         <div style={{ background: "rgba(234, 179, 8, 0.05)", borderRadius: 12, padding: "14px 18px", border: "1px solid rgba(234, 179, 8, 0.18)" }}>
           <div style={{ fontSize: "0.83rem", fontWeight: 700, color: "var(--yellow)", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
-            <span>🚀</span> Highest Impact Improvement Areas
+            <Icon name="trending-up" size={15} />
+            <span>Highest Impact Improvement Areas</span>
           </div>
           {redFlags.map((flag, idx) => (
             <div key={idx} style={{ fontSize: "0.8rem", color: "var(--txt-2)", marginBottom: 4, display: "flex", alignItems: "flex-start", gap: 6 }}>
-              <span style={{ color: "var(--yellow)", fontWeight: 700 }}>💡</span>
+              <Icon name="info" size={12} style={{ color: "var(--yellow)", marginTop: 3 }} />
               <span>{renderFlagText(flag)}</span>
             </div>
           ))}
@@ -213,11 +226,11 @@ export default function ExecutiveSummaryHero({ score, recruiterDecision, targetR
               fontSize: "0.83rem",
               cursor: "pointer",
               display: "flex",
-              justify: "space-between",
+              justifyContent: "space-between",
               alignItems: "center",
             }}
           >
-            <span>❓ View 3 Tailored Recruiter Technical Screening Questions</span>
+            <span>View 3 Tailored Recruiter Technical Screening Questions</span>
             <span>{showQuestions ? "▲ Hide Questions" : "▼ Reveal Questions"}</span>
           </button>
 

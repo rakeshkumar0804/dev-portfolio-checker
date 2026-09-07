@@ -2,10 +2,15 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 import fs from "fs";
 import puppeteer from "puppeteer-core";
-import { assertPublicHttpUrl } from "../utils/publicUrl.js";
+import { assertPublicHttpUrl, isUnsafeHost } from "../utils/publicUrl.js";
+
+const CRAWL_TIMEOUT_MS = 5500;
+const NAVIGATION_TIMEOUT_MS = 4500;
 
 // Launches a browser compatible with both Vercel serverless and local environments
-async function launchBrowser() {
+async function launchBrowser(options = {}) {
+  const timeout = options.timeout || CRAWL_TIMEOUT_MS;
+
   // Vercel / AWS Lambda: use @sparticuz/chromium-min
   // chromium-min does NOT bundle the binary — it downloads from S3 at runtime
   // This keeps the serverless function bundle under Vercel's 50MB limit
@@ -20,6 +25,7 @@ async function launchBrowser() {
       defaultViewport: chromium.defaultViewport,
       executablePath,
       headless: chromium.headless,
+      timeout,
     });
   }
 
@@ -42,6 +48,7 @@ async function launchBrowser() {
   return puppeteer.launch({
     executablePath,
     headless: true,
+    timeout,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -61,7 +68,7 @@ export async function fetchPortfolioData(url) {
   try {
     targetUrl = (await assertPublicHttpUrl(targetUrl)).toString();
   } catch (err) {
-    return buildResult(null, targetUrl, false, err.message, null, null);
+    return buildResult(null, targetUrl, false, err.message, 400, null);
   }
 
   let html = "";
@@ -89,21 +96,93 @@ export async function fetchPortfolioData(url) {
 
   // 2. Headless Puppeteer render for SPA JavaScript hydration (React, Vite, Vue, Next.js)
   let renderedHtml = html;
+  let browser = null;
+  let isCancelled = false;
+  let crawlTimer = null;
+
   try {
-    const browser = await launchBrowser();
-    const page = await browser.newPage();
-    await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    );
-    await page.goto(finalUrl, { waitUntil: "domcontentloaded", timeout: 12000 });
-    // Allow SPA React/Vite script to execute & hydrate DOM
-    await new Promise((r) => setTimeout(r, 2000));
-    renderedHtml = await page.content();
-    await browser.close();
+    // Launch edge-case guard: if crawlTimer fires before launch completes,
+    // ensure the newly spawned browser is closed immediately to prevent zombie processes.
+    const browserPromise = launchBrowser({ timeout: CRAWL_TIMEOUT_MS }).then((b) => {
+      if (isCancelled) {
+        if (b) b.close().catch(() => {});
+        return null;
+      }
+      browser = b;
+      return b;
+    });
+
+    const crawlWork = (async () => {
+      const b = await browserPromise;
+      if (!b) return html;
+
+      const page = await b.newPage();
+      await page.setUserAgent(
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      );
+
+      // Enforce native page & navigation timeouts
+      page.setDefaultNavigationTimeout(NAVIGATION_TIMEOUT_MS);
+      page.setDefaultTimeout(NAVIGATION_TIMEOUT_MS);
+
+      // Subresource SSRF protection
+      await page.setRequestInterception(true);
+      page.on("request", async (interceptedReq) => {
+        const reqUrl = interceptedReq.url();
+        if (reqUrl.startsWith("data:")) return interceptedReq.continue();
+
+        try {
+          const parsed = new URL(reqUrl);
+          if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+            return interceptedReq.abort("blockedbyclient");
+          }
+          if (parsed.username || parsed.password) {
+            return interceptedReq.abort("blockedbyclient");
+          }
+          if (isUnsafeHost(parsed.hostname)) {
+            return interceptedReq.abort("blockedbyclient");
+          }
+          if (interceptedReq.isNavigationRequest()) {
+            await assertPublicHttpUrl(reqUrl);
+          }
+          return interceptedReq.continue();
+        } catch {
+          return interceptedReq.abort("blockedbyclient");
+        }
+      });
+
+      // Native navigation timeout: stops navigation and throws on timeout
+      await page.goto(finalUrl, { waitUntil: "domcontentloaded", timeout: NAVIGATION_TIMEOUT_MS });
+      
+      // Allow brief SPA hydration
+      await new Promise((r) => setTimeout(r, 800));
+      return await page.content();
+    })();
+
+    const timeoutPromise = new Promise((_, reject) => {
+      crawlTimer = setTimeout(() => {
+        isCancelled = true;
+        reject(new Error("Headless render timed out"));
+      }, CRAWL_TIMEOUT_MS);
+    });
+
+    renderedHtml = await Promise.race([crawlWork, timeoutPromise]);
   } catch (renderErr) {
     console.warn("⚠️ Headless render fallback to static HTML:", renderErr.message?.slice(0, 100));
-    // Fall back to static Axios HTML if headless render fails
+    // Fall back cleanly to static Axios HTML if headless render fails or times out
     renderedHtml = html;
+  } finally {
+    isCancelled = true;
+    if (crawlTimer) {
+      clearTimeout(crawlTimer);
+      crawlTimer = null;
+    }
+    if (browser) {
+      try {
+        await browser.close();
+      } catch (_) {}
+      browser = null;
+    }
   }
 
   const $ = cheerio.load(renderedHtml);
@@ -112,10 +191,10 @@ export async function fetchPortfolioData(url) {
 
 async function fetchPublicPage(initialUrl) {
   let currentUrl = initialUrl;
-  for (let redirects = 0; redirects <= 5; redirects++) {
+  for (let redirects = 0; redirects <= 2; redirects++) {
     await assertPublicHttpUrl(currentUrl);
     const response = await axios.get(currentUrl, {
-      timeout: 12000,
+      timeout: 6000,
       maxRedirects: 0,
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; DevPortfolioChecker/2.1)",

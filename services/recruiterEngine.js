@@ -52,11 +52,25 @@ export function evaluateRecruiterDecision(scores, githubData, portfolioData, res
   // 3. Evidence-Based Confidence Indicator
   let confidenceScore = 92;
   let confidenceLevel = "High Confidence";
-  let confidenceRationale = "Verified strictly against public GitHub API commits, repository metadata, and uploaded resume text parsing.";
-  if (!hasResume || !hasPortfolio) {
+  let confidenceRationale = "Verified strictly against submitted profile data.";
+  if (hasGithub && hasPortfolio && hasResume) {
+    confidenceRationale = "Verified strictly against public GitHub API commits, repository metadata, and uploaded resume text parsing.";
+  } else if (hasGithub) {
     confidenceScore = 84;
     confidenceLevel = "Medium-High Confidence";
-    confidenceRationale = "Verified against GitHub public data. Connect Portfolio & Resume for 100% full-spectrum confidence.";
+    confidenceRationale = "Verified against GitHub public data. Connect Portfolio & Resume for full-spectrum evaluation.";
+  } else if (hasPortfolio && hasResume) {
+    confidenceScore = 84;
+    confidenceLevel = "Medium-High Confidence";
+    confidenceRationale = "Verified against live portfolio website and uploaded resume. Add GitHub for code commit proof.";
+  } else if (hasPortfolio) {
+    confidenceScore = 78;
+    confidenceLevel = "Medium Confidence";
+    confidenceRationale = "Verified against live portfolio website. Add GitHub and Resume for code and ATS evaluation.";
+  } else if (hasResume) {
+    confidenceScore = 80;
+    confidenceLevel = "Medium Confidence";
+    confidenceRationale = "Verified against uploaded resume PDF. Add GitHub and Portfolio for live code and project verification.";
   }
 
   // 4. Positive Signals & Opportunities
@@ -66,7 +80,7 @@ export function evaluateRecruiterDecision(scores, githubData, portfolioData, res
   if (hasGithub) {
     const stats = githubData.stats || {};
     const repoCount = stats.ownedRepos || 0;
-    if (stats.commitCount90Days >= 10) greenFlags.push({ title: "Active GitHub Contributor", evidence: `${stats.commitCount90Days} commits verified in last 90 days` });
+    if (stats.commitCount90Days >= 10) greenFlags.push({ title: repoCount > 0 ? "Active GitHub Contributor" : "Active Contribution Activity", evidence: `${stats.commitCount90Days} ${repoCount > 0 ? "commits" : "contributions"} verified in last 90 days` });
     if (stats.totalStars >= 5) greenFlags.push({ title: "Community Recognition", evidence: `${stats.totalStars} stars across ${repoCount} repos` });
     if (githubData.hasProfileReadme) greenFlags.push({ title: "Profile README Active", evidence: "Dedicated GitHub Profile README file verified" });
     if (repoCount > 0) greenFlags.push({ title: "Public Repositories Published", evidence: `${repoCount} original code repositories on GitHub` });
@@ -91,8 +105,12 @@ export function evaluateRecruiterDecision(scores, githubData, portfolioData, res
   const repoCount = hasGithub ? (githubData.stats?.ownedRepos || 0) : 0;
 
   const interviewQuestions = [
-    `1. "I noticed your public GitHub repos focus on ${targetRole} projects. How do you approach state management and system architecture when scaling a production app?"`,
-    `2. "Your profile shows ${repoCount} active project repositories. Can you walk me through the hardest technical bug you debugged in your main repository?"`,
+    hasGithub
+      ? `1. "I noticed your public GitHub repos focus on ${targetRole} projects. How do you approach state management and system architecture when scaling a production app?"`
+      : `1. "How do you approach state management and system architecture when scaling a production ${targetRole} app?"`,
+    hasGithub && repoCount > 0
+      ? `2. "Your profile shows ${repoCount} active project repositories. Can you walk me through the hardest technical bug you debugged in your main repository?"`
+      : `2. "Can you walk me through the hardest technical challenge or production bug you have encountered and how you resolved it?"`,
     hasPortfolio
       ? `3. "You have a live portfolio at ${portfolioData.url}. How did you handle web performance, responsiveness, and deployment CI/CD for this site?"`
       : `3. "How do you handle production deployment and CI/CD pipelines when publishing web applications for users?"`,
@@ -103,9 +121,15 @@ export function evaluateRecruiterDecision(scores, githubData, portfolioData, res
   if (toneCategory === "beginner") {
     recruiterThought = `Profile demonstrates great initiative at the early stage. Candidates at this level benefit most from completing 1–2 full-stack projects with clear README documentation and live Vercel/Render deployments.`;
   } else if (toneCategory === "senior") {
-    recruiterThought = `Strong candidate for ${roleUpper} roles. Public GitHub commit velocity, repository structure, and technical documentation demonstrate high readiness for senior engineering environments.`;
+    recruiterThought = hasGithub
+      ? `Strong candidate for ${roleUpper} roles. Public GitHub commit velocity, repository structure, and technical documentation demonstrate high readiness for senior engineering environments.`
+      : `Strong candidate for ${roleUpper} roles based on evaluated credentials and profile materials.`;
   } else {
-    recruiterThought = `Solid technical foundation for ${roleUpper} roles with ${repoCount} verified repositories. Adding quantified impact statements on resume bullet points will significantly increase interview shortlist rates.`;
+    recruiterThought = hasGithub
+      ? (repoCount > 0
+          ? `Solid technical foundation for ${roleUpper} roles with ${repoCount} verified repositories. Adding quantified impact statements on resume bullet points may strengthen the profile evidence.`
+          : `Solid technical foundation for ${roleUpper} roles with verified profile contribution activity. Adding quantified impact statements on resume bullet points may strengthen the profile evidence.`)
+      : `Solid technical foundation for ${roleUpper} roles. Adding verified public project code will further strengthen your application.`;
   }
 
   return {

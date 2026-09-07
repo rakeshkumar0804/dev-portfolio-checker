@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import Icon from "./Icon.jsx";
 
 const SCAN_DURATION = 10; // seconds
 
@@ -62,7 +63,10 @@ export default function RecruiterSimulator({ aiFeedback, profile, scores }) {
     <div className="recruiter-sim-card">
       <div className="recruiter-sim-header">
         <div>
-          <div className="recruiter-sim-title">👁️ 10-Second Recruiter Scan</div>
+          <div className="recruiter-sim-title" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Icon name="eye" size={18} style={{ color: "var(--cyan)" }} />
+            <span>10-Second Recruiter Scan</span>
+          </div>
           <div style={{ fontSize: "0.78rem", color: "var(--txt-3)", marginTop: 2 }}>
             Simulating what a recruiter notices in their first 10 seconds
           </div>
@@ -72,8 +76,18 @@ export default function RecruiterSimulator({ aiFeedback, profile, scores }) {
             <div className="recruiter-timer">{timeLeft.toFixed(1)}s</div>
           )}
           {!scanning && (
-            <button className="btn-secondary" onClick={startScan} style={{ fontSize: "0.85rem" }}>
-              {done ? "🔄 Run Again" : "▶ Start Scan"}
+            <button className="btn-secondary" onClick={startScan} style={{ fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 6 }}>
+              {done ? (
+                <>
+                  <Icon name="refresh" size={14} />
+                  <span>Run Again</span>
+                </>
+              ) : (
+                <>
+                  <Icon name="play" size={14} />
+                  <span>Start Scan</span>
+                </>
+              )}
             </button>
           )}
         </div>
@@ -102,7 +116,10 @@ export default function RecruiterSimulator({ aiFeedback, profile, scores }) {
 
             <div className="recruiter-lists">
               <div className="recruiter-list-box positives">
-                <div className="recruiter-list-title">✅ Notices First</div>
+                <div className="recruiter-list-title" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Icon name="check-circle" size={15} style={{ color: "var(--green)" }} />
+                  <span>Notices First</span>
+                </div>
                 {visiblePositives.map((item, i) => (
                   <div key={i} className="recruiter-list-item">
                     <div className="recruiter-list-dot" />
@@ -114,7 +131,10 @@ export default function RecruiterSimulator({ aiFeedback, profile, scores }) {
                 )}
               </div>
               <div className="recruiter-list-box negatives">
-                <div className="recruiter-list-title">⚠️ Red Flags Spotted</div>
+                <div className="recruiter-list-title" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Icon name="alert-triangle" size={15} style={{ color: "var(--yellow)" }} />
+                  <span>Red Flags Spotted</span>
+                </div>
                 {visibleNegatives.map((item, i) => (
                   <div key={i} className="recruiter-list-item">
                     <div className="recruiter-list-dot" />
@@ -131,7 +151,9 @@ export default function RecruiterSimulator({ aiFeedback, profile, scores }) {
 
         {!scanning && !done && (
           <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--txt-3)" }}>
-            <div style={{ fontSize: "3rem", marginBottom: 12 }}>👀</div>
+            <div style={{ marginBottom: 12 }}>
+              <Icon name="eye" size={48} style={{ color: "var(--cyan)" }} />
+            </div>
             <div style={{ fontSize: "0.95rem", marginBottom: 8 }}>
               Click "Start Scan" to simulate a recruiter reviewing your profile
             </div>

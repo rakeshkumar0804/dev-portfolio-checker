@@ -1,97 +1,61 @@
-# 🚀 PortfolioPulse
-> **Built to help developers understand how recruiters evaluate technical profiles before the interview stage.**
+# PortfolioPulse
 
-PortfolioPulse is a full-stack developer career intelligence platform that analyzes **GitHub profiles, portfolio websites, and resumes** to generate evidence-based hiring insights.
+PortfolioPulse is a SaaS career intelligence workspace for developers. Members create a private account, run evidence-based analyses of their GitHub, portfolio, and resume, and keep their reports in one workspace.
 
-Instead of relying on vanity metrics, it evaluates repository quality, documentation, portfolio structure, resume readiness, and technical presentation using **deterministic, rule-based scoring** — every score is backed by real, explainable evidence, not a black-box guess.
+## SaaS capabilities
 
-## ✨ Features
+- Account registration and sign-in with seven-day signed sessions
+- Starter, Pro, and Team plans with monthly analysis credits
+- Private workspace with account usage and saved report history
+- Public share links for reports, without exposing account credentials
+- Pricing page ready for Stripe Checkout integration
+- Deterministic scoring plus optional Gemini AI narrative feedback
 
-- 🔍 GitHub Repository Analysis
-- 🌐 Portfolio Website Evaluation
-- 📄 Resume & ATS Analysis
-- 📊 Hiring Readiness Score (rule-based, fully explainable)
-- 🎭 Recruiter Screening Simulation (illustrative walkthrough of what a recruiter checks)
-- 📈 Personalized Career Roadmap
-- 📑 PDF Report Export
-- 💾 Workspace for Saved Reports
+## Product tiers
 
----
+| Plan | Analyses / month | Intended customer |
+| --- | ---: | --- |
+| Starter | 3 | Individual developer trying the product |
+| Pro | 25 | Active job seeker |
+| Team | 100 | Mentor, bootcamp, or career team |
 
-## 🛠️ Tech Stack
+## Run locally
 
-**Frontend**
-- React
-- Vite
-- React Router
-- Axios
+Requires Node.js 20+.
 
-**Backend**
-- Node.js
-- Express.js
-- MongoDB Atlas
-- JWT Authentication
-
-**APIs**
-- GitHub REST API
-
-**Deployment**
-- Vercel
-
----
-
-## 🚀 Getting Started
-
-Clone the repository
-```bash
-git clone https://github.com/rakeshkumar0804/dev-portfolio-checker.git
-```
-
-Install dependencies (run in both `client` and `server` folders if applicable)
-```bash
+```powershell
 npm install
+Copy-Item .env.example .env
+npm run start
 ```
 
-Create a `.env` file (see `.env.example`)
-```env
-MONGODB_URI=
-JWT_SECRET=
-GITHUB_TOKEN=
-```
+In another terminal:
 
-> Note: You'll need a GitHub Personal Access Token with `public_repo` and `read:user` scopes. Generate one at github.com → Settings → Developer settings → Personal access tokens.
-
-Run the project
-```bash
+```powershell
 npm run dev
 ```
 
----
+Open the app at the URL Vite prints (normally `http://localhost:5173`). Create a free account before running an analysis.
 
-## 📸 Preview
+## Environment variables
 
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `CLIENT_URL` | No | The deployed frontend origin. |
+| `PORT` | No | API port; defaults to `5000`. |
+| `MONGODB_URI` | No | Durable accounts and report history. Without it, development uses temporary in-memory storage. |
+| `JWT_SECRET` | Yes in production | Long random value used to sign sessions. |
+| `GEMINI_API_KEY` | No | Enables generated executive summaries. |
+| `GITHUB_TOKEN` | No | Raises GitHub API rate limits. |
 
-- Home Page<img width="1893" height="973" alt="home page " src="https://github.com/user-attachments/assets/0878dc8a-8a91-4c1c-b0a5-f5a06e045759" />
+## Taking payments live
 
-- GitHub Analysis<img width="1907" height="967" alt="GitHub Analysis" src="https://github.com/user-attachments/assets/ed88dd3b-780f-410d-af03-6c0c6c9597bd" />
+The product and plan entitlements are in place. To enable real payment collection, connect Stripe Checkout and webhooks, then update a user's `plan` only from a verified Stripe webhook. Keep `JWT_SECRET`, MongoDB, Stripe keys, and Gemini keys in your host's secret manager.
 
-- Hiring Dashboard<img width="1895" height="967" alt="Hiring Dashboard" src="https://github.com/user-attachments/assets/9e531a3b-d284-47bf-bdd6-d98b6382e20d" />
+## Safety
 
-
----
-
-## 💡 Why PortfolioPulse?
-
-Most profile analyzers only display raw GitHub statistics with no context. PortfolioPulse combines GitHub analysis, portfolio evaluation, resume review, and hiring intelligence into a single report — and every score is deterministic and rule-based, with the underlying evidence shown next to each number. Nothing is a black box: if a score is low, you can see exactly why, and exactly what to fix.
-
----
-
-## 👨‍💻 Author
-
-**Rakesh Kumar**
-- GitHub: https://github.com/rakeshkumar0804
-- Portfolio: https://dev-portfolio-checker.vercel.app
-
----
-
-⭐ If you found this project useful, consider giving it a star.
+- Public-URL scanning blocks local and private network destinations.
+- Reports receive server-generated share IDs.
+- Resume files are signature-checked and deleted after parsing.
+- Passwords are salted with Node's `scrypt`; no plaintext password is stored.
+- Local development accepts local browser origins; production allows only `CLIENT_URL`.

@@ -132,8 +132,16 @@ Return ONLY valid JSON (no markdown):
   const onlyResume = skillsExtracted.filter((s) => !matchingConsistency.includes(s));
   const onlyGithub = githubSkills.filter((g) => !skillsExtracted.some((s) => s.toLowerCase() === g.toLowerCase()));
 
+  // Build a safe, normalized technical skills string for downstream skill matching (consistencyService).
+  // Contains only verified technical skills and role keywords from the static predefined lists.
+  // Never contains arbitrary text, prose, names, contact details, employer, or education text.
+  const safeTokens = [
+    ...skillsExtracted,
+    ...foundKeywords,
+  ];
+  const skillsText = [...new Set(safeTokens.map((t) => t.toLowerCase().trim()))].filter(Boolean).join(" ");
+
   return {
-    rawText: text,
     atsScore: Math.max(atsScore, 55),
     atsBreakdown: {
       formatting: Math.max(formattingScore, 65),
@@ -142,12 +150,17 @@ Return ONLY valid JSON (no markdown):
       impactMetrics: Math.max(impactMetricsScore, 30),
       length: lengthScore,
     },
+    wordCount,
+    quantifiedMetricsCount: foundMetrics.length,
+    actionVerbCount: foundVerbs.length,
+    matchedKeywords: foundKeywords,
     strengths: finalStrengths,
     issues: finalIssues,
     missingKeywords,
     hasActionVerbs,
     hasMetrics,
     skillsExtracted,
+    skillsText,
     githubConsistency: {
       score: matchingConsistency.length > 0 ? Math.round((matchingConsistency.length / Math.max(skillsExtracted.length, 1)) * 100) : 70,
       matching: matchingConsistency,
@@ -156,10 +169,10 @@ Return ONLY valid JSON (no markdown):
     },
     improvements: finalIssues.map((issue, idx) => ({
       action: issue,
-      impact: "Boosts ATS keyword ranking and recruiter interview rate",
+      impact: "Strengthens ATS keyword alignment and provides quantifiable proof for technical screeners",
       priority: idx + 1,
     })),
-    overallVerdict: aiVerdict?.overallVerdict || `Resume scored ${Math.max(atsScore, 55)}/100 for ${targetRole.toUpperCase()} role. Extracted skills: ${skillsExtracted.slice(0, 5).join(", ") || "Technical skills"}. Add quantified impact metrics to increase interview calls.`,
+    overallVerdict: aiVerdict?.overallVerdict || `Resume scored ${Math.max(atsScore, 55)}/100 for ${targetRole.toUpperCase()} role. Extracted skills: ${skillsExtracted.slice(0, 5).join(", ") || "Technical skills"}. Add quantified impact metrics to strengthen profile evidence.`,
   };
 }
 
@@ -167,6 +180,10 @@ export function buildFallbackResumeAnalysis(resumeText, githubData, targetRole) 
   return {
     atsScore: 0,
     atsBreakdown: { formatting: 0, keywords: 0, actionVerbs: 0, impactMetrics: 0, length: 0 },
+    wordCount: 0,
+    quantifiedMetricsCount: 0,
+    actionVerbCount: 0,
+    matchedKeywords: [],
     strengths: ["No resume uploaded"],
     issues: ["Upload a PDF resume to analyze ATS keyword match and formatting"],
     missingKeywords: [],

@@ -4,7 +4,7 @@
 
 export function generateConsistencyMatrix(githubData, resumeAnalysis) {
   const resumeSkills = resumeAnalysis?.skillsExtracted || [];
-  const resumeRawText = (resumeAnalysis?.rawText || "").toLowerCase();
+  const resumeSkillsText = (resumeAnalysis?.skillsText || "").toLowerCase();
   const githubSkills = githubData?.skills || [];
   const topRepos = githubData?.topRepos || [];
 
@@ -27,6 +27,21 @@ export function generateConsistencyMatrix(githubData, resumeAnalysis) {
     return l;
   }
 
+  // Generic non-technical metadata topics that must not become skill recommendations
+  const GENERIC_PROJECT_TOPICS = new Set([
+    "resume", "portfolio", "ats", "developer-tools", "developertools",
+    "project", "projects", "sample", "demo", "demos", "assignment", "assignments",
+    "homework", "practice", "personal-website", "portfolio-website", "website",
+    "web-application", "web-app", "app", "application", "challenge", "tutorial",
+    "tutorials", "learning", "starter", "starter-kit", "boilerplate", "template",
+    "hackathon", "career", "career-development", "careerdevelopment", "github",
+    "showcase", "showcases", "docs", "documentation", "guide", "collection",
+    "exercises", "notes", "resources", "resource", "interview", "interview-prep",
+    "test", "testing-ground", "sandbox", "example", "examples", "student",
+    "beginner", "free", "open-source", "opensource", "frontend-mentor",
+    "coding-challenge", "mini-project", "coursework"
+  ]);
+
   // Inspect all GitHub repo names, descriptions, and topics
   const repoTexts = topRepos.map((r) => `${r.name || ""} ${r.description || ""} ${(r.topics || []).join(" ")} ${r.language || ""}`.toLowerCase());
 
@@ -47,8 +62,8 @@ export function generateConsistencyMatrix(githubData, resumeAnalysis) {
         skill,
         status: "Resume Only (Unverified)",
         evidenceFound: "Claimed in resume text",
-        evidenceMissing: "No matching public GitHub code found",
-        actionableFix: `Build a small public demo project using ${skill}`,
+        evidenceMissing: "Not detected in inspected GitHub evidence",
+        actionableFix: `Build a small project or add public evidence for ${skill}`,
         impact: "Medium",
       });
     }
@@ -60,22 +75,27 @@ export function generateConsistencyMatrix(githubData, resumeAnalysis) {
     const normG = normalizeSkill(g);
     const rawG = g.toLowerCase().replace(/[^a-z0-9]/g, "");
 
+    // Ignore generic non-technical topics from being recommended as resume skills
+    if (GENERIC_PROJECT_TOPICS.has(normG) || GENERIC_PROJECT_TOPICS.has(rawG) || GENERIC_PROJECT_TOPICS.has(g.toLowerCase())) {
+      return;
+    }
+
     const inResumeSkills = resumeSkills.some((r) => {
       const normR = normalizeSkill(r);
       const rawR = r.toLowerCase().replace(/[^a-z0-9]/g, "");
       return normR === normG || rawR === rawG || rawR.includes(rawG) || rawG.includes(rawR);
     });
 
-    const inResumeText = resumeRawText.length > 0 && (resumeRawText.includes(g.toLowerCase()) || (rawG.length > 2 && resumeRawText.includes(rawG)));
+    const inResumeText = resumeSkillsText.length > 0 && (resumeSkillsText.includes(g.toLowerCase()) || (rawG.length > 2 && resumeSkillsText.includes(rawG)));
 
     if (!inResumeSkills && !inResumeText) {
       githubOnly.push(g);
       actionAuditList.push({
         skill: g,
         status: "GitHub Only (Hidden Gem)",
-        evidenceFound: "Active code found in public GitHub repos",
+        evidenceFound: "Detected in inspected GitHub repository evidence",
         evidenceMissing: "Missing from uploaded resume PDF",
-        actionableFix: `Add ${g} to your resume skills section`,
+        actionableFix: `Consider adding ${g} to your resume skills if proficient`,
         impact: "High",
       });
     }
@@ -91,10 +111,10 @@ export function generateConsistencyMatrix(githubData, resumeAnalysis) {
   // Warnings Rationale
   const warnings = [];
   if (resumeOnly.length > 2) {
-    warnings.push(`Resume claims ${resumeOnly.length} skills (${resumeOnly.slice(0, 3).join(", ")}) that have no public GitHub code proof.`);
+    warnings.push(`Resume claims ${resumeOnly.length} skills (${resumeOnly.slice(0, 3).join(", ")}) that were not detected in inspected GitHub evidence.`);
   }
   if (githubOnly.length > 0) {
-    warnings.push(`You have active GitHub code in ${githubOnly.slice(0, 3).join(", ")}, but these are missing from your resume!`);
+    warnings.push(`Inspected GitHub evidence includes ${githubOnly.slice(0, 3).join(", ")}, but these are not listed in your resume skills.`);
   }
 
   return {

@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage.jsx";
 import ResultsPage from "./pages/ResultsPage.jsx";
 import AuthPage from "./pages/AuthPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
+import PrivacyPage from "./pages/PrivacyPage.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
 function ProtectedRoute({ children }) {
@@ -34,6 +35,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/results/:shareId" element={<ResultsPage />} />
+        <Route path="/sample-report" element={<ResultsPage isSample={true} />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route
           path="/dashboard"

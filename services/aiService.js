@@ -8,34 +8,55 @@ function getGenAI() {
   return new GoogleGenerativeAI(key);
 }
 
-async function callGemini(prompt) {
+async function callGemini(prompt, { timeoutMs = 3500 } = {}) {
   const genAI = getGenAI();
   if (!genAI) return null;
 
-  for (const modelName of MODELS) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) continue;
-      return JSON.parse(jsonMatch[0]);
-    } catch (err) {
-      const msg = err.message || "";
-      if (msg.includes("API_KEY_INVALID") || msg.includes("API key not valid")) {
-        console.error("[Gemini] Invalid API key");
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  const deadline = Date.now() + timeoutMs;
+
+  try {
+    for (const modelName of MODELS) {
+      if (controller.signal.aborted || Date.now() >= deadline) {
+        break;
+      }
+
+      const remainingMs = Math.max(0, deadline - Date.now());
+      if (remainingMs < 400) break; // Insufficient time for another attempt
+
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt, {
+          signal: controller.signal,
+          timeout: remainingMs,
+        });
+        const text = result.response.text();
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) continue;
+        return JSON.parse(jsonMatch[0]);
+      } catch (err) {
+        if (controller.signal.aborted) {
+          break; // Overall deadline expired, stop immediately
+        }
+        const msg = err.message || "";
+        if (msg.includes("API_KEY_INVALID") || msg.includes("API key not valid")) {
+          console.error("[Gemini] Invalid API key");
+          return null;
+        }
+        if (msg.includes("429") || msg.includes("quota") || msg.includes("503")) {
+          if (Date.now() + 600 >= deadline) break;
+          await new Promise((r) => setTimeout(r, Math.min(600, deadline - Date.now())));
+          continue;
+        }
+        console.error(`[Gemini] Error with ${modelName}:`, msg.slice(0, 150));
         return null;
       }
-      if (msg.includes("429") || msg.includes("quota") || msg.includes("503")) {
-        console.warn(`[Gemini] ${modelName} unavailable, trying next…`);
-        await new Promise((r) => setTimeout(r, 800));
-        continue;
-      }
-      console.error(`[Gemini] Error with ${modelName}:`, msg.slice(0, 150));
-      return null;
     }
+    return null;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  return null;
 }
 
 export async function generateAIFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis) {
@@ -133,7 +154,7 @@ function buildFallbackFeedback(githubData, portfolioData, scores, improvements, 
 
   if (hasGithub) {
     if (stats.totalStars > 5) strengths.push(`${stats.totalStars} total GitHub stars`);
-    if (stats.commitCount90Days > 20) strengths.push(`Active GitHub activity: ${stats.commitCount90Days} commits in 90 days`);
+    if (stats.commitCount90Days > 20) strengths.push(stats.ownedRepos > 0 ? `Active GitHub activity: ${stats.commitCount90Days} commits in 90 days` : `Active GitHub activity: ${stats.commitCount90Days} contributions in past 90 days`);
     if (!profile.bio || profile.bio.length < 10) weaknesses.push("GitHub bio is empty");
   } else if (!hasResume) {
     weaknesses.push("No GitHub profile provided");
@@ -151,7 +172,7 @@ function buildFallbackFeedback(githubData, portfolioData, scores, improvements, 
   return {
     overallSummary: `Analysis completed for ${targetRole.toUpperCase()} role. ${
       hasResume ? `Resume scored ${resumeAnalysis.atsScore}/100 with extracted skills (${(resumeAnalysis.skillsExtracted || []).slice(0, 5).join(", ") || "general"}).` : ""
-    } ${hasGithub ? `@${profile.username} has ${stats.ownedRepos || 0} repos.` : ""} Focus on strengthening quantifiable achievements to maximize interview call rates.`,
+    } ${hasGithub ? `@${profile.username} has ${stats.ownedRepos || 0} public repos.` : ""} Focus on strengthening quantifiable achievements to support profile evidence.`,
     strengths: strengths.length ? strengths : ["Candidate profile provided for evaluation"],
     weaknesses: weaknesses.length ? weaknesses : ["Add more quantifiable project impact metrics"],
     scoreExplanations: {
@@ -171,7 +192,7 @@ function buildFallbackFeedback(githubData, portfolioData, scores, improvements, 
       targetLevel: `Mid/Senior ${targetRole.toUpperCase()} Developer`,
       estimatedWeeks: 4,
       milestones: [
-        { week: "Week 1–2", task: "Add quantifiable metrics to resume and top project READMEs", impact: "Directly improves ATS score and recruiter callback rate" },
+        { week: "Week 1–2", task: "Add quantifiable metrics to resume and top project READMEs", impact: "Directly improves ATS score and provides verified impact proof for technical screeners" },
         { week: "Week 3–4", task: "Build a production demo project aligned with " + targetRole.toUpperCase(), impact: "Provides strong technical proof to interviewers" }
       ],
     },

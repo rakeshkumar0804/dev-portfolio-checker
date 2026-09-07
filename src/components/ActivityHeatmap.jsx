@@ -7,8 +7,14 @@ function getHeatColor(count) {
 }
 
 export default function ActivityHeatmap({ weeklyActivity = [] }) {
-  if (!weeklyActivity.length) {
-    return <p style={{ color: "var(--txt-3)", fontSize: "0.85rem" }}>No activity data available</p>;
+  const hasActivity = Array.isArray(weeklyActivity) && weeklyActivity.length > 0 && weeklyActivity.some((w) => w && w.count > 0);
+
+  if (!hasActivity) {
+    return (
+      <div style={{ padding: "20px 16px", textAlign: "center", color: "var(--txt-3)", fontSize: "0.85rem", background: "rgba(255,255,255,0.02)", borderRadius: "var(--r-md)", border: "1px dashed var(--border)" }}>
+        Activity breakdown unavailable
+      </div>
+    );
   }
 
   const maxCount = Math.max(...weeklyActivity.map((w) => w.count), 1);

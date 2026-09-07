@@ -1,28 +1,22 @@
 import axios from "axios";
 
-const api = axios.create({ baseURL: "/api" });
+const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("saas_token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
+export const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// Auto-clear stale tokens on 401 from auth-only routes.
-// This handles the Vercel cold-start case where server memory is wiped
-// and the user's JWT is no longer valid server-side.
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const url = error.config?.url || "";
-    const isAuthRoute = url.startsWith("/auth/") && !url.startsWith("/auth/login") && !url.startsWith("/auth/register");
-    if (error.response?.status === 401 && isAuthRoute) {
-      console.warn("🔑 Stale token detected — clearing session from localStorage.");
-      localStorage.removeItem("saas_token");
-    }
-    return Promise.reject(error);
+// Attach JWT token automatically if present in localStorage
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("saas_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  return config;
+});
 
 export async function registerAccount(data) {
   const res = await api.post("/auth/register", data);
@@ -39,24 +33,20 @@ export async function getAccount() {
   return res.data;
 }
 
-export async function getRecentReports() {
-  const res = await api.get("/auth/reports");
-  return res.data;
-}
-
 export async function analyzeFullProfile(data) {
-  const res = await api.post("/analyze/full", data);
+  const res = await api.post("/analyze/full", data, { timeout: 25000 });
   return res.data;
 }
 
 export async function getReport(shareId) {
-  const res = await api.get(`/analyze/report/${shareId}`);
+  const res = await api.get(`/analyze/report/${shareId}`, { timeout: 15000 });
   return res.data;
 }
 
 export async function uploadResume(formData) {
   const res = await api.post("/resume/analyze", formData, {
     headers: { "Content-Type": "multipart/form-data" },
+    timeout: 20000,
   });
   return res.data;
 }
@@ -137,13 +127,10 @@ export function removeLocalReport(userId = "current", shareId) {
     const filtered = reports.filter((r) => r.shareId !== shareId);
     localStorage.setItem("portfolio_saved_reports_global", JSON.stringify(filtered));
     localStorage.setItem("portfolio_saved_reports_current", JSON.stringify(filtered));
-
-    const cached = sessionStorage.getItem("portfolioReport");
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      if (parsed && parsed.shareId === shareId) {
-        sessionStorage.removeItem("portfolioReport");
-      }
-    }
   } catch (_) {}
+}
+
+export async function getRecentReports() {
+  const res = await api.get("/auth/reports");
+  return res.data;
 }

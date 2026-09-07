@@ -20,6 +20,52 @@ function sanitizeUsername(input) {
   return clean.trim();
 }
 
+async function fallbackPublicRepos(cleanUsername) {
+  try {
+    const res = await axios.get(`https://github.com/${cleanUsername}?tab=repositories`, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+      timeout: 10000,
+    });
+    const $ = cheerio.load(res.data);
+    const repos = [];
+    const repoItems = $("#user-repositories-list li");
+    const blankslate = $(".blankslate, [data-target='empty-state']");
+    const hasRepoContainer = $("#user-repositories-list").length > 0 || blankslate.length > 0 || repoItems.length > 0;
+
+    if (!hasRepoContainer) {
+      return null;
+    }
+
+    repoItems.each((i, el) => {
+      const name = $(el).find('a[itemprop*="codeRepository"]').text().trim();
+      const desc = $(el).find('p[itemprop="description"]').text().trim();
+      const lang = $(el).find('span[itemprop="programmingLanguage"]').text().trim();
+      const isFork = $(el).find('span:contains("Forked from")').length > 0;
+      if (name) {
+        repos.push({
+          name,
+          description: desc,
+          stargazers_count: 0,
+          forks_count: 0,
+          language: lang || "Unknown",
+          topics: [],
+          html_url: `https://github.com/${cleanUsername}/${name}`,
+          pushed_at: new Date().toISOString(),
+          fork: isFork,
+          license: null,
+          homepage: "",
+        });
+      }
+    });
+    return repos;
+  } catch (err) {
+    console.warn(`Fallback repository scrape failed for ${cleanUsername}:`, err.message);
+    return null;
+  }
+}
+
 async function fallbackPublicProfile(cleanUsername) {
   try {
     const htmlRes = await axios.get(`https://github.com/${cleanUsername}`, {
@@ -36,11 +82,13 @@ async function fallbackPublicProfile(cleanUsername) {
     const location = $('[itemprop="homeLocation"]').text().trim() || "";
     const website = $('[itemprop="url"]').text().trim() || "";
 
-    const reposNav = $('a[href*="tab=repositories"] span.Counter').text().trim();
-    const publicRepos = parseInt(reposNav.replace(/,/g, ""), 10) || 12;
+    const reposNav = $('a[href*="tab=repositories"] span.Counter').first().text().trim();
+    const parsedRepos = parseInt(reposNav.replace(/,/g, ""), 10);
+    const publicRepos = Number.isInteger(parsedRepos) && parsedRepos >= 0 ? parsedRepos : null;
 
-    const followersNav = $('a[href*="tab=followers"] span.Counter').text().trim();
-    const followers = parseInt(followersNav.replace(/,/g, ""), 10) || 5;
+    const followersNav = $('a[href*="tab=followers"] span.Counter').first().text().trim();
+    const parsedFollowers = parseInt(followersNav.replace(/,/g, ""), 10);
+    const followers = Number.isInteger(parsedFollowers) && parsedFollowers >= 0 ? parsedFollowers : null;
 
     return {
       login: cleanUsername,
@@ -60,80 +108,103 @@ async function fallbackPublicProfile(cleanUsername) {
     };
   } catch (fallbackErr) {
     if (fallbackErr.response?.status === 404) {
-      throw new Error(`GitHub user "${cleanUsername}" not found.`);
+      const notFoundErr = new Error(`GitHub user "${cleanUsername}" not found.`);
+      notFoundErr.statusCode = 404;
+      throw notFoundErr;
     }
-    throw new Error(`GitHub API rate limit reached. Please try again in a few minutes or configure a GITHUB_TOKEN.`);
+    const rateLimitErr = new Error(`GitHub service is temporarily unavailable. Please retry in a few minutes or configure a GITHUB_TOKEN.`);
+    rateLimitErr.statusCode = 502;
+    throw rateLimitErr;
   }
 }
 
-async function ghFetch(url) {
-  const res = await axios.get(url, { headers: githubHeaders, timeout: 12000 });
-  return res.data;
+async function ghFetch(url, timeoutMs = 7000) {
+  try {
+    const res = await axios.get(url, { headers: githubHeaders, timeout: timeoutMs });
+    return res.data;
+  } catch (err) {
+    if (err.code === "ECONNABORTED" || err.message?.toLowerCase().includes("timeout")) {
+      const timeoutErr = new Error("GitHub request timed out.");
+      timeoutErr.statusCode = 504;
+      throw timeoutErr;
+    }
+    throw err;
+  }
 }
 
 export async function fetchGitHubData(rawUsername) {
   const username = sanitizeUsername(rawUsername);
   if (!username) {
-    throw new Error("Please enter a valid GitHub username.");
+    const err = new Error("Please enter a valid GitHub username.");
+    err.statusCode = 400;
+    throw err;
   }
 
-  // 1. Profile
+  // 1. Profile (validate user identity & existence)
   let profile;
   try {
-    profile = await ghFetch(`${BASE_URL}/users/${username}`);
+    profile = await ghFetch(`${BASE_URL}/users/${username}`, 7000);
   } catch (err) {
     if (err.response?.status === 404) {
-      throw new Error(`GitHub user "${username}" not found.`);
+      const notFoundErr = new Error(`GitHub user "${username}" not found.`);
+      notFoundErr.statusCode = 404;
+      throw notFoundErr;
     }
+    if (err.statusCode === 504) throw err;
     console.warn(`⚠️ GitHub API restricted/rate-limited for "${username}". Using public profile fallback...`);
     profile = await fallbackPublicProfile(username);
   }
 
-  // 2. Repos (up to 100)
+  // 2–5. Fetch Repos, Events, README & Contributions concurrently
+  const [reposResult, eventsResult, readmeResult, contribResult] = await Promise.allSettled([
+    ghFetch(`${BASE_URL}/users/${username}/repos?per_page=100&sort=updated&type=owner`, 7000),
+    ghFetch(`${BASE_URL}/users/${username}/events?per_page=100`, 7000),
+    ghFetch(`${BASE_URL}/repos/${username}/${username}`, 5000),
+    axios.get(`https://github-contributions-api.jogruber.de/v4/${username}`, { timeout: 4500 }),
+  ]);
+
   let repos = [];
-  try {
-    repos = await ghFetch(
-      `${BASE_URL}/users/${username}/repos?per_page=100&sort=updated&type=owner`
-    );
-    if (!Array.isArray(repos)) repos = [];
-  } catch (_) {
-    repos = [];
+  let repoFetchStatus = "fetched"; // "fetched" | "empty" | "unavailable"
+
+  const knownPublicRepos = Number.isInteger(profile.public_repos)
+    ? profile.public_repos
+    : Number.isInteger(profile.publicRepos)
+    ? profile.publicRepos
+    : null;
+
+  if (reposResult.status === "fulfilled" && Array.isArray(reposResult.value)) {
+    repos = reposResult.value;
+    repoFetchStatus = repos.length > 0 ? "fetched" : "empty";
+  } else {
+    console.warn(`⚠️ GitHub API repo fetch failed/rate-limited for "${username}". Attempting public profile repository fallback...`);
+    const scrapedRepos = await fallbackPublicRepos(username);
+    if (Array.isArray(scrapedRepos)) {
+      if (scrapedRepos.length > 0) {
+        repos = scrapedRepos;
+        repoFetchStatus = "fetched";
+      } else {
+        repos = [];
+        repoFetchStatus = "empty";
+      }
+    } else {
+      if (knownPublicRepos === 0) {
+        repos = [];
+        repoFetchStatus = "empty";
+      } else {
+        repos = [];
+        repoFetchStatus = "unavailable";
+      }
+    }
   }
 
-  // 3. Events (last 100)
-  let events = [];
-  try {
-    events = await ghFetch(`${BASE_URL}/users/${username}/events?per_page=100`);
-    if (!Array.isArray(events)) events = [];
-  } catch (_) {
-    events = [];
-  }
+  const events = (eventsResult.status === "fulfilled" && Array.isArray(eventsResult.value)) ? eventsResult.value : [];
+  const hasProfileReadme = readmeResult.status === "fulfilled";
+  const contributionData = (contribResult.status === "fulfilled" && contribResult.value?.data) ? contribResult.value.data : null;
 
-  // 4. Profile README check
-  let hasProfileReadme = false;
-  try {
-    await ghFetch(`${BASE_URL}/repos/${username}/${username}`);
-    hasProfileReadme = true;
-  } catch (_) {
-    hasProfileReadme = false;
-  }
-
-  // 5. Real Contribution Graph Data (accurate 30d, 90d & annual totals matching GitHub profile)
-  let contributionData = null;
-  try {
-    const contribRes = await axios.get(
-      `https://github-contributions-api.jogruber.de/v4/${username}`,
-      { timeout: 6000 }
-    );
-    contributionData = contribRes.data;
-  } catch (_) {
-    contributionData = null;
-  }
-
-  return processGitHubData(profile, repos, events, hasProfileReadme, contributionData);
+  return processGitHubData(profile, repos, events, hasProfileReadme, contributionData, repoFetchStatus);
 }
 
-function processGitHubData(profile, repos, events, hasProfileReadme, contributionData) {
+function processGitHubData(profile, repos, events, hasProfileReadme, contributionData, repoFetchStatus = "fetched") {
   // Language distribution
   const langCount = {};
   repos.forEach((r) => {
@@ -149,11 +220,32 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
       percentage: totalReposWithLang > 0 ? Math.round((count / totalReposWithLang) * 100) : 0,
     }));
 
+  // Generic non-technical metadata topics that must not become skill recommendations
+  const GENERIC_PROJECT_TOPICS = new Set([
+    "resume", "portfolio", "ats", "developer-tools", "developertools",
+    "project", "projects", "sample", "demo", "demos", "assignment", "assignments",
+    "homework", "practice", "personal-website", "portfolio-website", "website",
+    "web-application", "web-app", "app", "application", "challenge", "tutorial",
+    "tutorials", "learning", "starter", "starter-kit", "boilerplate", "template",
+    "hackathon", "career", "career-development", "careerdevelopment", "github",
+    "showcase", "showcases", "docs", "documentation", "guide", "collection",
+    "exercises", "notes", "resources", "resource", "interview", "interview-prep",
+    "test", "testing-ground", "sandbox", "example", "examples", "student",
+    "beginner", "free", "open-source", "opensource", "frontend-mentor",
+    "coding-challenge", "mini-project", "coursework"
+  ]);
+
   // Skills from languages + topics + repo names + repo descriptions
   const skillsSet = new Set();
   repos.forEach((r) => {
     if (r.language) skillsSet.add(r.language);
-    (r.topics || []).forEach((t) => skillsSet.add(t));
+    (r.topics || []).forEach((t) => {
+      const clean = (t || "").trim().toLowerCase();
+      const stripped = clean.replace(/[^a-z0-9]/g, "");
+      if (clean && !GENERIC_PROJECT_TOPICS.has(clean) && !GENERIC_PROJECT_TOPICS.has(stripped)) {
+        skillsSet.add(t);
+      }
+    });
 
     const combinedText = `${r.name || ""} ${r.description || ""} ${(r.topics || []).join(" ")}`.toLowerCase();
     
@@ -261,6 +353,17 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
 
   // Repo stats — Non-forked repositories matching GitHub profile badge
   const ownedRepos = repos.filter((r) => !r.fork);
+  const knownCount = Number.isInteger(profile.publicRepos)
+    ? profile.publicRepos
+    : Number.isInteger(profile.public_repos)
+    ? profile.public_repos
+    : null;
+  const ownedReposCount = (repoFetchStatus === "unavailable" && knownCount !== null && knownCount > 0)
+    ? knownCount
+    : ownedRepos.length;
+  const totalReposCount = (repoFetchStatus === "unavailable" && knownCount !== null && knownCount > 0)
+    ? knownCount
+    : repos.length;
   const totalStars = repos.reduce((s, r) => s + r.stargazers_count, 0);
   const totalForks = repos.reduce((s, r) => s + r.forks_count, 0);
   const reposWithDescription = ownedRepos.filter(
@@ -343,7 +446,8 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
       githubUrl: profile.html_url,
       followers: profile.followers,
       following: profile.following,
-      publicRepos: profile.public_repos,
+      publicRepos: profile.publicRepos !== undefined ? profile.publicRepos : profile.public_repos,
+      public_repos: profile.publicRepos !== undefined ? profile.publicRepos : profile.public_repos,
       publicGists: profile.public_gists,
       accountCreated: profile.created_at,
       accountAgeYears: Math.round(accountAgeYears * 10) / 10,
@@ -353,8 +457,10 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
     stats: {
       totalStars,
       totalForks,
-      totalRepos: repos.length,
-      ownedRepos: ownedRepos.length,
+      totalRepos: totalReposCount,
+      ownedRepos: ownedReposCount,
+      repoFetchStatus,
+      reposUnavailable: repoFetchStatus === "unavailable",
       forkedRepos: repos.filter((r) => r.fork).length,
       reposWithDescription,
       reposWithTopics,

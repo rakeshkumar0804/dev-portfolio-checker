@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Icon from "./Icon.jsx";
 
 export default function ScoreSimulator({ initialScore, improvements, recruiterDecision }) {
   const [checkedItems, setCheckedItems] = useState({});
@@ -19,13 +20,13 @@ export default function ScoreSimulator({ initialScore, improvements, recruiterDe
 
   const simulatedScore = Math.min(100, (initialScore || 50) + addedPoints);
 
-  let simulatedVerdict = "⚡ Promising Candidate";
+  let simulatedVerdict = "Promising Candidate";
   let simulatedColor = "var(--yellow)";
   if (simulatedScore >= 80) {
-    simulatedVerdict = "🌟 Shortlist: YES — High Priority Candidate";
+    simulatedVerdict = "Shortlist: YES — High Priority Candidate";
     simulatedColor = "var(--green)";
   } else if (simulatedScore >= 65) {
-    simulatedVerdict = "⚡ Shortlist: MAYBE — Strong Foundations";
+    simulatedVerdict = "Shortlist: MAYBE — Strong Foundations";
     simulatedColor = "var(--cyan)";
   }
 
@@ -43,7 +44,8 @@ export default function ScoreSimulator({ initialScore, improvements, recruiterDe
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 16 }}>
         <div>
           <h3 style={{ fontSize: "1.1rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
-            <span>🎛️</span> Interactive "What If?" Score Simulator
+            <Icon name="sliders" size={18} style={{ color: "var(--cyan)" }} />
+            <span>Interactive "What If?" Score Simulator</span>
           </h3>
           <p style={{ color: "var(--txt-3)", fontSize: "0.82rem", marginTop: 4, margin: 0 }}>
             Toggle action items below to simulate your projected score gain and recruiter decision in real time.

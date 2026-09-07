@@ -20,7 +20,6 @@ export function AuthProvider({ children }) {
         setUser(data.user || null);
       })
       .catch((err) => {
-        // Only clear token if server explicitly confirms invalid / expired token (401)
         if (err.response?.status === 401) {
           localStorage.removeItem("saas_token");
           localStorage.removeItem("saas_user");

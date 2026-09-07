@@ -1,38 +1,60 @@
 import React, { useState } from "react";
+import Icon from "./Icon.jsx";
 
-export default function RecruiterSimulationFlow({ githubData, portfolioData, resumeAnalysis, recruiterDecision }) {
+export default function RecruiterSimulationFlow({ githubData, portfolioData, resumeAnalysis, recruiterDecision, data }) {
   const [activeStep, setActiveStep] = useState(0);
 
-  const hasGithub = !!(githubData && githubData.profile);
-  const hasPortfolio = !!(portfolioData && portfolioData.accessible);
-  const hasResume = !!(resumeAnalysis && resumeAnalysis.atsScore > 0);
+  const hasGithub = Boolean(githubData && (githubData.profile || githubData.stats || githubData.topRepos?.length > 0));
+  const hasPortfolio = Boolean(portfolioData && portfolioData.accessible);
+  const isPortfolioFailed = Boolean(portfolioData && !portfolioData.accessible) || Boolean(!hasPortfolio && (data?.portfolioUrl || data?.analysisMode?.includes("portfolio")));
+  const hasResume = Boolean(
+    resumeAnalysis &&
+    (
+      (typeof resumeAnalysis.wordCount === "number" && resumeAnalysis.wordCount > 0) ||
+      (typeof resumeAnalysis.atsScore === "number" && resumeAnalysis.atsScore > 0 && (
+        (Array.isArray(resumeAnalysis.skillsExtracted) && resumeAnalysis.skillsExtracted.length > 0) ||
+        (Array.isArray(resumeAnalysis.matchedKeywords) && resumeAnalysis.matchedKeywords.length > 0)
+      ))
+    )
+  );
 
   const steps = [
     {
       id: "github",
-      icon: "🐙",
+      icon: "github",
       title: "GitHub Profile Review",
-      status: hasGithub ? "✓ GitHub Reviewed" : "⚠ GitHub Skipped",
+      status: hasGithub ? "GitHub Reviewed" : "GitHub Not Analyzed",
+      statusIcon: hasGithub ? "check" : "info",
       pass: hasGithub,
       detail: hasGithub
         ? `${githubData.stats?.commitCount90Days || 0} commits in 90d · ${githubData.stats?.totalStars || 0} stars · ${githubData.stats?.ownedRepos || 0} repos`
-        : "No public GitHub profile provided for code verification.",
+        : "No public GitHub profile submitted for code verification.",
     },
     {
       id: "portfolio",
-      icon: "🌐",
+      icon: "globe",
       title: "Portfolio Website Review",
-      status: hasPortfolio ? "✓ Portfolio Reviewed" : "⚠ Portfolio Skipped",
+      status: hasPortfolio
+        ? "Portfolio Reviewed"
+        : isPortfolioFailed
+        ? "Portfolio Unavailable"
+        : "Portfolio Not Analyzed",
+      statusIcon: hasPortfolio ? "check" : isPortfolioFailed ? "alert-triangle" : "info",
       pass: hasPortfolio,
       detail: hasPortfolio
         ? `Live site active at ${portfolioData.url} · SEO & accessibility audit complete`
-        : "No live portfolio link provided for UI/UX audit.",
+        : isPortfolioFailed
+        ? "Portfolio URL could not be reached during analysis."
+        : "No live portfolio link submitted for UI/UX audit.",
     },
     {
       id: "resume",
-      icon: "📄",
+      icon: "file-text",
       title: "Resume ATS Keyword Scan",
-      status: hasResume ? (resumeAnalysis.atsScore >= 70 ? "✓ Resume Verified" : "⚠ Resume Needs Impact") : "⚠ Resume Skipped",
+      status: hasResume
+        ? (resumeAnalysis.atsScore >= 70 ? "Resume Verified" : "Resume Needs Impact")
+        : "Resume Not Analyzed",
+      statusIcon: hasResume ? (resumeAnalysis.atsScore >= 70 ? "check" : "alert-triangle") : "info",
       pass: hasResume && resumeAnalysis.atsScore >= 60,
       detail: hasResume
         ? `ATS score ${resumeAnalysis.atsScore}/100 · ${resumeAnalysis.hasMetrics ? "Contains quantitative metrics" : "Lacks quantitative impact metrics"}`
@@ -40,9 +62,10 @@ export default function RecruiterSimulationFlow({ githubData, portfolioData, res
     },
     {
       id: "verdict",
-      icon: "🎯",
+      icon: "target",
       title: "Recruiter Shortlist Decision",
-      status: recruiterDecision?.decision === "YES" ? "✓ Interview Call Recommended" : "🟡 Talent Pool Shortlist",
+      status: recruiterDecision?.decision === "YES" ? "Interview Call Recommended" : "Talent Pool Shortlist",
+      statusIcon: recruiterDecision?.decision === "YES" ? "check-circle" : "clock",
       pass: recruiterDecision?.decision === "YES",
       detail: recruiterDecision?.decisionLabel || "Evaluation complete.",
     },
@@ -61,7 +84,8 @@ export default function RecruiterSimulationFlow({ githubData, portfolioData, res
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
         <div>
           <h3 style={{ fontSize: "1.1rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
-            <span>👀</span> Section 2: Interactive Recruiter Review Simulation
+            <Icon name="eye" size={18} style={{ color: "var(--cyan)" }} />
+            <span>Section 2: Interactive Recruiter Review Simulation</span>
           </h3>
           <p style={{ color: "var(--txt-3)", fontSize: "0.82rem", marginTop: 4, margin: 0 }}>
             Simulating how a tech recruiter inspects your profile channels in sequence before shortlisting.
@@ -84,10 +108,11 @@ export default function RecruiterSimulationFlow({ githubData, portfolioData, res
               transition: "all 0.2s ease",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-              <span style={{ fontSize: "1.2rem" }}>{s.icon}</span>
-              <span style={{ fontSize: "0.78rem", fontWeight: 700, color: s.pass ? "var(--green)" : "var(--yellow)" }}>
-                {s.status}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <Icon name={s.icon} size={18} style={{ color: "var(--cyan)" }} />
+              <span style={{ fontSize: "0.78rem", fontWeight: 700, color: s.pass ? "var(--green)" : "var(--yellow)", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <Icon name={s.statusIcon} size={12} />
+                <span>{s.status}</span>
               </span>
             </div>
             <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--txt-1)", marginBottom: 4 }}>
