@@ -27,7 +27,7 @@ export default function RecruiterSimulationFlow({ githubData, portfolioData, res
       statusIcon: hasGithub ? "check" : "info",
       pass: hasGithub,
       detail: hasGithub
-        ? `${githubData.stats?.commitCount90Days || 0} commits in 90d · ${githubData.stats?.totalStars || 0} stars · ${githubData.stats?.ownedRepos || 0} repos`
+        ? `${githubData.stats?.commitCount90Days || 0} commits in 90d · ${githubData.stats?.totalStars != null ? githubData.stats.totalStars : "N/A"} stars · ${githubData.stats?.ownedRepos || 0} repos`
         : "No public GitHub profile submitted for code verification.",
     },
     {

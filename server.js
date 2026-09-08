@@ -4,7 +4,7 @@ import express from "express";
 import analyzeRoutes from "./routes/analyzeRoutes.js";
 import resumeRoutes from "./routes/resumeRoutes.js";
 import { connectDatabase } from "./utils/connectDatabase.js";
-import { apiRateLimit } from "./utils/rateLimit.js";
+import { apiRateLimit, resetRateLimits } from "./utils/rateLimit.js";
 import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
@@ -63,6 +63,13 @@ app.get("/api/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+if (process.env.NODE_ENV !== "production") {
+  app.post("/api/test/reset-rate-limit", (req, res) => {
+    resetRateLimits();
+    res.json({ status: "ok", message: "Rate limit counters reset for testing" });
+  });
+}
 
 app.use("/api", apiRateLimit());
 app.use("/api/auth", authRoutes);

@@ -18,6 +18,33 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Response interceptor to handle expired sessions and clear stale credentials
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const msg = (error.response?.data?.message || "").toLowerCase();
+    const isSessionExpired =
+      (status === 401 || status === 403) &&
+      (msg.includes("session has expired") ||
+       msg.includes("authentication required") ||
+       msg.includes("please sign in"));
+
+    if (isSessionExpired) {
+      localStorage.removeItem("saas_token");
+      localStorage.removeItem("saas_user");
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("saas_session_expired", {
+            detail: { message: error.response?.data?.message },
+          })
+        );
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export async function registerAccount(data) {
   const res = await api.post("/auth/register", data);
   return res.data;

@@ -20,13 +20,19 @@ export function AuthProvider({ children }) {
         setUser(data.user || null);
       })
       .catch((err) => {
-        if (err.response?.status === 401) {
+        if (err.response?.status === 401 || err.response?.status === 403) {
           localStorage.removeItem("saas_token");
           localStorage.removeItem("saas_user");
           setUser(null);
         }
       })
       .finally(() => setLoading(false));
+
+    function handleSessionExpired() {
+      setUser(null);
+    }
+    window.addEventListener("saas_session_expired", handleSessionExpired);
+    return () => window.removeEventListener("saas_session_expired", handleSessionExpired);
   }, []);
 
   async function login(credentials) {

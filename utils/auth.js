@@ -48,11 +48,8 @@ export async function optionalAuth(req, res, next) {
     }
 
     const dbUser = await getAccount(payload.sub);
-    req.user = dbUser || {
-      id: payload.sub,
-      name: payload.name || "Developer",
-      email: payload.email || "",
-    };
+    // If the user account is not found, treat request as a guest (never set phantom user)
+    req.user = dbUser || null;
     return next();
   } catch {
     req.user = null;
@@ -69,11 +66,11 @@ export async function requireAuth(req, res, next) {
     if (!payload) return res.status(401).json({ message: "Your session has expired. Please sign in again." });
 
     const dbUser = await getAccount(payload.sub);
-    req.user = dbUser || {
-      id: payload.sub,
-      name: payload.name || "Developer",
-      email: payload.email || "",
-    };
+    if (!dbUser) {
+      return res.status(401).json({ message: "Your session has expired. Please sign in again." });
+    }
+
+    req.user = dbUser;
     return next();
   } catch {
     return res.status(401).json({ message: "Your session has expired. Please sign in again." });

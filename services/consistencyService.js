@@ -101,8 +101,21 @@ export function generateConsistencyMatrix(githubData, resumeAnalysis) {
     }
   });
 
+  const hasResume = !!(resumeAnalysis && (resumeSkills.length > 0 || resumeSkillsText.length > 0));
+  if (!hasResume || resumeSkills.length === 0) {
+    return {
+      consistencyScore: null,
+      status: !resumeAnalysis ? "not_analyzed" : "insufficient_evidence",
+      verifiedInBoth: [],
+      resumeOnly: [],
+      githubOnly: [],
+      actionAuditList: [],
+      warnings: [],
+    };
+  }
+
   // Consistency Score Calculation
-  let consistencyScore = 100;
+  let consistencyScore = null;
   if (resumeSkills.length > 0) {
     const ratio = verifiedInBoth.length / resumeSkills.length;
     consistencyScore = Math.min(100, Math.max(35, Math.round(ratio * 100)));
@@ -119,6 +132,7 @@ export function generateConsistencyMatrix(githubData, resumeAnalysis) {
 
   return {
     consistencyScore,
+    status: "analyzed",
     verifiedInBoth: [...new Set(verifiedInBoth)],
     resumeOnly: [...new Set(resumeOnly)],
     githubOnly: [...new Set(githubOnly)].slice(0, 8),

@@ -78,7 +78,7 @@ export default function RecruiterTimeline({ githubData, portfolioData, resumeAna
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 12 }}>
         <div>
           <h3 style={{ fontSize: "1.1rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
-            <Icon name="file-text" size={18} /> Section 2: 10-Second Recruiter Audit Checklist
+            <Icon name="file-text" size={18} /> Section 3: 10-Second Recruiter Audit Checklist
           </h3>
           <p style={{ color: "var(--txt-3)", fontSize: "0.82rem", marginTop: 4, margin: 0 }}>
             Illustrative breakdown of the core technical signals evaluated during candidate screening.

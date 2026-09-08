@@ -49,7 +49,7 @@ async function fallbackPublicRepos(cleanUsername) {
           description: desc,
           stargazers_count: 0,
           forks_count: 0,
-          language: lang || "Unknown",
+          language: lang || null,
           topics: [],
           html_url: `https://github.com/${cleanUsername}/${name}`,
           pushed_at: new Date().toISOString(),
@@ -364,8 +364,8 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
   const totalReposCount = (repoFetchStatus === "unavailable" && knownCount !== null && knownCount > 0)
     ? knownCount
     : repos.length;
-  const totalStars = repos.reduce((s, r) => s + r.stargazers_count, 0);
-  const totalForks = repos.reduce((s, r) => s + r.forks_count, 0);
+  const totalStars = repoFetchStatus === "unavailable" ? null : repos.reduce((s, r) => s + (r.stargazers_count || 0), 0);
+  const totalForks = repoFetchStatus === "unavailable" ? null : repos.reduce((s, r) => s + (r.forks_count || 0), 0);
   const reposWithDescription = ownedRepos.filter(
     (r) => r.description && r.description.trim().length > 5
   ).length;
@@ -414,7 +414,7 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
     description: r.description || "",
     stars: r.stargazers_count,
     forks: r.forks_count,
-    language: r.language || "Unknown",
+    language: r.language && r.language !== "Unknown" ? r.language : null,
     topics: r.topics || [],
     url: r.html_url,
     lastPushed: r.pushed_at,
@@ -476,7 +476,7 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
     },
     languageDistribution,
     topRepos,
-    skills: Array.from(skillsSet),
+    skills: Array.from(skillsSet).filter(s => s && s !== "Unknown"),
     hasProfileReadme,
   };
 }

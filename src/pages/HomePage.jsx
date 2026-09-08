@@ -133,6 +133,8 @@ export default function HomePage() {
   // API result state for two-phase loading screen
   const [apiResult, setApiResult] = useState(null);
   const [apiError, setApiError] = useState(null);
+  const [retryAfterSeconds, setRetryAfterSeconds] = useState(null);
+  const isSubmittingRef = useRef(false);
 
   // Field visibility per selected scope mode
   const showGithub = activeMode !== "portfolio_only" && activeMode !== "resume_only";
@@ -185,8 +187,11 @@ export default function HomePage() {
   }
 
   async function runAnalysis() {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setApiResult(null);
     setApiError(null);
+    setRetryAfterSeconds(null);
 
     try {
       let initialResumeResult = null;
@@ -200,7 +205,10 @@ export default function HomePage() {
           formData.append("targetRole", targetRole);
           const resResult = await uploadResume(formData);
           initialResumeResult = resResult.resumeAnalysis;
-        } catch (_) {
+        } catch (resumeErr) {
+          if (resumeErr.response?.status === 429) {
+            throw resumeErr; // Halt immediately if rate limited; do not fire subsequent requests
+          }
           console.warn("Resume parsing skipped or non-critical error");
         }
       }
@@ -222,26 +230,44 @@ export default function HomePage() {
     } catch (err) {
       const status = err.response?.status;
       const isTimeout = status === 504 || err.code === "ECONNABORTED" || err.message?.toLowerCase().includes("timeout");
+      const respMsg = err.response?.data?.message || "";
+      const isSessionExpired =
+        (status === 401 || status === 403) &&
+        (respMsg.toLowerCase().includes("session") ||
+         respMsg.toLowerCase().includes("sign in") ||
+         respMsg.toLowerCase().includes("authentication"));
 
       let errorMsg;
-      if (isTimeout) {
+      if (isSessionExpired) {
+        localStorage.removeItem("saas_token");
+        localStorage.removeItem("saas_user");
+        errorMsg = "Your session has expired. You can continue as a guest or sign in again.";
+      } else if (isTimeout) {
         errorMsg = "Analysis took longer than expected. Please retry in a moment.";
       } else if (!err.response) {
         errorMsg = "The backend API server is connecting. Please try again in a moment.";
       } else if (status === 502 || status === 503) {
-        errorMsg = err.response?.data?.message || "Upstream service temporarily unavailable. Please retry in a moment.";
+        errorMsg = respMsg || "Upstream service temporarily unavailable. Please retry in a moment.";
       } else if (status === 404) {
-        errorMsg = err.response?.data?.message || "The requested profile was not found. Please verify your inputs.";
+        errorMsg = respMsg || "The requested profile was not found. Please verify your inputs.";
+      } else if (status === 429) {
+        const retryHeader = err.response?.headers?.["retry-after"] || err.response?.headers?.get?.("retry-after");
+        let retrySec = retryHeader ? parseInt(retryHeader, 10) : null;
+        if (isNaN(retrySec) || retrySec <= 0) retrySec = null;
+        setRetryAfterSeconds(retrySec);
+        errorMsg = respMsg || "Too many requests. Please try again shortly.";
       } else {
-        errorMsg = err.response?.data?.message || (status >= 500 ? "Analysis temporarily unavailable. Please try again." : "Please check your inputs and try again.");
+        errorMsg = respMsg || (status >= 500 ? "Analysis temporarily unavailable. Please try again." : "Please check your inputs and try again.");
       }
       setApiError(errorMsg);
+    } finally {
+      isSubmittingRef.current = false;
     }
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (loading) return;
+    if (loading || isSubmittingRef.current) return;
     setError("");
 
     if (!isFormValid) {
@@ -270,13 +296,40 @@ export default function HomePage() {
   function handleLoadingRetry() {
     setApiResult(null);
     setApiError(null);
+    setRetryAfterSeconds(null);
     runAnalysis();
   }
 
+  function handleContinueAsGuest() {
+    localStorage.removeItem("saas_token");
+    localStorage.removeItem("saas_user");
+    setApiResult(null);
+    setApiError(null);
+    setRetryAfterSeconds(null);
+    runAnalysis();
+  }
+
+  function handleLoadingSignIn() {
+    try {
+      sessionStorage.setItem(
+        "pending_analysis_inputs",
+        JSON.stringify({
+          activeMode,
+          githubUsername,
+          portfolioUrl,
+          targetRole,
+        })
+      );
+    } catch (_) {}
+    navigate("/auth");
+  }
+
   function handleLoadingCancel() {
+    isSubmittingRef.current = false;
     setLoading(false);
     setApiResult(null);
     setApiError(null);
+    setRetryAfterSeconds(null);
     if (apiError) setError(apiError);
   }
 
@@ -288,8 +341,12 @@ export default function HomePage() {
         resumeFile={showResume && isResumeValid ? resumeFile : null}
         apiDone={!!apiResult || !!apiError}
         apiError={apiError}
+        retryAfterSeconds={retryAfterSeconds}
         onComplete={handleLoadingComplete}
         onRetry={handleLoadingRetry}
+        onContinueGuest={handleContinueAsGuest}
+        onSignIn={handleLoadingSignIn}
+        onCancel={handleLoadingCancel}
       />
     );
   }

@@ -15,14 +15,12 @@ export default function ConsistencyMatrixCard({ matrix }) {
     warnings = [],
   } = matrix;
 
-  // Do not render a fake consistency matrix if neither source had skills to compare
-  if (verifiedInBoth.length === 0 && resumeOnly.length === 0 && githubOnly.length === 0) {
-    return null;
-  }
-
-  const totalResume = verifiedInBoth.length + resumeOnly.length;
+  const totalResume = (verifiedInBoth?.length || 0) + (resumeOnly?.length || 0);
   const isScoreValid = typeof consistencyScore === "number" && Number.isFinite(consistencyScore) && consistencyScore >= 0 && consistencyScore <= 100;
-  const overlapRate = totalResume > 0 ? Math.round((verifiedInBoth.length / totalResume) * 100) : null;
+  const overlapRate = totalResume > 0 ? Math.round(((verifiedInBoth?.length || 0) / totalResume) * 100) : null;
+
+  // When resume skills are absent or comparison is insufficient, show an explicit unavailable/not-applicable state
+  const isUnanalyzed = totalResume === 0 || !isScoreValid;
 
   return (
     <div
@@ -55,7 +53,7 @@ export default function ConsistencyMatrixCard({ matrix }) {
               color: isScoreValid ? (consistencyScore >= 75 ? "var(--green)" : "var(--yellow)") : "var(--txt-3)",
             }}
           >
-            {isScoreValid ? `${consistencyScore}%` : "Not available"}
+            {isScoreValid ? `${consistencyScore}%` : "Not applicable"}
           </div>
           {totalResume > 0 ? (
             <div
@@ -69,23 +67,34 @@ export default function ConsistencyMatrixCard({ matrix }) {
               className="matrix-formula"
               style={{ fontSize: "0.7rem", color: "var(--txt-3)", marginTop: 2 }}
             >
-              Skill Overlap: Not applicable (0 resume skills detected)
+              Skill Overlap: Not applicable (No resume evaluated)
             </div>
           )}
         </div>
       </div>
 
-      {/* Warnings */}
-      {warnings.length > 0 && (
-        <div style={{ marginBottom: 16 }}>
-          {warnings.map((w, idx) => (
-            <div key={idx} className="info-box" style={{ background: "rgba(234, 179, 8, 0.08)", border: "1px solid rgba(234, 179, 8, 0.2)", color: "var(--yellow)", marginBottom: 8, fontSize: "0.83rem", display: "flex", alignItems: "center", gap: 8 }}>
-              <Icon name="info" size={14} style={{ color: "var(--yellow)" }} />
-              <span>{w}</span>
-            </div>
-          ))}
+      {isUnanalyzed ? (
+        <div style={{ background: "rgba(148, 163, 184, 0.05)", borderRadius: 12, padding: "16px 20px", border: "1px solid rgba(148, 163, 184, 0.15)", color: "var(--txt-2)", fontSize: "0.88rem", display: "flex", alignItems: "center", gap: 12 }}>
+          <Icon name="info" size={18} style={{ color: "var(--txt-3)" }} />
+          <span>
+            {matrix.status === "insufficient_evidence"
+              ? "Resume evidence does not contain sufficient technical skills to perform cross-reference against GitHub evidence."
+              : "Resume evidence was not provided for this report. Upload a resume PDF in the Resume tab to cross-reference claimed skills against inspected GitHub evidence."}
+          </span>
         </div>
-      )}
+      ) : (
+        <>
+          {/* Warnings */}
+          {warnings.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              {warnings.map((w, idx) => (
+                <div key={idx} className="info-box" style={{ background: "rgba(234, 179, 8, 0.08)", border: "1px solid rgba(234, 179, 8, 0.2)", color: "var(--yellow)", marginBottom: 8, fontSize: "0.83rem", display: "flex", alignItems: "center", gap: 8 }}>
+                  <Icon name="info" size={14} style={{ color: "var(--yellow)" }} />
+                  <span>{w}</span>
+                </div>
+              ))}
+            </div>
+          )}
 
       {/* Compact Summary for Verified Skills */}
       <div style={{ background: "rgba(34, 197, 94, 0.06)", borderRadius: 12, padding: "14px 18px", border: "1px solid rgba(34, 197, 94, 0.18)", marginBottom: 16 }}>
@@ -199,6 +208,8 @@ export default function ConsistencyMatrixCard({ matrix }) {
               </table>
             </div>
           )}
+        </>
+      )}
         </>
       )}
     </div>

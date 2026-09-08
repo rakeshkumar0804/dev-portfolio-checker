@@ -339,6 +339,7 @@ export default function ResultsPage({ isSample = false }) {
         portfolioUrl: data?.portfolioData?.url || data?.portfolioUrl || null,
         targetRole: data?.targetRole || "fullstack",
         forceRefresh: true,
+        resumeAnalysis: data?.resumeAnalysis || null,
       });
       sessionStorage.setItem("portfolioReport", JSON.stringify(result));
       setData(result);
@@ -385,19 +386,17 @@ export default function ResultsPage({ isSample = false }) {
       formData.append("shareId", shareId);
       formData.append("targetRole", data?.targetRole || "fullstack");
       const result = await uploadResume(formData);
-      if (result && result.resumeAnalysis) {
-        setResumeResult(result.resumeAnalysis);
-        setData((prev) => {
-          if (!prev) return prev;
-          const updated = {
-            ...prev,
-            resumeAnalysis: result.resumeAnalysis,
-          };
-          try {
-            sessionStorage.setItem("portfolioReport", JSON.stringify(updated));
-          } catch (_) {}
-          return updated;
-        });
+      if (result && (result.report || result.resumeAnalysis)) {
+        const fullReport = result.report || {
+          ...data,
+          resumeAnalysis: result.resumeAnalysis,
+        };
+        const activeResume = result.report?.resumeAnalysis || result.resumeAnalysis;
+        setResumeResult(activeResume);
+        setData(fullReport);
+        try {
+          sessionStorage.setItem("portfolioReport", JSON.stringify(fullReport));
+        } catch (_) {}
         setActiveTab("resume");
       }
     } catch (err) {
@@ -891,6 +890,10 @@ export default function ResultsPage({ isSample = false }) {
                         setTimeout(() => setSavedSuccess(false), 3000);
                       }).catch((err) => {
                         console.error("❌ [SAVE DEBUG Step 3 Error] saveReportToWorkspace failed:", err);
+                        if (err.response?.status === 401 || err.response?.status === 403) {
+                          setAuthModalReason("Your session has expired. Please sign in again to save reports to your workspace.");
+                          setShowAuthModal(true);
+                        }
                       });
                     });
                   }
@@ -1153,7 +1156,7 @@ export default function ResultsPage({ isSample = false }) {
                       </div>
                       <div className="stat-row">
                         <span>Total Stars Earned</span>
-                        <strong>{stats.totalStars || 0} stars</strong>
+                        <strong>{stats.totalStars != null ? `${stats.totalStars} stars` : "Unavailable"}</strong>
                       </div>
                       <div className="stat-row">
                         <span>{stats.ownedRepos > 0 ? "90-Day Commit Cadence" : "Contribution Activity"}</span>
@@ -1165,7 +1168,7 @@ export default function ResultsPage({ isSample = false }) {
                       </div>
                       <div className="stat-row">
                         <span>Followers</span>
-                        <strong>{profile.followers || 0}</strong>
+                        <strong>{profile.followers != null ? profile.followers : "Unavailable"}</strong>
                       </div>
                     </div>
                   </Card>

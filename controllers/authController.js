@@ -21,6 +21,9 @@ export async function login(req, res) {
 
 export async function me(req, res) {
   const user = await getAccount(req.user.id);
+  if (!user) {
+    return res.status(401).json({ message: "Your session has expired. Please sign in again." });
+  }
   return res.json({ user });
 }
 

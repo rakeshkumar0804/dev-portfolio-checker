@@ -75,7 +75,7 @@ const SAFE_RESUME_FIELDS = [
   "wordCount", "quantifiedMetricsCount", "actionVerbCount", "matchedKeywords",
 ];
 
-function sanitizeResumeAnalysis(ra) {
+export function sanitizeResumeAnalysis(ra) {
   if (!ra || typeof ra !== "object") return ra;
   const safe = {};
   for (const key of SAFE_RESUME_FIELDS) {
@@ -90,6 +90,104 @@ export function sanitizeReport(report) {
     report.resumeAnalysis = sanitizeResumeAnalysis(report.resumeAnalysis);
   }
   return report;
+}
+
+// ── Merge degraded GitHub data with existing high-fidelity snapshot ──────────
+// When forceRefresh returns partial/scraped data, preserve known values from the
+// existing report instead of replacing them with zeros or nulls.
+function mergeGitHubData(fresh, existing) {
+  if (!existing) return fresh;
+  if (!fresh) return existing;
+
+  const isFreshDegraded = fresh.stats?.repoFetchStatus === "unavailable" ||
+    fresh.stats?.reposUnavailable === true;
+
+  const mergedProfile = { ...fresh.profile };
+  // Preserve followers/publicRepos if fresh returned null/0 but existing had real values
+  if ((mergedProfile.followers === null || mergedProfile.followers === undefined) &&
+      existing.profile?.followers != null && existing.profile.followers > 0) {
+    mergedProfile.followers = existing.profile.followers;
+  }
+  if ((mergedProfile.publicRepos === null || mergedProfile.publicRepos === undefined) &&
+      existing.profile?.publicRepos != null) {
+    mergedProfile.publicRepos = existing.profile.publicRepos;
+    mergedProfile.public_repos = existing.profile.public_repos;
+  }
+
+  const mergedStats = { ...fresh.stats };
+  if (isFreshDegraded) {
+    // Preserve star/fork counts from existing when fresh data is from scraper (all zeros/nulls)
+    if ((mergedStats.totalStars === null || mergedStats.totalStars === 0) &&
+        existing.stats?.totalStars != null && existing.stats.totalStars > 0) {
+      mergedStats.totalStars = existing.stats.totalStars;
+    }
+    if ((mergedStats.totalForks === null || mergedStats.totalForks === 0) &&
+        existing.stats?.totalForks != null && existing.stats.totalForks > 0) {
+      mergedStats.totalForks = existing.stats.totalForks;
+    }
+    // Preserve contribution/activity data
+    if ((!mergedStats.weeklyActivity || mergedStats.weeklyActivity.every(w => w.count === 0)) &&
+        existing.stats?.weeklyActivity?.some(w => w.count > 0)) {
+      mergedStats.weeklyActivity = existing.stats.weeklyActivity;
+    }
+    if (mergedStats.commitCount90Days === 0 && existing.stats?.commitCount90Days > 0) {
+      mergedStats.commitCount90Days = existing.stats.commitCount90Days;
+    }
+    if (mergedStats.commitCount30Days === 0 && existing.stats?.commitCount30Days > 0) {
+      mergedStats.commitCount30Days = existing.stats.commitCount30Days;
+    }
+    if (mergedStats.totalContributionsYear === 0 && existing.stats?.totalContributionsYear > 0) {
+      mergedStats.totalContributionsYear = existing.stats.totalContributionsYear;
+    }
+    if (mergedStats.currentStreak === 0 && existing.stats?.currentStreak > 0) {
+      mergedStats.currentStreak = existing.stats.currentStreak;
+    }
+    mergedStats.dataSource = "merged";
+  }
+
+  // Preserve topRepos star/fork counts from existing when fresh scraper zeros them out
+  let mergedTopRepos = fresh.topRepos || [];
+  if (isFreshDegraded && existing.topRepos?.length > 0) {
+    const existingRepoMap = new Map(existing.topRepos.map(r => [r.name, r]));
+    mergedTopRepos = mergedTopRepos.map(r => {
+      const prev = existingRepoMap.get(r.name);
+      if (prev) {
+        return {
+          ...r,
+          stars: (r.stars === 0 && prev.stars > 0) ? prev.stars : r.stars,
+          forks: (r.forks === 0 && prev.forks > 0) ? prev.forks : r.forks,
+          language: r.language || prev.language,
+        };
+      }
+      return r;
+    });
+  }
+
+  // Merge skills: union of fresh and existing, filtering "Unknown"
+  const mergedSkillsSet = new Set([
+    ...(fresh.skills || []),
+    ...(existing.skills || []),
+  ]);
+  mergedSkillsSet.delete("Unknown");
+  mergedSkillsSet.delete("unknown");
+
+  return {
+    ...fresh,
+    profile: mergedProfile,
+    stats: mergedStats,
+    topRepos: mergedTopRepos,
+    skills: Array.from(mergedSkillsSet),
+    hasProfileReadme: fresh.hasProfileReadme ?? existing.hasProfileReadme,
+    languageDistribution: (fresh.languageDistribution?.length > 0)
+      ? fresh.languageDistribution
+      : existing.languageDistribution || [],
+  };
+}
+
+// ── Filter literal "Unknown" from skills arrays ─────────────────────────────
+function filterUnknownSkills(skills) {
+  if (!Array.isArray(skills)) return skills;
+  return skills.filter(s => s && s !== "Unknown" && s !== "unknown");
 }
 
 // POST /api/analyze/full
@@ -147,7 +245,8 @@ export async function analyzeFullProfile(req, res) {
       try {
         accountUsage = await consumeAnalysis(req.user.id);
       } catch (usageError) {
-        return res.status(403).json({ message: usageError.message });
+        console.warn("Could not record account analysis usage (proceeding as public analysis):", usageError.message);
+        accountUsage = null;
       }
     }
 
@@ -230,6 +329,28 @@ export async function analyzeFullProfile(req, res) {
       });
     }
 
+    // ── ForceRefresh merge: preserve high-fidelity data from existing snapshot ──
+    if (isForce && githubData) {
+      // Find existing report to merge with
+      let existingGithubData = null;
+      if (memoryStore.has(cacheKey)) {
+        existingGithubData = memoryStore.get(cacheKey)?.githubData;
+      }
+      if (!existingGithubData) {
+        // Search by shareId across all memory entries
+        for (const [, stored] of memoryStore) {
+          if (stored?.githubUsername === username && stored?.githubData) {
+            existingGithubData = stored.githubData;
+            break;
+          }
+        }
+      }
+      if (existingGithubData) {
+        githubData = mergeGitHubData(githubData, existingGithubData);
+        console.log(`🔀 [MERGE] Merged fresh GitHub data with existing snapshot for "${username}" (degraded: ${githubData.stats?.dataSource === "merged"})`);
+      }
+    }
+
     const { scores, scoreBreakdowns, improvements } = calculateAllScores(
       githubData,
       portfolioData,
@@ -237,10 +358,10 @@ export async function analyzeFullProfile(req, res) {
       resumeAnalysis
     );
 
-    const skillsDetected = [
+    const skillsDetected = filterUnknownSkills([
       ...(githubData?.skills || []),
       ...(resumeAnalysis?.skillsExtracted || []),
-    ];
+    ]);
 
     const missingSkills = detectMissingSkills(skillsDetected, targetRole);
     const recruiterDecision = evaluateRecruiterDecision(scores, githubData, portfolioData, resumeAnalysis, targetRole);
@@ -289,7 +410,10 @@ export async function analyzeFullProfile(req, res) {
       skillsDetected,
       recruiterDecision,
       consistencyMatrix,
-      createdAt: Date.now(),
+      createdAt: isForce && memoryStore.has(shareId)
+        ? (memoryStore.get(shareId).createdAt || Date.now())
+        : Date.now(),
+      ...(isForce ? { lastRefreshedAt: Date.now() } : {}),
     };
 
     // Save to DB if available, else memory (updating existing shareId entry)
