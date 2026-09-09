@@ -799,7 +799,7 @@ export default function ResultsPage({ isSample = false }) {
             </div>
           </div>
 
-          <div className="results-header-actions" style={{ display: "flex", gap: 16, alignItems: "center" }}>
+          <div className="results-header-actions">
             <div className="overall-score-badge">
               <div className="overall-score-gauge">
                 <svg viewBox="0 0 100 100" className="score-ring-svg">
@@ -829,7 +829,7 @@ export default function ResultsPage({ isSample = false }) {
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }} className="no-print">
+            <div className="results-header-buttons no-print">
               <button className="btn-share" onClick={copyLink}>
                 <Icon name={copyFeedback.type === "success" ? "check" : "share"} size={14} />
                 <span>{copyFeedback.type === "success" ? "Report link copied" : "Share Report"}</span>

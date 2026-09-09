@@ -894,38 +894,115 @@ input, select, textarea { font-family: inherit; }
 .results-header-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
   flex-shrink: 0;
 }
+.results-header-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   .results-header {
-    padding: 16px 16px;
+    padding: 16px;
   }
   .profile-hero {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 16px;
   }
   .results-header-actions {
     width: 100%;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .overall-score-badge {
+    align-self: center;
+  }
+  .results-header-buttons {
+    width: 100%;
+  }
+  .results-header-buttons .btn-share,
+  .results-header-buttons .btn-secondary {
+    width: 100%;
+    justify-content: center;
   }
 }
 
-/* Overall score pill */
+/* Overall score badge & circular gauge in profile header */
+.overall-score-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.overall-score-gauge {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.score-ring-svg {
+  width: 96px;
+  height: 96px;
+  transform: rotate(-90deg);
+  display: block;
+}
+
+.score-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 8;
+}
+
+.score-ring-fill {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease;
+}
+
 .overall-score-block { text-align: center; }
 .overall-score-ring-wrap { position: relative; display: inline-block; }
 .overall-score-text {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 .overall-score-number {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 2rem; font-weight: 800; line-height: 1;
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1;
   background: var(--grad-primary);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-.overall-score-label { font-size: 0.65rem; color: var(--txt-3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.overall-score-label {
+  font-size: 0.65rem;
+  color: var(--txt-3);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+}
 .overall-score-grade { font-size: 0.7rem; color: var(--txt-3); margin-top: 4px; }
 
 /* ── Tabs ─────────────────────────────────────────── */
