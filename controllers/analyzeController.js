@@ -9,6 +9,7 @@ import { generateAIFeedback } from "../services/aiService.js";
 import { evaluateRecruiterDecision } from "../services/recruiterEngine.js";
 import { generateConsistencyMatrix } from "../services/consistencyService.js";
 import { consumeAnalysis } from "../services/accountService.js";
+import { filterGenericTopics } from "../utils/topicFilter.js";
 import Report from "../models/Report.js";
 import os from "os";
 
@@ -367,10 +368,12 @@ export async function analyzeFullProfile(req, res) {
       resumeAnalysis
     );
 
-    const skillsDetected = filterUnknownSkills([
-      ...(githubData?.skills || []),
-      ...(resumeAnalysis?.skillsExtracted || []),
-    ]);
+    const skillsDetected = filterGenericTopics(
+      filterUnknownSkills([
+        ...(githubData?.skills || []),
+        ...(resumeAnalysis?.skillsExtracted || []),
+      ])
+    );
 
     const missingSkills = detectMissingSkills(skillsDetected, targetRole);
     const recruiterDecision = evaluateRecruiterDecision(scores, githubData, portfolioData, resumeAnalysis, targetRole);

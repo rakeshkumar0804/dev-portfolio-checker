@@ -18,6 +18,7 @@ import ScoreSimulator from "../components/ScoreSimulator.jsx";
 import ProgressTimeline from "../components/ProgressTimeline.jsx";
 import { sampleReportData } from "../data/sampleReportData.js";
 import Icon from "../components/Icon.jsx";
+import { buildTopPriorityActionItems } from "../../utils/actionItems.js";
 
 const TABS = [
   { id: "overview",   label: "Overview",            icon: "bar-chart", always: true },
@@ -566,6 +567,16 @@ export default function ResultsPage({ isSample = false }) {
     return { ...t, disabled, label };
   });
 
+  const topPriorityActions = buildTopPriorityActionItems({
+    improvements,
+    recruiterDecision,
+    portfolioStatus,
+    portfolioData,
+    githubStatus,
+    githubData,
+    resumeAnalysis,
+  });
+
   return (
     <main className="results-page page-wrap" id="main-content">
 
@@ -1085,20 +1096,10 @@ export default function ResultsPage({ isSample = false }) {
             </div>
 
             <div className="improvements-list">
-              {improvements && improvements.length > 0 ? (
-                improvements.slice(0, 5).map((imp, idx) => (
+              {topPriorityActions && topPriorityActions.length > 0 ? (
+                topPriorityActions.slice(0, 5).map((imp, idx) => (
                   <ImprovementCard key={idx} imp={imp} index={idx} />
                 ))
-              ) : recruiterDecision?.redFlags?.length > 0 ? (
-                <div className="info-box" style={{ background: "rgba(234, 179, 8, 0.08)", border: "1px solid rgba(234, 179, 8, 0.2)", color: "var(--yellow)", padding: "16px 20px", borderRadius: 12 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, marginBottom: 4 }}>
-                    <Icon name="alert-triangle" size={16} style={{ color: "var(--yellow)" }} />
-                    <span>Profile gaps detected in recruiter screening</span>
-                  </div>
-                  <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--txt-2)" }}>
-                    Review the Critical Hiring Risks identified in the Recruiter Decision Engine above to address outstanding profile gaps.
-                  </p>
-                </div>
               ) : scores?.overall < 85 ? (
                 <div className="info-box" style={{ background: "rgba(56, 189, 248, 0.08)", border: "1px solid rgba(56, 189, 248, 0.2)", color: "var(--cyan)", padding: "16px 20px", borderRadius: 12 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, marginBottom: 4 }}>

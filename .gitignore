@@ -15,6 +15,7 @@ saved_users_storage.json
 real_report_screenshots/
 real_report_screenshots.zip
 test_resume.pdf
+scratch/
 
 # Logs & OS files
 *.log

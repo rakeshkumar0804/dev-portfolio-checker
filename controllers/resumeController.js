@@ -9,6 +9,7 @@ import { memoryStore, persistReportsToDisk, sanitizeResumeAnalysis } from "./ana
 import { calculateAllScores, detectMissingSkills } from "../services/scoringService.js";
 import { evaluateRecruiterDecision } from "../services/recruiterEngine.js";
 import { generateConsistencyMatrix } from "../services/consistencyService.js";
+import { filterGenericTopics } from "../utils/topicFilter.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -138,10 +139,10 @@ export async function analyzeResumeController(req, res) {
         resumeAnalysis
       );
 
-      const skillsDetected = [
+      const skillsDetected = filterGenericTopics([
         ...(githubData?.skills || []),
         ...(resumeAnalysis?.skillsExtracted || []),
-      ].filter(s => s && s !== "Unknown" && s !== "unknown");
+      ].filter(s => s && s !== "Unknown" && s !== "unknown"));
 
       const missingSkills = detectMissingSkills(skillsDetected, effectiveTargetRole);
       const recruiterDecision = evaluateRecruiterDecision(

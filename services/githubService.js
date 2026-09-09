@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
-import { isGenericProjectOrDomainTag } from "../utils/topicFilter.js";
+import { isGenericProjectOrDomainTag, normalizeSkillAlias } from "../utils/topicFilter.js";
 
 const BASE_URL = "https://api.github.com";
 
@@ -224,12 +224,12 @@ export function processGitHubData(profile, repos, events, hasProfileReadme, cont
   // Skills from languages + topics + repo names + repo descriptions
   const skillsSet = new Set();
   repos.forEach((r) => {
-    if (r.language) skillsSet.add(r.language);
+    if (r.language) skillsSet.add(normalizeSkillAlias(r.language));
     (r.topics || []).forEach((t) => {
       const clean = (t || "").trim().toLowerCase();
       const stripped = clean.replace(/[^a-z0-9]/g, "");
       if (clean && !isGenericProjectOrDomainTag(clean) && !isGenericProjectOrDomainTag(stripped) && !isGenericProjectOrDomainTag(t)) {
-        skillsSet.add(t);
+        skillsSet.add(normalizeSkillAlias(t));
       }
     });
 
@@ -246,6 +246,18 @@ export function processGitHubData(profile, repos, events, hasProfileReadme, cont
     if (combinedText.includes("sql") || combinedText.includes("postgres") || combinedText.includes("mysql")) skillsSet.add("SQL");
     if (combinedText.includes("docker") || combinedText.includes("container")) skillsSet.add("Docker");
     if (combinedText.includes("rest")) skillsSet.add("REST API");
+    if (combinedText.includes("d3") || combinedText.includes("d3js")) skillsSet.add("D3.js");
+    if (combinedText.includes("prisma")) skillsSet.add("Prisma");
+    if (combinedText.includes("fastapi")) skillsSet.add("FastAPI");
+    if (combinedText.includes("tailwind")) skillsSet.add("Tailwind");
+    if (combinedText.includes("graphql")) skillsSet.add("GraphQL");
+  });
+
+  // Also include secondary languages from all repositories (e.g. HTML, CSS, TypeScript)
+  Object.keys(langCount).forEach((lang) => {
+    if (lang && lang !== "Unknown") {
+      skillsSet.add(normalizeSkillAlias(lang));
+    }
   });
 
   const pushEvents = events.filter((e) => e.type === "PushEvent");

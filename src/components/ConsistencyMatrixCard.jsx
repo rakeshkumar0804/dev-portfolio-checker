@@ -107,11 +107,11 @@ export default function ConsistencyMatrixCard({ matrix }) {
             </div>
           )}
 
-      {/* Compact Summary for Verified Skills */}
+      {/* Compact Summary for Supported Skills */}
       <div style={{ background: "rgba(34, 197, 94, 0.06)", borderRadius: 12, padding: "14px 18px", border: "1px solid rgba(34, 197, 94, 0.18)", marginBottom: 16 }}>
         <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--green)", marginBottom: 8, display: "flex", alignItems: "center", gap: 8 }}>
           <Icon name="check-circle" size={16} style={{ color: "var(--green)" }} />
-          <span>{verifiedInBoth.length} Skills Verified via Inspected GitHub Evidence</span>
+          <span>{verifiedInBoth.length} Skills Supported by Inspected GitHub Evidence</span>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
           {verifiedInBoth.length > 0 ? (
@@ -122,7 +122,7 @@ export default function ConsistencyMatrixCard({ matrix }) {
               </span>
             ))
           ) : (
-            <span style={{ fontSize: "0.78rem", color: "var(--txt-3)" }}>No overlapping skills verified yet</span>
+            <span style={{ fontSize: "0.78rem", color: "var(--txt-3)" }}>No overlapping skills detected yet</span>
           )}
         </div>
       </div>
@@ -141,7 +141,7 @@ export default function ConsistencyMatrixCard({ matrix }) {
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
             {resumeOnly.length > 0 ? (
               resumeOnly.map((s) => (
-                <span key={s} className="skill-tag" style={{ background: "rgba(234, 179, 8, 0.12)", color: "#fde047", border: "1px solid rgba(234, 179, 8, 0.25)" }}>
+                <span key={s} className="skill-tag" title="Not detected in inspected GitHub evidence (scope: public repos & metadata)" style={{ background: "rgba(234, 179, 8, 0.12)", color: "#fde047", border: "1px solid rgba(234, 179, 8, 0.25)" }}>
                   ? {s}
                 </span>
               ))
@@ -156,7 +156,7 @@ export default function ConsistencyMatrixCard({ matrix }) {
           <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--cyan)", marginBottom: 10, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
               <Icon name="github" size={14} style={{ color: "var(--cyan)" }} />
-              <span>Detected in GitHub Evidence (Missing from Resume)</span>
+              <span>Detected in Inspected GitHub Evidence (Not on Resume)</span>
             </span>
             <span>{filteredGithubOnly.length}</span>
           </div>
@@ -168,7 +168,7 @@ export default function ConsistencyMatrixCard({ matrix }) {
                 </span>
               ))
             ) : (
-              <span style={{ fontSize: "0.78rem", color: "var(--txt-3)" }}>All GitHub skills listed on resume</span>
+              <span style={{ fontSize: "0.78rem", color: "var(--txt-3)" }}>All inspected GitHub skills listed on resume</span>
             )}
           </div>
         </div>
@@ -217,6 +217,9 @@ export default function ConsistencyMatrixCard({ matrix }) {
                   ))}
                 </tbody>
               </table>
+              <div style={{ fontSize: "0.72rem", color: "var(--txt-3)", marginTop: 8, fontStyle: "italic" }}>
+                * Note: Skills marked &quot;Not detected in inspected GitHub evidence&quot; reflect only the public repositories and metadata inspected during evaluation. This is not proof that the candidate lacks proficiency.
+              </div>
             </div>
           )}
         </>

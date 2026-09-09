@@ -14,38 +14,58 @@ export default function ImprovementCard({ item, imp, index }) {
   const [open, setOpen] = useState(false);
 
   const howSteps = (cardItem.how || "").split("\n").filter((s) => s.trim());
-  const impactLabel = cardItem.points >= 15 ? "High Recruiter Impact" : cardItem.points >= 8 ? "Medium Recruiter Impact" : "Quick Win";
+  const hasPoints = typeof cardItem.points === "number" && cardItem.points > 0;
+  const hasDifficulty = Boolean(cardItem.difficulty && cardItem.difficulty !== "undefined");
+  const hasTime = typeof cardItem.timeMinutes === "number" && cardItem.timeMinutes > 0;
+  const isUnavailable = Boolean(cardItem.isUnavailable);
+
+  const impactLabel = isUnavailable
+    ? "Collection Limitation"
+    : cardItem.impactLabel || cardItem.impact || (hasPoints ? (cardItem.points >= 15 ? "High Recruiter Impact" : cardItem.points >= 8 ? "Medium Recruiter Impact" : "Quick Win") : "Actionable Item");
   const confidence = cardItem.confidenceLevel || "High Confidence";
   const affectedRepos = cardItem.affectedRepos || [];
-  const affectedResumeSection = cardItem.affectedResumeSection || "Public Profile";
+  const affectedResumeSection = cardItem.affectedResumeSection || null;
 
   return (
     <div className="improvement-card anim-fade-up" style={{ animationDelay: `${index * 0.06}s` }}>
       <div className="improvement-card-header" onClick={() => setOpen((o) => !o)}>
-        <div className={`improvement-priority-badge ${PRI_CLASS[cardItem.priority] || "pri-4"}`}>
+        <div className={`improvement-priority-badge ${isUnavailable ? "pri-4" : (PRI_CLASS[cardItem.priority] || "pri-4")}`}>
           #{index + 1}
         </div>
 
         <div className="improvement-meta">
           <div className="improvement-title">{cardItem.action}</div>
           <div className="improvement-badges" style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
-            <span className="badge badge-points">+{cardItem.points} Score Points</span>
-            <span className="badge" style={{ background: "rgba(34, 197, 94, 0.15)", color: "#4ade80", border: "1px solid rgba(34, 197, 94, 0.3)" }}>
-              {impactLabel}
-            </span>
-            <span className={`badge ${DIFF_CLASS[cardItem.difficulty] || "badge-medium"}`}>
-              {cardItem.difficulty} Effort
-            </span>
-            {cardItem.timeMinutes > 0 && (
+            {hasPoints && (
+              <span className="badge badge-points">+{cardItem.points} Score Points</span>
+            )}
+            {isUnavailable ? (
+              <span className="badge" style={{ background: "rgba(234, 179, 8, 0.15)", color: "var(--yellow)", border: "1px solid rgba(234, 179, 8, 0.3)", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <Icon name="alert-triangle" size={11} />
+                <span>Inspection Limitation</span>
+              </span>
+            ) : (
+              <span className="badge" style={{ background: "rgba(34, 197, 94, 0.15)", color: "#4ade80", border: "1px solid rgba(34, 197, 94, 0.3)" }}>
+                {impactLabel}
+              </span>
+            )}
+            {hasDifficulty && (
+              <span className={`badge ${DIFF_CLASS[cardItem.difficulty] || "badge-medium"}`}>
+                {cardItem.difficulty} Effort
+              </span>
+            )}
+            {hasTime && (
               <span className="badge badge-time" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
                 <Icon name="clock" size={11} />
                 <span>Est. {cardItem.timeMinutes} min</span>
               </span>
             )}
-            <span className="badge" style={{ background: "rgba(56, 189, 248, 0.12)", color: "#38bdf8", border: "1px solid rgba(56, 189, 248, 0.25)", display: "inline-flex", alignItems: "center", gap: 4 }}>
-              <Icon name="check" size={11} />
-              <span>{confidence}</span>
-            </span>
+            {!isUnavailable && (
+              <span className="badge" style={{ background: "rgba(56, 189, 248, 0.12)", color: "#38bdf8", border: "1px solid rgba(56, 189, 248, 0.25)", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <Icon name="check" size={11} />
+                <span>{confidence}</span>
+              </span>
+            )}
           </div>
         </div>
 
@@ -56,19 +76,38 @@ export default function ImprovementCard({ item, imp, index }) {
 
       {open && (
         <div className="improvement-detail">
+          {/* Supporting Evidence or Collection Limitation */}
+          {(cardItem.evidence || cardItem.supportingEvidence) && (
+            <div className="improvement-section" style={{ marginBottom: 12 }}>
+              <div className="improvement-section-title" style={{ display: "flex", alignItems: "center", gap: 6, color: isUnavailable ? "var(--yellow)" : "var(--cyan)" }}>
+                <Icon name={isUnavailable ? "alert-triangle" : "search"} size={14} />
+                <span>{isUnavailable ? "Collection Limitation Details" : "Supporting Evidence"}</span>
+              </div>
+              <div className="improvement-section-text" style={{ background: "rgba(255,255,255,0.02)", padding: "8px 12px", borderRadius: 6, border: "1px solid var(--border)" }}>
+                {cardItem.evidence || cardItem.supportingEvidence}
+              </div>
+            </div>
+          )}
+
           {/* Affected Target Metadata */}
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 14, padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 8, border: "1px solid var(--border)", fontSize: "0.78rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <Icon name="github" size={13} style={{ color: "var(--cyan)" }} />
-              <strong style={{ color: "var(--txt-3)" }}>Affected Repositories:</strong>{" "}
-              <span style={{ color: "var(--txt-1)", fontWeight: 600 }}>{affectedRepos.join(", ") || "GitHub Repositories"}</span>
+          {(affectedRepos.length > 0 || affectedResumeSection) && (
+            <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 14, padding: "10px 14px", background: "rgba(255,255,255,0.03)", borderRadius: 8, border: "1px solid var(--border)", fontSize: "0.78rem" }}>
+              {affectedRepos.length > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Icon name="github" size={13} style={{ color: "var(--cyan)" }} />
+                  <strong style={{ color: "var(--txt-3)" }}>Affected Repositories:</strong>{" "}
+                  <span style={{ color: "var(--txt-1)", fontWeight: 600 }}>{affectedRepos.join(", ")}</span>
+                </div>
+              )}
+              {affectedResumeSection && (
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <Icon name="file-text" size={13} style={{ color: "var(--cyan)" }} />
+                  <strong style={{ color: "var(--txt-3)" }}>Target Section:</strong>{" "}
+                  <span style={{ color: "var(--txt-1)", fontWeight: 600 }}>{affectedResumeSection}</span>
+                </div>
+              )}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <Icon name="file-text" size={13} style={{ color: "var(--cyan)" }} />
-              <strong style={{ color: "var(--txt-3)" }}>Target Section:</strong>{" "}
-              <span style={{ color: "var(--txt-1)", fontWeight: 600 }}>{affectedResumeSection}</span>
-            </div>
-          </div>
+          )}
 
           {cardItem.why && (
             <div className="improvement-section">

@@ -1,4 +1,4 @@
-﻿// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════════
 // Topic & Domain Filter Utility: Exclude Generic & Domain Tags from Skill Recommendations
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -85,7 +85,13 @@ export const GENERIC_DOMAIN_AND_PROJECT_TAGS = new Set([
   "ecommerce", "e-commerce", "shopping-cart", "online-store", "online-shop",
   "food-delivery", "social-network", "social-media", "social-platform",
   "real-estate", "healthcare", "telemedicine", "job-board", "blog", "blogging",
-  "management-system", "management"
+  "management-system", "management",
+
+  // Broad roles & non-tool professions
+  "fullstack", "full-stack", "fullstack-developer", "frontend", "front-end",
+  "frontend-developer", "backend", "back-end", "backend-developer", "web-developer",
+  "web-development", "software-engineer", "software-engineering", "developer",
+  "engineer", "programmer", "mobile-developer", "mobile-development"
 ]);
 
 /**
@@ -153,12 +159,91 @@ export function isGenericProjectOrDomainTag(tag) {
 }
 
 /**
- * Filters out generic project, domain, and category tags from an array of skill tags.
+ * Canonical tool alias mapping to normalize technical skill variations (e.g. d3js -> D3.js).
+ */
+export const SKILL_ALIAS_MAP = {
+  "d3js": "D3.js",
+  "d3": "D3.js",
+  "d3.js": "D3.js",
+  "reactjs": "React",
+  "react.js": "React",
+  "react": "React",
+  "nodejs": "Node.js",
+  "node.js": "Node.js",
+  "node": "Node.js",
+  "expressjs": "Express",
+  "express.js": "Express",
+  "express": "Express",
+  "nextjs": "Next.js",
+  "next.js": "Next.js",
+  "next": "Next.js",
+  "vuejs": "Vue.js",
+  "vue.js": "Vue.js",
+  "vue": "Vue.js",
+  "angularjs": "Angular",
+  "angular": "Angular",
+  "sveltekit": "SvelteKit",
+  "svelte": "Svelte",
+  "tailwindcss": "Tailwind",
+  "tailwind": "Tailwind",
+  "html5": "HTML",
+  "html": "HTML",
+  "css3": "CSS",
+  "css": "CSS",
+  "js": "JavaScript",
+  "javascript": "JavaScript",
+  "ts": "TypeScript",
+  "typescript": "TypeScript",
+  "py": "Python",
+  "python": "Python",
+  "golang": "Go",
+  "postgres": "PostgreSQL",
+  "postgresql": "PostgreSQL",
+  "mongo": "MongoDB",
+  "mongodb": "MongoDB",
+  "rest": "REST API",
+  "restapi": "REST API",
+  "rest-api": "REST API",
+  "restful": "REST API",
+  "fastapi": "FastAPI",
+  "docker": "Docker",
+  "prisma": "Prisma",
+  "graphql": "GraphQL",
+  "vite": "Vite",
+  "vitest": "Vitest",
+  "webpack": "Webpack",
+  "kubernetes": "Kubernetes",
+  "redux": "Redux",
+};
+
+/**
+ * Normalizes a raw skill string or alias into its canonical representation.
+ *
+ * @param {string} skill
+ * @returns {string} Normalized skill string
+ */
+export function normalizeSkillAlias(skill) {
+  if (!skill || typeof skill !== "string") return skill;
+  const clean = skill.trim();
+  const lower = clean.toLowerCase();
+  const stripped = lower.replace(/[^a-z0-9]/g, "");
+  return SKILL_ALIAS_MAP[lower] || SKILL_ALIAS_MAP[stripped] || clean;
+}
+
+/**
+ * Filters out generic project, domain, and category tags from an array of skill tags,
+ * and normalizes tool aliases (e.g. d3js -> D3.js).
  *
  * @param {string[]} skills
  * @returns {string[]} Filtered skills containing only genuine technical skills
  */
 export function filterGenericTopics(skills) {
   if (!Array.isArray(skills)) return [];
-  return skills.filter((s) => !isGenericProjectOrDomainTag(s));
+  const set = new Set();
+  skills.forEach((s) => {
+    if (s && !isGenericProjectOrDomainTag(s)) {
+      set.add(normalizeSkillAlias(s));
+    }
+  });
+  return Array.from(set);
 }

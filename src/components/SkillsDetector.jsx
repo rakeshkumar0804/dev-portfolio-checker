@@ -48,7 +48,7 @@ export default function SkillsDetector({ missingSkills = {}, detectedSkills = []
                 </span>
               ))}
               {missing.map((s) => (
-                <span key={s} className="skill-tag skill-miss" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <span key={s} className="skill-tag skill-miss" title="Not detected within inspected evaluation scope (does not imply candidate lacks proficiency)" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
                   <Icon name="x" size={11} />
                   <span>{s}</span>
                 </span>
@@ -61,13 +61,13 @@ export default function SkillsDetector({ missingSkills = {}, detectedSkills = []
       <div style={{ marginTop: 16, fontSize: "0.78rem", color: "var(--txt-3)", display: "flex", gap: 16, flexWrap: "wrap" }}>
         <span>
           <span className="skill-tag skill-have" style={{ fontSize: "0.7rem", padding: "2px 8px", display: "inline-flex", alignItems: "center", gap: 4 }}>
-            <Icon name="check" size={10} /> Have
-          </span> — detected in evaluated profile sources
+            <Icon name="check" size={10} /> Detected
+          </span> — detected in inspected profile sources
         </span>
         <span>
           <span className="skill-tag skill-miss" style={{ fontSize: "0.7rem", padding: "2px 8px", display: "inline-flex", alignItems: "center", gap: 4 }}>
-            <Icon name="x" size={10} /> Missing
-          </span> — recommended for target role
+            <Icon name="x" size={10} /> Not Detected
+          </span> — not detected within inspected evaluation scope (does not imply candidate lacks proficiency)
         </span>
       </div>
     </div>
