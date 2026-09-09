@@ -1,6 +1,4 @@
-// ═══════════════════════════════════════════════════════════════════════════════
-// Resume vs GitHub Consistency Matrix Service v4 — Robust Alias & Text Matching
-// ═══════════════════════════════════════════════════════════════════════════════
+import { isGenericProjectOrDomainTag } from "../utils/topicFilter.js";
 
 export function generateConsistencyMatrix(githubData, resumeAnalysis) {
   const resumeSkills = resumeAnalysis?.skillsExtracted || [];
@@ -26,21 +24,6 @@ export function generateConsistencyMatrix(githubData, resumeAnalysis) {
     if (l === "ai") return "ai";
     return l;
   }
-
-  // Generic non-technical metadata topics that must not become skill recommendations
-  const GENERIC_PROJECT_TOPICS = new Set([
-    "resume", "portfolio", "ats", "developer-tools", "developertools",
-    "project", "projects", "sample", "demo", "demos", "assignment", "assignments",
-    "homework", "practice", "personal-website", "portfolio-website", "website",
-    "web-application", "web-app", "app", "application", "challenge", "tutorial",
-    "tutorials", "learning", "starter", "starter-kit", "boilerplate", "template",
-    "hackathon", "career", "career-development", "careerdevelopment", "github",
-    "showcase", "showcases", "docs", "documentation", "guide", "collection",
-    "exercises", "notes", "resources", "resource", "interview", "interview-prep",
-    "test", "testing-ground", "sandbox", "example", "examples", "student",
-    "beginner", "free", "open-source", "opensource", "frontend-mentor",
-    "coding-challenge", "mini-project", "coursework"
-  ]);
 
   // Inspect all GitHub repo names, descriptions, and topics
   const repoTexts = topRepos.map((r) => `${r.name || ""} ${r.description || ""} ${(r.topics || []).join(" ")} ${r.language || ""}`.toLowerCase());
@@ -75,8 +58,8 @@ export function generateConsistencyMatrix(githubData, resumeAnalysis) {
     const normG = normalizeSkill(g);
     const rawG = g.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-    // Ignore generic non-technical topics from being recommended as resume skills
-    if (GENERIC_PROJECT_TOPICS.has(normG) || GENERIC_PROJECT_TOPICS.has(rawG) || GENERIC_PROJECT_TOPICS.has(g.toLowerCase())) {
+    // Ignore generic non-technical topics, project types, and domain tags from being recommended as resume skills
+    if (isGenericProjectOrDomainTag(g) || isGenericProjectOrDomainTag(normG) || isGenericProjectOrDomainTag(rawG)) {
       return;
     }
 

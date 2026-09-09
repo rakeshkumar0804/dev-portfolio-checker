@@ -1,5 +1,6 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { isGenericProjectOrDomainTag } from "../utils/topicFilter.js";
 
 const BASE_URL = "https://api.github.com";
 
@@ -204,7 +205,7 @@ export async function fetchGitHubData(rawUsername) {
   return processGitHubData(profile, repos, events, hasProfileReadme, contributionData, repoFetchStatus);
 }
 
-function processGitHubData(profile, repos, events, hasProfileReadme, contributionData, repoFetchStatus = "fetched") {
+export function processGitHubData(profile, repos, events, hasProfileReadme, contributionData, repoFetchStatus = "fetched") {
   // Language distribution
   const langCount = {};
   repos.forEach((r) => {
@@ -220,21 +221,6 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
       percentage: totalReposWithLang > 0 ? Math.round((count / totalReposWithLang) * 100) : 0,
     }));
 
-  // Generic non-technical metadata topics that must not become skill recommendations
-  const GENERIC_PROJECT_TOPICS = new Set([
-    "resume", "portfolio", "ats", "developer-tools", "developertools",
-    "project", "projects", "sample", "demo", "demos", "assignment", "assignments",
-    "homework", "practice", "personal-website", "portfolio-website", "website",
-    "web-application", "web-app", "app", "application", "challenge", "tutorial",
-    "tutorials", "learning", "starter", "starter-kit", "boilerplate", "template",
-    "hackathon", "career", "career-development", "careerdevelopment", "github",
-    "showcase", "showcases", "docs", "documentation", "guide", "collection",
-    "exercises", "notes", "resources", "resource", "interview", "interview-prep",
-    "test", "testing-ground", "sandbox", "example", "examples", "student",
-    "beginner", "free", "open-source", "opensource", "frontend-mentor",
-    "coding-challenge", "mini-project", "coursework"
-  ]);
-
   // Skills from languages + topics + repo names + repo descriptions
   const skillsSet = new Set();
   repos.forEach((r) => {
@@ -242,7 +228,7 @@ function processGitHubData(profile, repos, events, hasProfileReadme, contributio
     (r.topics || []).forEach((t) => {
       const clean = (t || "").trim().toLowerCase();
       const stripped = clean.replace(/[^a-z0-9]/g, "");
-      if (clean && !GENERIC_PROJECT_TOPICS.has(clean) && !GENERIC_PROJECT_TOPICS.has(stripped)) {
+      if (clean && !isGenericProjectOrDomainTag(clean) && !isGenericProjectOrDomainTag(stripped) && !isGenericProjectOrDomainTag(t)) {
         skillsSet.add(t);
       }
     });

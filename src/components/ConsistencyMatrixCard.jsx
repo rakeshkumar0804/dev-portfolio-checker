@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Icon from "./Icon.jsx";
+import { isGenericProjectOrDomainTag } from "../../utils/topicFilter.js";
 
 export default function ConsistencyMatrixCard({ matrix }) {
   const [showFullAudit, setShowFullAudit] = useState(false);
@@ -14,6 +15,16 @@ export default function ConsistencyMatrixCard({ matrix }) {
     actionAuditList = [],
     warnings = [],
   } = matrix;
+
+  const filteredGithubOnly = githubOnly.filter((s) => !isGenericProjectOrDomainTag(s));
+  const filteredActionAuditList = actionAuditList.filter((item) => !isGenericProjectOrDomainTag(item.skill));
+  const displayWarnings = warnings.map((w) => {
+    if (typeof w === "string" && w.startsWith("Inspected GitHub evidence includes")) {
+      if (filteredGithubOnly.length === 0) return null;
+      return `Inspected GitHub evidence includes ${filteredGithubOnly.slice(0, 3).join(", ")}, but these are not listed in your resume skills.`;
+    }
+    return w;
+  }).filter(Boolean);
 
   const totalResume = (verifiedInBoth?.length || 0) + (resumeOnly?.length || 0);
   const isScoreValid = typeof consistencyScore === "number" && Number.isFinite(consistencyScore) && consistencyScore >= 0 && consistencyScore <= 100;
@@ -85,9 +96,9 @@ export default function ConsistencyMatrixCard({ matrix }) {
       ) : (
         <>
           {/* Warnings */}
-          {warnings.length > 0 && (
+          {displayWarnings.length > 0 && (
             <div style={{ marginBottom: 16 }}>
-              {warnings.map((w, idx) => (
+              {displayWarnings.map((w, idx) => (
                 <div key={idx} className="info-box" style={{ background: "rgba(234, 179, 8, 0.08)", border: "1px solid rgba(234, 179, 8, 0.2)", color: "var(--yellow)", marginBottom: 8, fontSize: "0.83rem", display: "flex", alignItems: "center", gap: 8 }}>
                   <Icon name="info" size={14} style={{ color: "var(--yellow)" }} />
                   <span>{w}</span>
@@ -147,11 +158,11 @@ export default function ConsistencyMatrixCard({ matrix }) {
               <Icon name="github" size={14} style={{ color: "var(--cyan)" }} />
               <span>Detected in GitHub Evidence (Missing from Resume)</span>
             </span>
-            <span>{githubOnly.length}</span>
+            <span>{filteredGithubOnly.length}</span>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {githubOnly.length > 0 ? (
-              githubOnly.map((s) => (
+            {filteredGithubOnly.length > 0 ? (
+              filteredGithubOnly.map((s) => (
                 <span key={s} className="skill-tag" style={{ background: "rgba(56, 189, 248, 0.12)", color: "#38bdf8", border: "1px solid rgba(56, 189, 248, 0.25)" }}>
                   + {s}
                 </span>
@@ -163,7 +174,7 @@ export default function ConsistencyMatrixCard({ matrix }) {
         </div>
       </div>
 
-      {actionAuditList.length > 0 && (
+      {filteredActionAuditList.length > 0 && (
         <>
           <button
             onClick={() => setShowFullAudit((s) => !s)}
@@ -194,7 +205,7 @@ export default function ConsistencyMatrixCard({ matrix }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {actionAuditList.map((item, idx) => (
+                  {filteredActionAuditList.map((item, idx) => (
                     <tr key={idx} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
                       <td style={{ padding: "8px", fontWeight: 700, color: "var(--txt-1)" }}>{item.skill}</td>
                       <td style={{ padding: "8px", color: item.status.includes("Resume") ? "var(--yellow)" : "var(--cyan)" }}>

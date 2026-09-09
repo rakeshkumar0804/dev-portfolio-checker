@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { isGenericProjectOrDomainTag } from "../utils/topicFilter.js";
 
 const MODELS = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash"];
 
@@ -139,7 +140,7 @@ Return ONLY valid JSON (no markdown):
   const githubSkills = githubData?.skills || [];
   const matchingConsistency = skillsExtracted.filter((s) => githubSkills.some((g) => g.toLowerCase() === s.toLowerCase()));
   const onlyResume = skillsExtracted.filter((s) => !matchingConsistency.includes(s));
-  const onlyGithub = githubSkills.filter((g) => !skillsExtracted.some((s) => s.toLowerCase() === g.toLowerCase()));
+  const onlyGithub = githubSkills.filter((g) => !isGenericProjectOrDomainTag(g) && !skillsExtracted.some((s) => s.toLowerCase() === g.toLowerCase()));
 
   // Build a safe, normalized technical skills string for downstream skill matching (consistencyService).
   // Contains only verified technical skills and role keywords from the static predefined lists.
