@@ -131,7 +131,7 @@ export async function analyzeResumeController(req, res) {
       const portfolioData = existingReport.portfolioData || null;
 
       // Re-run scoring engine with updated resume analysis
-      const { scores, scoreBreakdowns, improvements } = calculateAllScores(
+      const { scores, scoreBreakdowns, improvements, coverage } = calculateAllScores(
         githubData,
         portfolioData,
         effectiveTargetRole,
@@ -173,6 +173,7 @@ export async function analyzeResumeController(req, res) {
         scores,
         scoreBreakdowns,
         improvements,
+        coverage: coverage || null,
         resumeAnalysis,
         skillsDetected,
         missingSkills,

@@ -1460,10 +1460,28 @@ input, select, textarea { font-family: inherit; }
 }
 .checklist-item.pass { border-color: rgba(52,211,153,0.15); background: rgba(52,211,153,0.04); }
 .checklist-item.fail { border-color: rgba(248,113,113,0.12); background: rgba(248,113,113,0.03); }
+.checklist-item.unavailable { border-color: rgba(234,179,8,0.15); background: rgba(234,179,8,0.03); }
+.checklist-item.not_applicable, .checklist-item.na { border-color: rgba(148,163,184,0.15); background: rgba(148,163,184,0.03); opacity: 0.85; }
 .checklist-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
 .checklist-content { flex: 1; }
-.checklist-label { font-weight: 600; color: var(--txt-1); margin-bottom: 2px; }
-.checklist-hint  { font-size: 0.72rem; color: var(--txt-3); line-height: 1.4; }
+.checklist-header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 2px; }
+.checklist-label { font-weight: 600; color: var(--txt-1); }
+.checklist-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.checklist-badge.pass { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.25); }
+.checklist-badge.fail { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+.checklist-badge.unavailable { background: rgba(234,179,8,0.12); color: var(--yellow); border: 1px solid rgba(234,179,8,0.2); }
+.checklist-badge.not_applicable, .checklist-badge.na { background: rgba(148,163,184,0.1); color: var(--txt-3); border: 1px solid rgba(148,163,184,0.15); }
+.checklist-evidence { font-size: 0.72rem; color: var(--txt-2); margin-top: 3px; line-height: 1.35; word-break: break-word; }
+.checklist-hint  { font-size: 0.72rem; color: var(--txt-3); line-height: 1.4; margin-top: 2px; }
 .checklist-importance { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--txt-4); }
 
 /* ── AI Insights ──────────────────────────────────── */

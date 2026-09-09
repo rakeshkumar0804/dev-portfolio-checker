@@ -1,17 +1,16 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// Scoring Engine v6 — Evidence-Based Additive Architecture
+// Scoring Engine v6.1 — Evidence-Based Additive Architecture with Truthful States
 //
 // DESIGN PRINCIPLES:
 //  1. Evidence-Based Accumulation: Users earn points for positive proof of work
 //     rather than losing points repeatedly for missing items.
-//  2. Single Source of Truth: Each metric is evaluated ONCE in its authoritative category.
-//  3. Calibrated Score Benchmarks:
-//     - Beginner Student         : 45–60
-//     - Average CS Student       : 60–70
-//     - Good MERN Developer      : 75–85
-//     - Strong Open-Source       : 85–92
-//     - Exceptional Developer    : 93–100
-//  4. Fully Explainable: Explicit evidence positive/negative signals per metric.
+//  2. Truthful States:
+//     - Present: Positive verified proof.
+//     - Absent: Adequate inspection completed, evidence not detected.
+//     - Unavailable: Inspection failed or unrendered shell; no missing penalties.
+//     - Not Applicable: Check not relevant (e.g. alt tags when 0 images exist).
+//  3. Single Source of Truth: Each metric is evaluated ONCE in its authoritative category.
+//  4. Fully Reconciled: Overall score denominator explicitly matches active verified sources.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function clamp(val, min, max) {
@@ -24,6 +23,9 @@ function pct(numerator, denominator) {
 }
 
 export function getScoringTier(score) {
+  if (typeof score !== "number" || !Number.isFinite(score)) {
+    return { label: "Provisional Evaluation", color: "var(--txt-3)", badge: "info" };
+  }
   if (score >= 93) return { label: "Exceptional Candidate", color: "#a855f7", badge: "pass" };
   if (score >= 85) return { label: "Interview Ready", color: "var(--green)", badge: "pass" };
   if (score >= 75) return { label: "Hiring Ready", color: "var(--cyan)", badge: "pass" };
@@ -33,7 +35,7 @@ export function getScoringTier(score) {
 }
 
 function buildEmptyScore() {
-  return { score: 0, tier: getScoringTier(0), breakdown: [], improvements: [], positiveSignals: [], negativeSignals: [] };
+  return { score: 0, status: "not_provided", tier: getScoringTier(0), breakdown: [], improvements: [], positiveSignals: [], negativeSignals: [] };
 }
 
 // ─── 1. GitHub Activity & Profile (Evidence-Based 0–100) ──────────────────────
@@ -42,13 +44,12 @@ export function calculateGitHubScore(githubData) {
 
   const profile = githubData.profile || {};
   const stats = githubData.stats || {};
-  const languageDistribution = githubData.languageDistribution || [];
   const hasProfileReadme = githubData.hasProfileReadme || false;
+  const isUnavailable = stats.repoFetchStatus === "unavailable" || stats.reposUnavailable;
 
   const commitCount90Days = stats.commitCount90Days || 0;
   const currentStreak = stats.currentStreak || 0;
   const totalStars = stats.totalStars || 0;
-  const ownedRepos = stats.ownedRepos || 0;
   const followers = profile.followers || 0;
 
   const breakdown = [];
@@ -73,13 +74,14 @@ export function calculateGitHubScore(githubData) {
   breakdown.push({
     score: 15 + activityPts, max: 40,
     label: "Commit Cadence & Consistency",
+    status: commitCount90Days > 0 ? "present" : (isUnavailable ? "unavailable" : "absent"),
     evidence: commitCount90Days > 0
       ? `Earned +${activityPts} pts for ${commitCount90Days} commits in last 90 days${currentStreak > 0 ? ` (${currentStreak}-day active streak)` : ""}`
-      : "No recent public commit activity detected (+0 pts earned)",
+      : (isUnavailable ? "Commit cadence temporarily unavailable from GitHub" : "No recent public commit activity detected (+0 pts earned)"),
   });
 
   if (commitCount90Days >= 20) positiveSignals.push(`Earned points for consistent commit history (${commitCount90Days} commits)`);
-  else {
+  else if (!isUnavailable) {
     negativeSignals.push(`Low commit frequency (+${commitPts} pts out of 20)`);
     improvements.push({
       action: "Maintain a 3–4 day weekly commit rhythm on GitHub",
@@ -98,7 +100,10 @@ export function calculateGitHubScore(githubData) {
   breakdown.push({
     score: 10 + repPts, max: 25,
     label: "Community Stars & Followers",
-    evidence: `Earned +${repPts} pts for ${totalStars} stars across repos and ${followers} followers`,
+    status: (totalStars > 0 || followers > 0) ? "present" : (isUnavailable ? "unavailable" : "absent"),
+    evidence: isUnavailable
+      ? "Community metrics temporarily unavailable"
+      : `Earned +${repPts} pts for ${totalStars} stars across repos and ${followers} followers`,
   });
 
   if (totalStars >= 5 || followers >= 5) positiveSignals.push(`Community recognition (+${repPts} pts)`);
@@ -119,6 +124,7 @@ export function calculateGitHubScore(githubData) {
   breakdown.push({
     score: 15 + compPts, max: 35,
     label: "Profile Completeness & Overview README",
+    status: compPts > 10 ? "present" : "absent",
     evidence: `Earned +${compPts} pts for completing ${profileFields.filter((f) => f.pass).length}/${profileFields.length} profile fields${hasProfileReadme ? " and Profile README" : ""}`,
   });
 
@@ -137,6 +143,7 @@ export function calculateGitHubScore(githubData) {
 
   return {
     score: finalScore,
+    status: "analyzed",
     tier: getScoringTier(finalScore),
     breakdown,
     improvements,
@@ -150,6 +157,7 @@ export function calculateDocumentationScore(githubData) {
   if (!githubData || !githubData.profile) return buildEmptyScore();
 
   const stats = githubData.stats || {};
+  const isUnavailable = stats.repoFetchStatus === "unavailable" || stats.reposUnavailable;
   const ownedRepos = Math.max(stats.ownedRepos || 0, 1);
   const reposWithDescription = stats.reposWithDescription || 0;
   const reposWithTopics = stats.reposWithTopics || 0;
@@ -170,7 +178,10 @@ export function calculateDocumentationScore(githubData) {
   breakdown.push({
     score: 10 + descPts, max: 35,
     label: "Repository Descriptions Coverage",
-    evidence: `Earned +${descPts} pts: ${reposWithDescription}/${ownedRepos} repos have descriptions (${Math.round(descRatio * 100)}%)`,
+    status: isUnavailable ? "unavailable" : (descRatio > 0 ? "present" : "absent"),
+    evidence: isUnavailable
+      ? "Repository descriptions temporarily unavailable"
+      : `Earned +${descPts} pts: ${reposWithDescription}/${ownedRepos} repos have descriptions (${Math.round(descRatio * 100)}%)`,
   });
 
   // Topics (+0 to +20 pts)
@@ -180,7 +191,10 @@ export function calculateDocumentationScore(githubData) {
   breakdown.push({
     score: 10 + topicsPts, max: 30,
     label: "Topic Tags & Categorization",
-    evidence: `Earned +${topicsPts} pts: ${reposWithTopics}/${ownedRepos} repos tagged with topics (${Math.round(topicsRatio * 100)}%)`,
+    status: isUnavailable ? "unavailable" : (topicsRatio > 0 ? "present" : "absent"),
+    evidence: isUnavailable
+      ? "Repository topics temporarily unavailable"
+      : `Earned +${topicsPts} pts: ${reposWithTopics}/${ownedRepos} repos tagged with topics (${Math.round(topicsRatio * 100)}%)`,
   });
 
   // README Quality (+0 to +20 pts)
@@ -189,11 +203,14 @@ export function calculateDocumentationScore(githubData) {
   breakdown.push({
     score: 15 + readmePts, max: 35,
     label: "Repository README Content Depth",
-    evidence: `Earned +${readmePts} pts based on project README depth (${avgReadmeScore}/100 quality rating)`,
+    status: isUnavailable ? "unavailable" : (avgReadmeScore > 0 ? "present" : "absent"),
+    evidence: isUnavailable
+      ? "README depth analysis temporarily unavailable"
+      : `Earned +${readmePts} pts based on project README depth (${avgReadmeScore}/100 quality rating)`,
   });
 
   if (descRatio >= 0.6) positiveSignals.push("Strong repo description coverage");
-  else {
+  else if (!isUnavailable) {
     negativeSignals.push("Repositories missing header descriptions");
     improvements.push({
       action: "Add concise descriptions to all public repositories",
@@ -207,6 +224,7 @@ export function calculateDocumentationScore(githubData) {
 
   return {
     score: finalScore,
+    status: isUnavailable ? "unavailable" : "analyzed",
     tier: getScoringTier(finalScore),
     breakdown,
     improvements,
@@ -221,6 +239,7 @@ export function calculateProjectQualityScore(githubData) {
 
   const stats = githubData.stats || {};
   const topRepos = githubData.topRepos || [];
+  const isUnavailable = stats.repoFetchStatus === "unavailable" || stats.reposUnavailable;
 
   const breakdown = [];
   const improvements = [];
@@ -228,17 +247,18 @@ export function calculateProjectQualityScore(githubData) {
   const negativeSignals = [];
 
   if (!topRepos || topRepos.length === 0) {
-    const isUnavailable = stats.repoFetchStatus === "unavailable" || stats.reposUnavailable;
     return {
-      score: 30,
-      tier: getScoringTier(30),
+      score: isUnavailable ? null : 30,
+      status: isUnavailable ? "unavailable" : "analyzed",
+      tier: isUnavailable ? { label: "Data Unavailable", color: "var(--txt-3)", badge: "info" } : getScoringTier(30),
       breakdown: [{
-        score: 30,
+        score: isUnavailable ? 0 : 30,
         max: 100,
+        status: isUnavailable ? "unavailable" : "absent",
         label: "Public Repositories",
         evidence: isUnavailable
           ? "Repository inspection temporarily unavailable due to GitHub API rate limits"
-          : "No public repositories found"
+          : "No public repositories found for this account (+0 pts earned)",
       }],
       improvements: isUnavailable ? [] : [{
         action: "Publish your first public code repository on GitHub",
@@ -263,6 +283,7 @@ export function calculateProjectQualityScore(githubData) {
   breakdown.push({
     score: 10 + livePts, max: 40,
     label: "Live Demo Deployments",
+    status: liveRepos > 0 ? "present" : "absent",
     evidence: liveRepos > 0
       ? `Earned +${livePts} pts: ${liveRepos}/${topRepos.length} top projects have live demo links`
       : "No live demo URLs configured (+0 out of 30 pts earned)",
@@ -284,68 +305,77 @@ export function calculateProjectQualityScore(githubData) {
   const recentRepos = topRepos.filter((r) => r.lastPushed && new Date(r.lastPushed).getTime() > sixtyDaysAgo).length;
   const recentPts = Math.round(pct(recentRepos, topRepos.length) * 20);
   score += recentPts;
-  // 5. Tech diversity (0–15 pts)
+
+  breakdown.push({
+    score: 10 + recentPts, max: 30,
+    label: "Code Recency & Freshness",
+    status: recentRepos > 0 ? "present" : "absent",
+    evidence: recentRepos > 0
+      ? `Earned +${recentPts} pts: ${recentRepos}/${topRepos.length} projects updated within last 60 days`
+      : "No repositories updated within the last 60 days (+0 pts)",
+  });
+
+  // 3. Tech diversity (0–15 pts)
   const uniqueLangs = new Set(topRepos.map((r) => r.language).filter(Boolean));
   const langPts = clamp(uniqueLangs.size * 3, 0, 15);
   score += langPts;
   breakdown.push({
     score: langPts, max: 15,
     label: "Tech Diversity",
+    status: uniqueLangs.size > 0 ? "present" : "absent",
     evidence: `${uniqueLangs.size} different languages across top repositories`,
   });
 
-  if (liveRepos === 0) {
-    improvements.push({
-      action: "Deploy your projects and add live demo links",
-      why: "Live demos are the most powerful signal in your portfolio. Recruiters can evaluate your work without reading code.",
-      how: "Use Vercel (frontend), Railway or Render (backend) — all free. Add the deployment URL to your repo's Homepage field.",
-      points: 12,
-      difficulty: "Medium",
-      timeMinutes: 30,
-      priority: 2,
-    });
-  }
-
-  const completeRepos = topRepos.filter((r) => r.description && r.topics?.length > 0).length;
-  if (completeRepos < Math.ceil(topRepos.length * 0.7)) {
-    improvements.push({
-      action: "Add detailed descriptions and topics to your top repositories",
-      why: "Incomplete repos signal you don't care about presentation — which makes recruiters wonder about your code quality too.",
-      how: "For each repo: add a 1-2 sentence description, add 3–5 relevant topics (react, nodejs, portfolio, etc.), and add a homepage link if deployed.",
-      points: 8,
-      difficulty: "Easy",
-      timeMinutes: 20,
-      priority: 2,
-    });
-  }
-
   return {
     score: clamp(Math.round(score), 15, 100),
+    status: "analyzed",
+    tier: getScoringTier(clamp(Math.round(score), 15, 100)),
     breakdown,
     improvements,
+    positiveSignals,
+    negativeSignals,
   };
 }
 
 // ─── Portfolio Website Score (0–100) ──────────────────────────────────────────
 export function calculatePortfolioScore(portfolioData) {
-  if (!portfolioData || !portfolioData.accessible) {
+  if (!portfolioData || !portfolioData.accessible || portfolioData.inspectionStatus === "incomplete_shell" || portfolioData.inspectionStatus === "failed") {
+    const isShell = portfolioData?.inspectionStatus === "incomplete_shell";
+    const status = isShell ? "unavailable" : (!portfolioData?.url ? "not_provided" : "unavailable");
+    const reason = portfolioData?.fetchError || (isShell ? "Client-side rendering timed out; page requires JavaScript hydration" : "No portfolio URL provided or site was inaccessible");
+
     return {
-      score: 0,
-      breakdown: [{ score: 0, max: 100, label: "Portfolio", evidence: "No portfolio URL provided or site was inaccessible" }],
-      improvements: [{
+      score: null,
+      status,
+      breakdown: [{
+        score: 0,
+        max: 100,
+        status,
+        label: "Portfolio Website",
+        evidence: reason,
+      }],
+      improvements: isShell ? [{
+        action: "Optimize initial portfolio page load and hydration speed",
+        why: "Recruiters and automated screeners on slow connections may experience a blank loading shell.",
+        how: "Pre-render critical HTML tags or reduce client bundle size to ensure fast first contentful paint.",
+        points: 15,
+        difficulty: "Medium",
+        timeMinutes: 30,
+        priority: 1,
+      }] : (!portfolioData?.url ? [{
         action: "Build and deploy a portfolio website",
-        why: "A portfolio website is the #1 differentiator between candidates with similar GitHub profiles. Recruiters expect developers to have one.",
-        how: "Use a template from GitHub (search 'portfolio template') and deploy to Vercel or Netlify for free. Takes 30 minutes.",
+        why: "A portfolio website is the #1 differentiator between candidates with similar GitHub profiles.",
+        how: "Use a clean template and deploy to Vercel or Netlify.",
         points: 25,
         difficulty: "Medium",
         timeMinutes: 120,
         priority: 1,
-      }],
+      }] : []),
     };
   }
 
   const { checklist } = portfolioData;
-  if (!checklist) return { score: 0, breakdown: [], improvements: [] };
+  if (!checklist) return { score: null, status: "unavailable", breakdown: [], improvements: [] };
 
   const weights = {
     isHttps:                  { pts: 10, label: "HTTPS Secure",       category: "Security" },
@@ -373,17 +403,56 @@ export function calculatePortfolioScore(portfolioData) {
   let possible = 0;
 
   Object.entries(weights).forEach(([key, { pts, label, category }]) => {
+    const item = checklist[key];
+    const itemStatus = item?.status || (item?.pass ? "present" : "absent");
+
+    // Truthful Handling: Not Applicable items are completely excluded from the denominator
+    if (itemStatus === "not_applicable") {
+      breakdown.push({
+        score: 0,
+        max: pts,
+        status: "not_applicable",
+        label,
+        evidence: item?.evidence || `${category}: Check is not applicable (no images present)`,
+      });
+      return;
+    }
+
+    // Unavailable items are excluded from denominator to avoid false penalties
+    if (itemStatus === "unavailable") {
+      breakdown.push({
+        score: 0,
+        max: pts,
+        status: "unavailable",
+        label,
+        evidence: item?.evidence || `${category}: Evidence unavailable`,
+      });
+      return;
+    }
+
     possible += pts;
-    const pass = checklist[key]?.pass;
-    if (pass) {
+    if (item?.pass) {
       earned += pts;
+      breakdown.push({
+        score: pts,
+        max: pts,
+        status: "present",
+        label,
+        evidence: item?.evidence ? `✅ ${item.evidence}` : `✅ ${label} — passing`,
+      });
     } else {
-      breakdown.push({ score: 0, max: pts, label, evidence: `${category}: Missing or failing` });
+      breakdown.push({
+        score: 0,
+        max: pts,
+        status: "absent",
+        label,
+        evidence: item?.evidence ? `❌ ${item.evidence}` : `❌ ${label} — needs fix`,
+      });
       if (pts >= 5) {
         improvements.push({
           action: `Fix: ${label}`,
           why: `${category} issue — this reduces your professional credibility.`,
-          how: checklist[key]?.hint || `Add or fix the ${label} on your portfolio website.`,
+          how: item?.hint || `Add or fix the ${label} on your portfolio website.`,
           points: pts,
           difficulty: pts >= 8 ? "Medium" : "Easy",
           timeMinutes: pts >= 8 ? 15 : 5,
@@ -397,12 +466,10 @@ export function calculatePortfolioScore(portfolioData) {
 
   return {
     score: finalScore,
-    breakdown: Object.entries(weights).map(([key, { pts, label }]) => ({
-      score: checklist[key]?.pass ? pts : 0,
-      max: pts,
-      label,
-      evidence: checklist[key]?.pass ? `✅ ${label} — passing` : `❌ ${label} — needs fix`,
-    })),
+    status: "analyzed",
+    possible,
+    earned,
+    breakdown,
     improvements: improvements.sort((a, b) => b.points - a.points),
   };
 }
@@ -412,20 +479,22 @@ export function calculateHiringReadiness(scores, githubData, portfolioData, resu
   const profile = githubData?.profile || {};
   const stats = githubData?.stats || {};
   const hasProfileReadme = githubData?.hasProfileReadme || false;
-  const resumeScore = resumeAnalysis?.atsScore || 0;
+  const resumeScore = (resumeAnalysis && typeof resumeAnalysis.atsScore === "number") ? resumeAnalysis.atsScore : 0;
+
+  const hasPortfolioScore = typeof scores.portfolio === "number" && Number.isFinite(scores.portfolio);
+  const pScore = hasPortfolioScore ? scores.portfolio : 0;
 
   let base = 50;
-  if (portfolioData?.accessible && resumeScore > 0) {
-    base = scores.github * 0.25 + scores.projectQuality * 0.20 + scores.documentation * 0.15 + scores.portfolio * 0.20 + resumeScore * 0.20;
-  } else if (portfolioData?.accessible) {
-    base = scores.github * 0.30 + scores.projectQuality * 0.25 + scores.documentation * 0.20 + scores.portfolio * 0.25;
+  if (hasPortfolioScore && resumeScore > 0) {
+    base = scores.github * 0.25 + scores.projectQuality * 0.20 + scores.documentation * 0.15 + pScore * 0.20 + resumeScore * 0.20;
+  } else if (hasPortfolioScore) {
+    base = scores.github * 0.30 + scores.projectQuality * 0.25 + scores.documentation * 0.20 + pScore * 0.25;
   } else if (resumeScore > 0) {
     base = scores.github * 0.35 + scores.projectQuality * 0.25 + scores.documentation * 0.20 + resumeScore * 0.20;
   } else {
     base = scores.github * 0.40 + scores.projectQuality * 0.35 + scores.documentation * 0.25;
   }
 
-  // Cap hiring readiness so it never hits 100/100 unless commit activity >= 30, portfolio is live, and README exists
   let maxCap = 95;
   if ((stats.commitCount90Days || 0) < 15 || !hasProfileReadme) {
     maxCap = 85;
@@ -436,14 +505,19 @@ export function calculateHiringReadiness(scores, githubData, portfolioData, resu
 
 // ─── Calculate All Scores (Handles Full 360°, GitHub-Only, Portfolio-Only, Resume-Only) ───
 export function calculateAllScores(githubData, portfolioData, targetRole = "fullstack", resumeAnalysis = null) {
-  const hasGithub = !!(githubData && githubData.profile);
-  const hasPortfolio = !!(portfolioData && portfolioData.accessible);
-  const hasResume = !!(resumeAnalysis && resumeAnalysis.atsScore);
+  const hasGithub = Boolean(githubData && githubData.profile);
+  const isGithubUnavailable = Boolean(githubData?.stats?.repoFetchStatus === "unavailable");
+
+  const hasPortfolioProvided = Boolean(portfolioData?.url);
+  const isPortfolioAnalyzed = Boolean(portfolioData && portfolioData.accessible && portfolioData.inspectionStatus === "complete");
+  const isPortfolioUnavailable = Boolean(hasPortfolioProvided && !isPortfolioAnalyzed);
+
+  const hasResume = Boolean(resumeAnalysis && typeof resumeAnalysis.atsScore === "number" && resumeAnalysis.atsScore > 0);
 
   const githubResult    = hasGithub ? calculateGitHubScore(githubData) : buildEmptyScore();
   const docResult       = hasGithub ? calculateDocumentationScore(githubData) : buildEmptyScore();
   const projResult      = hasGithub ? calculateProjectQualityScore(githubData) : buildEmptyScore();
-  const portfolioResult = hasPortfolio ? calculatePortfolioScore(portfolioData) : buildEmptyScore();
+  const portfolioResult = hasPortfolioProvided ? calculatePortfolioScore(portfolioData) : buildEmptyScore();
 
   const scores = {
     github:         githubResult.score,
@@ -452,53 +526,77 @@ export function calculateAllScores(githubData, portfolioData, targetRole = "full
     portfolio:      portfolioResult.score,
   };
 
-  const hiringReadiness = hasGithub
-    ? calculateHiringReadiness(scores, githubData, portfolioData, resumeAnalysis)
-    : (hasPortfolio ? scores.portfolio : (hasResume ? (resumeAnalysis.atsScore || 70) : 50));
-
   const effectiveAtsScore = hasResume ? resumeAnalysis.atsScore : 0;
+  const isProvisional = isPortfolioUnavailable || (hasGithub && isGithubUnavailable);
 
-  // Evidence-Based Composite Overall Weights (Sum = 1.00 per active input mode)
+  const coverage = {
+    github: hasGithub ? (isGithubUnavailable ? "unavailable" : "analyzed") : "not_provided",
+    portfolio: hasPortfolioProvided ? (isPortfolioAnalyzed ? "analyzed" : "unavailable") : "not_provided",
+    resume: hasResume ? "analyzed" : "not_provided",
+    isProvisional,
+    provisionalReason: isPortfolioUnavailable
+      ? "Portfolio inspection was unavailable; score is provisionally computed from verified sources."
+      : (isGithubUnavailable ? "GitHub repository details were unavailable; score is provisional." : null),
+  };
+
+  // Reconciled composite weights with explicit active denominators
   let overall = 50;
-  if (hasGithub && hasPortfolio && hasResume) {
-    // Full 360° Mode: GitHub (30%), Projects (25%), Portfolio (25%), Resume (20%)
+  let activeWeights = {};
+
+  if (hasGithub && isPortfolioAnalyzed && hasResume) {
+    // Full 360° All Sources Analyzed
+    activeWeights = { github: 30, projectQuality: 25, portfolio: 25, resume: 20 };
     overall = Math.round(
       scores.github * 0.30 +
       scores.projectQuality * 0.25 +
       scores.portfolio * 0.25 +
       effectiveAtsScore * 0.20
     );
-  } else if (hasGithub && hasPortfolio) {
-    // GitHub + Portfolio Mode: GitHub (40%), Projects (35%), Portfolio (25%)
+  } else if (hasGithub && isPortfolioAnalyzed) {
+    // GitHub + Portfolio
+    activeWeights = { github: 40, projectQuality: 35, portfolio: 25 };
     overall = Math.round(
       scores.github * 0.40 +
       scores.projectQuality * 0.35 +
       scores.portfolio * 0.25
     );
   } else if (hasGithub && hasResume) {
-    // GitHub + Resume Mode: GitHub (40%), Projects (35%), Resume (25%)
+    // GitHub + Resume (also used when portfolio is unavailable)
+    activeWeights = { github: 40, projectQuality: 35, resume: 25 };
     overall = Math.round(
       scores.github * 0.40 +
       scores.projectQuality * 0.35 +
       effectiveAtsScore * 0.25
     );
-  } else if (hasPortfolio && hasResume) {
-    // Portfolio + Resume Mode: Portfolio (55%), Resume (45%)
+  } else if (isPortfolioAnalyzed && hasResume) {
+    // Portfolio + Resume
+    activeWeights = { portfolio: 55, resume: 45 };
     overall = Math.round(
       scores.portfolio * 0.55 +
       effectiveAtsScore * 0.45
     );
   } else if (hasGithub) {
-    // GitHub Only Mode: GitHub Activity (55%), Projects Quality (45%)
+    // GitHub Only
+    activeWeights = { github: 55, projectQuality: 45 };
     overall = Math.round(
       scores.github * 0.55 +
       scores.projectQuality * 0.45
     );
-  } else if (hasPortfolio) {
-    overall = scores.portfolio;
+  } else if (isPortfolioAnalyzed) {
+    // Portfolio Only
+    activeWeights = { portfolio: 100 };
+    overall = scores.portfolio || 50;
   } else if (hasResume) {
+    // Resume Only
+    activeWeights = { resume: 100 };
     overall = effectiveAtsScore;
   }
+
+  coverage.activeWeights = activeWeights;
+
+  const hiringReadiness = hasGithub
+    ? calculateHiringReadiness(scores, githubData, portfolioData, resumeAnalysis)
+    : (isPortfolioAnalyzed ? (scores.portfolio || 50) : (hasResume ? (resumeAnalysis.atsScore || 70) : 50));
 
   // Merge all active improvements with explainable metadata
   const topRepoNames = githubData?.topRepos?.slice(0, 3).map((r) => r.name) || [];
@@ -533,6 +631,7 @@ export function calculateAllScores(githubData, portfolioData, targetRole = "full
     scores: { ...scores, hiringReadiness, overall: clamp(overall, 20, 100) },
     scoreBreakdowns,
     improvements: allImprovements,
+    coverage,
   };
 }
 

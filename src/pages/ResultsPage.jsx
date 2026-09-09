@@ -957,7 +957,12 @@ export default function ResultsPage({ isSample = false }) {
           }}
         >
           <Icon name="alert-triangle" size={16} />
-          <span>{failedSources.join(" and ")} analysis was unavailable. Your report was generated using the remaining verified sources.</span>
+          <span>
+            {failedSources.join(" and ")} analysis was unavailable. Your overall score ({scores.overall}/100) is provisionally evaluated using the remaining verified sources
+            {data.coverage?.activeWeights && Object.keys(data.coverage.activeWeights).length > 0
+              ? ` (${Object.entries(data.coverage.activeWeights).map(([k, w]) => `${k.charAt(0).toUpperCase() + k.slice(1)} ${w}%`).join(", ")})`
+              : ""}.
+          </span>
         </div>
       )}
 
@@ -1257,30 +1262,119 @@ export default function ResultsPage({ isSample = false }) {
             {isPortfolioAnalyzed && portfolioData ? (
               <>
                 <Card title="Portfolio Health & Structural Checklist" icon={<Icon name="globe" size={18} />} className="mb-24">
-                  <div className="portfolio-url-bar">
+                  <div className="portfolio-url-bar" style={{ marginBottom: 16 }}>
                     <span className="portfolio-url-label">URL Evaluated:</span>
                     <a href={portfolioData.url} target="_blank" rel="noreferrer">
                       {portfolioData.url} ↗
                     </a>
                   </div>
+
+                  {portfolioData.checklist && (
+                    <div className="checklist-grid">
+                      {Object.entries(portfolioData.checklist).map(([key, item]) => {
+                        const status = item.status || (item.pass ? "present" : "absent");
+                        const badgeClass = status === "present"
+                          ? "pass"
+                          : status === "not_applicable"
+                          ? "not_applicable"
+                          : status === "unavailable"
+                          ? "unavailable"
+                          : "fail";
+
+                        const badgeText = status === "present"
+                          ? "PASS"
+                          : status === "not_applicable"
+                          ? "N/A"
+                          : status === "unavailable"
+                          ? "UNAVAILABLE"
+                          : "FAIL";
+
+                        const iconName = status === "present"
+                          ? "check-circle"
+                          : status === "not_applicable"
+                          ? "info"
+                          : status === "unavailable"
+                          ? "alert-circle"
+                          : "x";
+
+                        const iconColor = status === "present"
+                          ? "var(--green)"
+                          : status === "not_applicable"
+                          ? "var(--txt-3)"
+                          : status === "unavailable"
+                          ? "var(--yellow)"
+                          : "var(--red)";
+
+                        return (
+                          <div key={key} className={`checklist-item ${badgeClass}`}>
+                            <span className="checklist-icon" style={{ color: iconColor }}>
+                              <Icon name={iconName} size={16} />
+                            </span>
+                            <div className="checklist-content">
+                              <div className="checklist-header-row">
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  <span className="checklist-label">{item.label}</span>
+                                  {item.importance && (
+                                    <span className="checklist-importance">({item.importance})</span>
+                                  )}
+                                </div>
+                                <span className={`checklist-badge ${badgeClass}`}>{badgeText}</span>
+                              </div>
+                              {item.evidence && (
+                                <div className="checklist-evidence">{item.evidence}</div>
+                              )}
+                              {!item.pass && status !== "not_applicable" && status !== "unavailable" && item.hint && (
+                                <div className="checklist-hint">{item.hint}</div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </Card>
 
                 <div className="section-title">
                   <h2>Portfolio Score Breakdown</h2>
                 </div>
                 <div className="breakdown-cards">
-                  {(scoreBreakdowns?.portfolio || []).map((b, idx) => (
-                    <div key={idx} className="breakdown-card card">
-                      <div className="breakdown-header">
-                        <span className="breakdown-label">{b.label}</span>
-                        <span className="breakdown-score">{b.score} / {b.max}</span>
+                  {(scoreBreakdowns?.portfolio || []).map((b, idx) => {
+                    const itemStatus = b.status || (b.score > 0 ? "present" : "absent");
+                    const badgeClass = itemStatus === "present"
+                      ? "pass"
+                      : itemStatus === "not_applicable"
+                      ? "not_applicable"
+                      : itemStatus === "unavailable"
+                      ? "unavailable"
+                      : "fail";
+                    const badgeText = itemStatus === "present"
+                      ? "PASS"
+                      : itemStatus === "not_applicable"
+                      ? "N/A"
+                      : itemStatus === "unavailable"
+                      ? "UNAVAILABLE"
+                      : "FAIL";
+
+                    return (
+                      <div key={idx} className="breakdown-card card">
+                        <div className="breakdown-header">
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span className="breakdown-label">{b.label}</span>
+                            <span className={`checklist-badge ${badgeClass}`}>{badgeText}</span>
+                          </div>
+                          <span className="breakdown-score">
+                            {itemStatus === "not_applicable" ? "Excluded (N/A)" : `${b.score} / ${b.max}`}
+                          </span>
+                        </div>
+                        {itemStatus !== "not_applicable" && (
+                          <div className="progress-bar">
+                            <div className="progress-fill" style={{ width: `${Math.round((b.score / b.max) * 100)}%` }} />
+                          </div>
+                        )}
+                        <div className="breakdown-evidence">{b.evidence}</div>
                       </div>
-                      <div className="progress-bar">
-                        <div className="progress-fill" style={{ width: `${Math.round((b.score / b.max) * 100)}%` }} />
-                      </div>
-                      <div className="breakdown-evidence">{b.evidence}</div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             ) : (

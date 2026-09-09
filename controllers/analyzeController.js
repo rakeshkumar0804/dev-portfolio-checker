@@ -360,7 +360,7 @@ export async function analyzeFullProfile(req, res) {
       }
     }
 
-    const { scores, scoreBreakdowns, improvements } = calculateAllScores(
+    const { scores, scoreBreakdowns, improvements, coverage } = calculateAllScores(
       githubData,
       portfolioData,
       targetRole,
@@ -420,6 +420,7 @@ export async function analyzeFullProfile(req, res) {
       scores,
       scoreBreakdowns,
       improvements,
+      coverage: coverage || null,
       githubData,
       portfolioData,
       aiFeedback,
@@ -465,6 +466,7 @@ export async function analyzeFullProfile(req, res) {
       scores,
       scoreBreakdowns,
       improvements,
+      coverage,
       aiFeedback,
       missingSkills,
       skillsDetected,
@@ -504,6 +506,7 @@ export async function getReport(req, res) {
             scores: dbReport.scores,
             scoreBreakdowns: dbReport.scoreBreakdowns,
             improvements: dbReport.improvements,
+            coverage: dbReport.coverage || null,
             aiFeedback: dbReport.aiFeedback,
             resumeAnalysis: dbReport.resumeAnalysis,
             skillsDetected: dbReport.skillsDetected || [],
