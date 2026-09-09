@@ -19,6 +19,7 @@ import ProgressTimeline from "../components/ProgressTimeline.jsx";
 import { sampleReportData } from "../data/sampleReportData.js";
 import Icon from "../components/Icon.jsx";
 import { buildTopPriorityActionItems } from "../../utils/actionItems.js";
+import { PORTFOLIO_SCORED_KEY_MAP } from "../../utils/portfolioConstants.js";
 
 const TABS = [
   { id: "overview",   label: "Overview",            icon: "bar-chart", always: true },
@@ -1262,85 +1263,31 @@ export default function ResultsPage({ isSample = false }) {
           >
             {isPortfolioAnalyzed && portfolioData ? (
               <>
-                <Card title="Portfolio Health & Structural Checklist" icon={<Icon name="globe" size={18} />} className="mb-24">
-                  <div className="portfolio-url-bar" style={{ marginBottom: 16 }}>
-                    <span className="portfolio-url-label">URL Evaluated:</span>
-                    <a href={portfolioData.url} target="_blank" rel="noreferrer">
+                <div className="portfolio-url-bar mb-24" style={{ padding: "12px 18px", background: "rgba(15, 23, 42, 0.6)", borderRadius: 12, border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Icon name="globe" size={16} style={{ color: "var(--cyan)" }} />
+                    <span className="portfolio-url-label" style={{ fontWeight: 600, color: "var(--txt-2)", fontSize: "0.85rem" }}>URL Evaluated:</span>
+                    <a href={portfolioData.url} target="_blank" rel="noreferrer" style={{ color: "var(--cyan)", fontWeight: 600, fontSize: "0.9rem" }}>
                       {portfolioData.url} ↗
                     </a>
                   </div>
-
-                  {portfolioData.checklist && (
-                    <div className="checklist-grid">
-                      {Object.entries(portfolioData.checklist).map(([key, item]) => {
-                        const status = item.status || (item.pass ? "present" : "absent");
-                        const badgeClass = status === "present"
-                          ? "pass"
-                          : status === "not_applicable"
-                          ? "not_applicable"
-                          : status === "unavailable"
-                          ? "unavailable"
-                          : "fail";
-
-                        const badgeText = status === "present"
-                          ? "PASS"
-                          : status === "not_applicable"
-                          ? "N/A"
-                          : status === "unavailable"
-                          ? "UNAVAILABLE"
-                          : "FAIL";
-
-                        const iconName = status === "present"
-                          ? "check-circle"
-                          : status === "not_applicable"
-                          ? "info"
-                          : status === "unavailable"
-                          ? "alert-circle"
-                          : "x";
-
-                        const iconColor = status === "present"
-                          ? "var(--green)"
-                          : status === "not_applicable"
-                          ? "var(--txt-3)"
-                          : status === "unavailable"
-                          ? "var(--yellow)"
-                          : "var(--red)";
-
-                        return (
-                          <div key={key} className={`checklist-item ${badgeClass}`}>
-                            <span className="checklist-icon" style={{ color: iconColor }}>
-                              <Icon name={iconName} size={16} />
-                            </span>
-                            <div className="checklist-content">
-                              <div className="checklist-header-row">
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                  <span className="checklist-label">{item.label}</span>
-                                  {item.importance && (
-                                    <span className="checklist-importance">({item.importance})</span>
-                                  )}
-                                </div>
-                                <span className={`checklist-badge ${badgeClass}`}>{badgeText}</span>
-                              </div>
-                              {item.evidence && (
-                                <div className="checklist-evidence">{item.evidence}</div>
-                              )}
-                              {!item.pass && status !== "not_applicable" && status !== "unavailable" && item.hint && (
-                                <div className="checklist-hint">{item.hint}</div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                  {portfolioData.responseTimeMs > 0 && (
+                    <span style={{ fontSize: "0.78rem", color: "var(--txt-3)" }}>
+                      Response Time: {portfolioData.responseTimeMs}ms · Status: {portfolioData.statusCode || 200}
+                    </span>
                   )}
-                </Card>
+                </div>
 
                 <div className="section-title">
-                  <h2>Portfolio Score Breakdown</h2>
+                  <h2>Portfolio Score Breakdown & Structural Verification</h2>
+                  <p>Each scored check evaluated against the live rendered portfolio DOM</p>
                 </div>
+
                 <div className="breakdown-cards">
                   {(scoreBreakdowns?.portfolio || []).map((b, idx) => {
-                    const itemStatus = b.status || (b.score > 0 ? "present" : "absent");
+                    const key = PORTFOLIO_SCORED_KEY_MAP[b.label];
+                    const chk = portfolioData?.checklist?.[key] || {};
+                    const itemStatus = b.status || chk.status || (b.score > 0 ? "present" : "absent");
                     const badgeClass = itemStatus === "present"
                       ? "pass"
                       : itemStatus === "not_applicable"
@@ -1355,28 +1302,142 @@ export default function ResultsPage({ isSample = false }) {
                       : itemStatus === "unavailable"
                       ? "UNAVAILABLE"
                       : "FAIL";
+                    const iconName = itemStatus === "present"
+                      ? "check-circle"
+                      : itemStatus === "not_applicable"
+                      ? "info"
+                      : itemStatus === "unavailable"
+                      ? "alert-circle"
+                      : "x";
+                    const iconColor = itemStatus === "present"
+                      ? "var(--green)"
+                      : itemStatus === "not_applicable"
+                      ? "var(--txt-3)"
+                      : itemStatus === "unavailable"
+                      ? "var(--yellow)"
+                      : "var(--red)";
+
+                    const displayEvidence = chk.evidence || b.evidence;
+                    const hint = (!chk.pass && itemStatus !== "not_applicable" && itemStatus !== "unavailable" && chk.hint) ? chk.hint : null;
 
                     return (
-                      <div key={idx} className="breakdown-card card">
-                        <div className="breakdown-header">
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span className="breakdown-label">{b.label}</span>
+                      <div key={idx} className={`breakdown-card card checklist-item ${badgeClass}`} style={{ padding: "16px 18px", gap: 10 }}>
+                        <div className="breakdown-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                            <span className="checklist-icon" style={{ color: iconColor }}>
+                              <Icon name={iconName} size={16} />
+                            </span>
+                            <span className="breakdown-label" style={{ fontSize: "0.92rem", fontWeight: 700 }}>{b.label}</span>
+                            {chk.importance && (
+                              <span className="checklist-importance">({chk.importance})</span>
+                            )}
                             <span className={`checklist-badge ${badgeClass}`}>{badgeText}</span>
                           </div>
-                          <span className="breakdown-score">
-                            {itemStatus === "not_applicable" ? "Excluded (N/A)" : `${b.score} / ${b.max}`}
+                          <span className="breakdown-score" style={{ fontWeight: 700, fontSize: "0.88rem", whiteSpace: "nowrap" }}>
+                            {itemStatus === "not_applicable" ? "Excluded (N/A)" : itemStatus === "unavailable" ? "Unavailable" : `${b.score} / ${b.max} pts`}
                           </span>
                         </div>
-                        {itemStatus !== "not_applicable" && (
-                          <div className="progress-bar">
+
+                        {itemStatus !== "not_applicable" && itemStatus !== "unavailable" && (
+                          <div className="progress-bar" style={{ height: 6, margin: "2px 0 4px" }}>
                             <div className="progress-fill" style={{ width: `${Math.round((b.score / b.max) * 100)}%` }} />
                           </div>
                         )}
-                        <div className="breakdown-evidence">{b.evidence}</div>
+
+                        <div className="checklist-evidence" style={{ fontSize: "0.78rem", color: "var(--txt-2)", lineHeight: 1.45 }}>
+                          {displayEvidence}
+                        </div>
+
+                        {hint && (
+                          <div className="checklist-hint" style={{ fontSize: "0.75rem", color: "var(--yellow)", marginTop: 4, display: "flex", alignItems: "flex-start", gap: 5 }}>
+                            <Icon name="arrow-right" size={12} style={{ flexShrink: 0, marginTop: 2 }} />
+                            <span>{hint}</span>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
                 </div>
+
+                {(() => {
+                  const scoredKeySet = new Set(Object.values(PORTFOLIO_SCORED_KEY_MAP));
+                  const additionalChecks = Object.entries(portfolioData?.checklist || {}).filter(
+                    ([key]) => !scoredKeySet.has(key)
+                  );
+                  if (additionalChecks.length === 0) return null;
+
+                  return (
+                    <Card
+                      title="Additional Structural Checks (Non-Scoring)"
+                      icon={<Icon name="check-square" size={18} />}
+                      className="mt-24"
+                    >
+                      <p style={{ color: "var(--txt-3)", fontSize: "0.82rem", margin: "-6px 0 14px" }}>
+                        Supplementary SEO and structural hygiene checks evaluated for candidate guidance. These checks do not alter your numerical score.
+                      </p>
+                      <div className="checklist-grid">
+                        {additionalChecks.map(([key, item]) => {
+                          const status = item.status || (item.pass ? "present" : "absent");
+                          const badgeClass = status === "present"
+                            ? "pass"
+                            : status === "not_applicable"
+                            ? "not_applicable"
+                            : status === "unavailable"
+                            ? "unavailable"
+                            : "fail";
+                          const badgeText = status === "present"
+                            ? "PASS"
+                            : status === "not_applicable"
+                            ? "N/A"
+                            : status === "unavailable"
+                            ? "UNAVAILABLE"
+                            : "FAIL";
+                          const iconName = status === "present"
+                            ? "check-circle"
+                            : status === "not_applicable"
+                            ? "info"
+                            : status === "unavailable"
+                            ? "alert-circle"
+                            : "x";
+                          const iconColor = status === "present"
+                            ? "var(--green)"
+                            : status === "not_applicable"
+                            ? "var(--txt-3)"
+                            : status === "unavailable"
+                            ? "var(--yellow)"
+                            : "var(--red)";
+
+                          return (
+                            <div key={key} className={`checklist-item ${badgeClass}`}>
+                              <span className="checklist-icon" style={{ color: iconColor }}>
+                                <Icon name={iconName} size={16} />
+                              </span>
+                              <div className="checklist-content">
+                                <div className="checklist-header-row">
+                                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                    <span className="checklist-label">{item.label}</span>
+                                    {item.importance && (
+                                      <span className="checklist-importance">({item.importance})</span>
+                                    )}
+                                  </div>
+                                  <span className={`checklist-badge ${badgeClass}`}>{badgeText}</span>
+                                </div>
+                                {item.evidence && (
+                                  <div className="checklist-evidence">{item.evidence}</div>
+                                )}
+                                {!item.pass && status !== "not_applicable" && status !== "unavailable" && item.hint && (
+                                  <div className="checklist-hint" style={{ color: "var(--yellow)", marginTop: 4 }}>
+                                    {item.hint}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </Card>
+                  );
+                })()}
               </>
             ) : (
               <Card title="Portfolio Unavailable" icon={<Icon name="globe" size={18} />}>
@@ -1402,7 +1463,9 @@ export default function ResultsPage({ isSample = false }) {
                 <p style={{ whiteSpace: "pre-line", lineHeight: 1.7, fontSize: "0.95rem" }}>
                   {typeof aiFeedback === "string"
                     ? aiFeedback
-                    : aiFeedback?.overallSummary || "Synthesis feedback unavailable for this report."}
+                    : aiFeedback?.overallSummary
+                    ? aiFeedback.overallSummary
+                    : "Executive recruiter synthesis is temporarily unavailable for this report snapshot. All numerical scores, ATS keyword matches, and verified technical checks remain fully evaluated and unaffected."}
                 </p>
               </div>
             </Card>

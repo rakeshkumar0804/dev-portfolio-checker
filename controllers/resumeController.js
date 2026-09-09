@@ -10,6 +10,7 @@ import { calculateAllScores, detectMissingSkills } from "../services/scoringServ
 import { evaluateRecruiterDecision } from "../services/recruiterEngine.js";
 import { generateConsistencyMatrix } from "../services/consistencyService.js";
 import { filterGenericTopics } from "../utils/topicFilter.js";
+import { buildFallbackFeedback } from "../services/aiService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -165,6 +166,19 @@ export async function analyzeResumeController(req, res) {
 
       const plainExisting = existingReport.toObject ? existingReport.toObject() : existingReport;
 
+      // Generate updated feedback and roadmap incorporating the newly analyzed resume
+      let updatedAiFeedback = null;
+      try {
+        updatedAiFeedback = buildFallbackFeedback(
+          githubData,
+          portfolioData,
+          scores,
+          improvements,
+          effectiveTargetRole,
+          resumeAnalysis
+        );
+      } catch (_) {}
+
       updatedReport = {
         ...plainExisting,
         shareId,
@@ -180,6 +194,8 @@ export async function analyzeResumeController(req, res) {
         missingSkills,
         recruiterDecision,
         consistencyMatrix,
+        aiFeedback: updatedAiFeedback || plainExisting.aiFeedback || null,
+        careerRoadmap: updatedAiFeedback?.careerRoadmap || plainExisting.careerRoadmap || plainExisting.aiFeedback?.careerRoadmap || null,
         updatedAt: Date.now(),
       };
 

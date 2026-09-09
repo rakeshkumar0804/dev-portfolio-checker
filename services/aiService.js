@@ -131,7 +131,7 @@ Return ONLY a valid JSON object (no markdown, no explanation):
   return buildFallbackFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis);
 }
 
-function buildFallbackFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis) {
+export function buildFallbackFeedback(githubData, portfolioData, scores = {}, improvements = [], targetRole = "fullstack", resumeAnalysis = null) {
   const profile = githubData?.profile || {};
   const stats = githubData?.stats || {};
   const strengths = [];
@@ -166,11 +166,13 @@ function buildFallbackFeedback(githubData, portfolioData, scores, improvements, 
     weaknesses.push("No portfolio website provided");
   }
 
-  const level = scores.overall >= 75 ? "Mid-Level" : scores.overall >= 55 ? "Junior" : "Early-Stage";
-  const verdict = scores.overall >= 75 ? "Promising Developer" : scores.overall >= 55 ? "Needs Polish" : "Early Stage";
+  const overall = typeof scores?.overall === "number" ? scores.overall : 50;
+  const level = overall >= 75 ? "Mid-Level" : overall >= 55 ? "Junior" : "Early-Stage";
+  const verdict = overall >= 75 ? "Promising Developer" : overall >= 55 ? "Needs Polish" : "Early Stage";
+  const safeRole = (targetRole || "fullstack").toUpperCase();
 
   return {
-    overallSummary: `Analysis completed for ${targetRole.toUpperCase()} role. ${
+    overallSummary: `Analysis completed for ${safeRole} role. ${
       hasResume ? `Resume scored ${resumeAnalysis.atsScore}/100 with extracted skills (${(resumeAnalysis.skillsExtracted || []).slice(0, 5).join(", ") || "general"}).` : ""
     } ${hasGithub ? `@${profile.username} has ${stats.ownedRepos || 0} public repos.` : ""} Focus on strengthening quantifiable achievements to support profile evidence.`,
     strengths: strengths.length ? strengths : ["Candidate profile provided for evaluation"],
@@ -188,12 +190,12 @@ function buildFallbackFeedback(githubData, portfolioData, scores, improvements, 
       negatives: weaknesses.slice(0, 3),
     },
     careerRoadmap: {
-      currentLevel: `${level} ${targetRole.toUpperCase()} Candidate`,
-      targetLevel: `Mid/Senior ${targetRole.toUpperCase()} Developer`,
+      currentLevel: `${level} ${safeRole} Candidate`,
+      targetLevel: `Mid/Senior ${safeRole} Developer`,
       estimatedWeeks: 4,
       milestones: [
         { week: "Week 1–2", task: "Add quantifiable metrics to resume and top project READMEs", impact: "Directly improves ATS score and provides verified impact proof for technical screeners" },
-        { week: "Week 3–4", task: "Build a production demo project aligned with " + targetRole.toUpperCase(), impact: "Provides strong technical proof to interviewers" }
+        { week: "Week 3–4", task: "Build a production demo project aligned with " + safeRole, impact: "Provides strong technical proof to interviewers" }
       ],
     },
     hiringRecommendation: scores.overall >= 75 ? "hire" : scores.overall >= 55 ? "maybe" : "not_yet",

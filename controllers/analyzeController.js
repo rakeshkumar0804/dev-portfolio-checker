@@ -5,7 +5,7 @@ import { dbConnected } from "../utils/connectDatabase.js";
 import { fetchGitHubData } from "../services/githubService.js";
 import { fetchPortfolioData } from "../services/portfolioService.js";
 import { calculateAllScores, detectMissingSkills } from "../services/scoringService.js";
-import { generateAIFeedback } from "../services/aiService.js";
+import { generateAIFeedback, buildFallbackFeedback } from "../services/aiService.js";
 import { evaluateRecruiterDecision } from "../services/recruiterEngine.js";
 import { generateConsistencyMatrix } from "../services/consistencyService.js";
 import { consumeAnalysis } from "../services/accountService.js";
@@ -396,6 +396,16 @@ export async function analyzeFullProfile(req, res) {
       console.warn(`Skipping AI feedback to preserve serverless timeout budget (${elapsedBeforeAi}ms elapsed, ${remainingForAi}ms left)`);
     }
 
+    // Ensure reliable, evidence-based synthesis and roadmap if AI generation timed out, failed, or was skipped
+    if (!aiFeedback) {
+      try {
+        aiFeedback = buildFallbackFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis);
+      } catch (fbErr) {
+        console.warn("Fallback AI feedback error:", fbErr.message);
+        aiFeedback = null;
+      }
+    }
+
     // Share IDs are server-owned. Never accept a caller-provided ID because it
     // would let someone overwrite another person's report.
     let shareId = null;
@@ -471,6 +481,7 @@ export async function analyzeFullProfile(req, res) {
       improvements,
       coverage,
       aiFeedback,
+      careerRoadmap: reportPayload.careerRoadmap,
       missingSkills,
       skillsDetected,
       targetRole,
@@ -511,6 +522,7 @@ export async function getReport(req, res) {
             improvements: dbReport.improvements,
             coverage: dbReport.coverage || null,
             aiFeedback: dbReport.aiFeedback,
+            careerRoadmap: dbReport.careerRoadmap || dbReport.aiFeedback?.careerRoadmap || null,
             resumeAnalysis: dbReport.resumeAnalysis,
             skillsDetected: dbReport.skillsDetected || [],
             recruiterDecision: dbReport.recruiterDecision,
