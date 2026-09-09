@@ -109,17 +109,26 @@ Return ONLY valid JSON (no markdown):
   "strengths": ["recruiter strength 1", "recruiter strength 2"],
   "issues": ["recruiter concern 1", "recruiter concern 2"]
 }`;
+      const aiTimeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Resume Gemini timeout")), 2500)
+      );
+
       for (const modelName of MODELS) {
         try {
           const model = genAI.getGenerativeModel({ model: modelName });
-          const res = await model.generateContent(prompt);
+          const res = await Promise.race([
+            model.generateContent(prompt),
+            aiTimeoutPromise,
+          ]);
           const raw = res.response.text();
           const json = raw.match(/\{[\s\S]*\}/);
           if (json) {
             aiVerdict = JSON.parse(json[0]);
             break;
           }
-        } catch (_) {}
+        } catch (_) {
+          break; // Stop trying subsequent models if timed out or failed
+        }
       }
     }
   } catch (_) {}

@@ -4,8 +4,8 @@ import fs from "fs";
 import puppeteer from "puppeteer-core";
 import { assertPublicHttpUrl, isUnsafeHost } from "../utils/publicUrl.js";
 
-const CRAWL_TIMEOUT_MS = 5500;
-const NAVIGATION_TIMEOUT_MS = 4500;
+const CRAWL_TIMEOUT_MS = 3000;
+const NAVIGATION_TIMEOUT_MS = 2500;
 
 // Launches a browser compatible with both Vercel serverless and local environments
 async function launchBrowser(options = {}) {
@@ -89,7 +89,11 @@ export async function fetchPortfolioData(url) {
     statusCode = response.status;
     responseTimeMs = Date.now() - startTime;
   } catch (err) {
-    fetchError = err.message;
+    if (err.code === "ECONNABORTED" || err.message?.toLowerCase().includes("timeout")) {
+      fetchError = "Website request timed out.";
+    } else {
+      fetchError = err.message;
+    }
     responseTimeMs = Date.now() - startTime;
     return buildResult(null, targetUrl, isHttps, fetchError, statusCode, responseTimeMs);
   }
@@ -194,7 +198,7 @@ async function fetchPublicPage(initialUrl) {
   for (let redirects = 0; redirects <= 2; redirects++) {
     await assertPublicHttpUrl(currentUrl);
     const response = await axios.get(currentUrl, {
-      timeout: 6000,
+      timeout: 3500,
       maxRedirects: 0,
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; DevPortfolioChecker/2.1)",

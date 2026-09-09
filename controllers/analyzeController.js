@@ -192,6 +192,9 @@ function filterUnknownSkills(skills) {
 
 // POST /api/analyze/full
 export async function analyzeFullProfile(req, res) {
+  const requestStartTime = Date.now();
+  const MAX_ANALYSIS_BUDGET_MS = 8500; // 8.5s budget to ensure completion within serverless limits
+
   try {
     const { githubUsername, portfolioUrl, targetRole = "fullstack", forceRefresh = false, resumeAnalysis = null } = req.body;
     const isForce = forceRefresh === true || forceRefresh === "true";
@@ -269,7 +272,10 @@ export async function analyzeFullProfile(req, res) {
         const errMsg = err?.message || "Could not retrieve GitHub profile data.";
         githubStatus = err?.statusCode || (errMsg.includes("not found") ? 404 : (errMsg.includes("timeout") ? 504 : 502));
         if (analysisMode === "github_only") {
-          return res.status(githubStatus).json({ message: errMsg });
+          const message = githubStatus === 504
+            ? "Analysis took longer than expected. Please retry in a moment."
+            : errMsg;
+          return res.status(githubStatus).json({ message });
         }
         console.warn("⚠️ GitHub analysis failed in combined mode:", errMsg);
         githubData = null;
@@ -297,9 +303,9 @@ export async function analyzeFullProfile(req, res) {
           }
 
           if (analysisMode === "portfolio_only") {
-            const errMsg = fetchErr
-              ? `Could not access portfolio website (${fetchErr}). Please verify the URL.`
-              : "Could not access portfolio website. Please verify the URL.";
+            const errMsg = portfolioStatus === 504
+              ? "Analysis took longer than expected. Please retry in a moment."
+              : (fetchErr ? `Could not access portfolio website (${fetchErr}). Please verify the URL.` : "Could not access portfolio website. Please verify the URL.");
             return res.status(portfolioStatus).json({ message: errMsg });
           }
         }
@@ -308,7 +314,10 @@ export async function analyzeFullProfile(req, res) {
         const errMsg = err?.message || "Could not analyze portfolio website.";
         portfolioStatus = err?.statusCode || (errMsg.includes("timeout") ? 504 : 400);
         if (analysisMode === "portfolio_only") {
-          return res.status(portfolioStatus).json({ message: errMsg });
+          const message = portfolioStatus === 504
+            ? "Analysis took longer than expected. Please retry in a moment."
+            : errMsg;
+          return res.status(portfolioStatus).json({ message });
         }
         console.warn("⚠️ Portfolio analysis failed in combined mode:", errMsg);
         portfolioData = null;
@@ -368,11 +377,20 @@ export async function analyzeFullProfile(req, res) {
     const consistencyMatrix = generateConsistencyMatrix(githubData, resumeAnalysis);
 
     let aiFeedback = null;
-    try {
-      // Bound AI feedback internally with native cancellation
-      aiFeedback = await generateAIFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis);
-    } catch (aiErr) {
-      console.warn("AI feedback skipped or timed out (non-critical):", aiErr.message?.slice(0, 80));
+    const elapsedBeforeAi = Date.now() - requestStartTime;
+    const remainingForAi = MAX_ANALYSIS_BUDGET_MS - elapsedBeforeAi;
+    if (remainingForAi >= 1500) {
+      try {
+        const aiDeadline = Math.min(remainingForAi - 500, 3000);
+        aiFeedback = await Promise.race([
+          generateAIFeedback(githubData, portfolioData, scores, improvements, targetRole, resumeAnalysis),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("AI feedback timeout")), aiDeadline)),
+        ]);
+      } catch (aiErr) {
+        console.warn("AI feedback skipped or timed out (non-critical):", aiErr.message?.slice(0, 80));
+      }
+    } else {
+      console.warn(`Skipping AI feedback to preserve serverless timeout budget (${elapsedBeforeAi}ms elapsed, ${remainingForAi}ms left)`);
     }
 
     // Share IDs are server-owned. Never accept a caller-provided ID because it

@@ -198,6 +198,12 @@ export default function LoadingScreen({
       apiError.toLowerCase().includes("rate limit") ||
       (typeof retryAfterSeconds === "number" && retryAfterSeconds > 0));
 
+  const isTimeoutError =
+    Boolean(apiError) &&
+    (apiError.toLowerCase().includes("longer than expected") ||
+      apiError.toLowerCase().includes("timed out") ||
+      apiError.toLowerCase().includes("timeout"));
+
   return (
     <div className="loading-screen" role="status" aria-live="polite">
       <div className="loading-card anim-fade-up">
@@ -210,6 +216,8 @@ export default function LoadingScreen({
               ? "Session Expired"
               : isRateLimitError
               ? "Rate Limit Reached"
+              : isTimeoutError
+              ? "Analysis Timed Out"
               : "Analysis Issue"
             : finishing
             ? "Finalizing Report"
@@ -223,6 +231,8 @@ export default function LoadingScreen({
               ? remainingSeconds > 0
                 ? `Please wait ${remainingSeconds}s before retrying analysis.`
                 : "Too many requests were sent in a short period. Please wait a few moments before trying again."
+              : isTimeoutError
+              ? "The analysis took longer than expected to complete. Please try again."
               : "Something went wrong during the analysis."
             : `Running ${totalStages} tailored checks across your selected inputs\u2026`}
         </p>
@@ -257,12 +267,12 @@ export default function LoadingScreen({
           <div className="loading-error anim-fade-up">
             <div className="loading-error-icon">
               <Icon
-                name={isSessionError ? "user" : isRateLimitError ? "clock" : "alert-triangle"}
+                name={isSessionError ? "user" : (isRateLimitError || isTimeoutError) ? "clock" : "alert-triangle"}
                 size={20}
                 style={{
                   color: isSessionError
                     ? "var(--cyan)"
-                    : isRateLimitError
+                    : (isRateLimitError || isTimeoutError)
                     ? "var(--amber, #f59e0b)"
                     : "var(--yellow)",
                 }}

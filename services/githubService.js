@@ -26,7 +26,7 @@ async function fallbackPublicRepos(cleanUsername) {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       },
-      timeout: 10000,
+      timeout: 3500,
     });
     const $ = cheerio.load(res.data);
     const repos = [];
@@ -72,7 +72,7 @@ async function fallbackPublicProfile(cleanUsername) {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       },
-      timeout: 10000,
+      timeout: 3500,
     });
     const $ = cheerio.load(htmlRes.data);
 
@@ -118,7 +118,7 @@ async function fallbackPublicProfile(cleanUsername) {
   }
 }
 
-async function ghFetch(url, timeoutMs = 7000) {
+async function ghFetch(url, timeoutMs = 4500) {
   try {
     const res = await axios.get(url, { headers: githubHeaders, timeout: timeoutMs });
     return res.data;
@@ -143,7 +143,7 @@ export async function fetchGitHubData(rawUsername) {
   // 1. Profile (validate user identity & existence)
   let profile;
   try {
-    profile = await ghFetch(`${BASE_URL}/users/${username}`, 7000);
+    profile = await ghFetch(`${BASE_URL}/users/${username}`, 4500);
   } catch (err) {
     if (err.response?.status === 404) {
       const notFoundErr = new Error(`GitHub user "${username}" not found.`);
@@ -157,10 +157,10 @@ export async function fetchGitHubData(rawUsername) {
 
   // 2–5. Fetch Repos, Events, README & Contributions concurrently
   const [reposResult, eventsResult, readmeResult, contribResult] = await Promise.allSettled([
-    ghFetch(`${BASE_URL}/users/${username}/repos?per_page=100&sort=updated&type=owner`, 7000),
-    ghFetch(`${BASE_URL}/users/${username}/events?per_page=100`, 7000),
-    ghFetch(`${BASE_URL}/repos/${username}/${username}`, 5000),
-    axios.get(`https://github-contributions-api.jogruber.de/v4/${username}`, { timeout: 4500 }),
+    ghFetch(`${BASE_URL}/users/${username}/repos?per_page=100&sort=updated&type=owner`, 4500),
+    ghFetch(`${BASE_URL}/users/${username}/events?per_page=100`, 4500),
+    ghFetch(`${BASE_URL}/repos/${username}/${username}`, 3500),
+    axios.get(`https://github-contributions-api.jogruber.de/v4/${username}`, { timeout: 3000 }),
   ]);
 
   let repos = [];
